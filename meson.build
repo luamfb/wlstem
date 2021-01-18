@@ -248,22 +248,6 @@ install_data(
     install_dir: join_paths(datadir, 'wayland-sessions')
 )
 
-if get_option('default-wallpaper')
-    wallpaper_files = files(
-        'assets/Sway_Wallpaper_Blue_768x1024.png',
-        'assets/Sway_Wallpaper_Blue_768x1024_Portrait.png',
-        'assets/Sway_Wallpaper_Blue_1136x640.png',
-        'assets/Sway_Wallpaper_Blue_1136x640_Portrait.png',
-        'assets/Sway_Wallpaper_Blue_1366x768.png',
-        'assets/Sway_Wallpaper_Blue_1920x1080.png',
-        'assets/Sway_Wallpaper_Blue_2048x1536.png',
-        'assets/Sway_Wallpaper_Blue_2048x1536_Portrait.png',
-    )
-    wallpaper_install_dir = join_paths(datadir, 'backgrounds', 'sway')
-
-    install_data(wallpaper_files, install_dir: wallpaper_install_dir)
-endif
-
 if get_option('zsh-completions')
     zsh_files = files(
         'completions/zsh/_sway',
