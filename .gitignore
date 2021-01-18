@@ -1,0 +1,7 @@
+build
+wip
+*.swp
+*.o
+*.a
+config-debug
+wayland-*-protocol.*
