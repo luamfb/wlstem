@@ -241,11 +241,6 @@ configure_file(
     install_dir: join_paths(sysconfdir, 'sway')
 )
 
-install_data(
-    'sway.desktop',
-    install_dir: join_paths(datadir, 'wayland-sessions')
-)
-
 summary({
     'xwayland': have_xwayland,
     'gdk-pixbuf': gdk_pixbuf.found(),
