@@ -194,18 +194,6 @@ subdir('client')
 subdir('swaybar')
 subdir('swaynag')
 
-config = configuration_data()
-config.set('datadir', join_paths(prefix, datadir))
-config.set('prefix', prefix)
-config.set('sysconfdir', join_paths(prefix, sysconfdir))
-
-configure_file(
-    configuration: config,
-    input: 'config.in',
-    output: '@BASENAME@',
-    install_dir: join_paths(sysconfdir, 'sway')
-)
-
 summary({
     'xwayland': have_xwayland,
     'gdk-pixbuf': gdk_pixbuf.found(),
