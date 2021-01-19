@@ -5,3 +5,4 @@ wip
 *.a
 config-debug
 wayland-*-protocol.*
+tags
