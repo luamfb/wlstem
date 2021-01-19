@@ -127,41 +127,6 @@ conf_data.set10('HAVE_LIBELOGIND', sdbus.found() and sdbus.name() == 'libelogind
 conf_data.set10('HAVE_BASU', sdbus.found() and sdbus.name() == 'basu')
 conf_data.set10('HAVE_TRAY', have_tray)
 
-scdoc = dependency('scdoc', version: '>=1.9.2', native: true, required: get_option('man-pages'))
-if scdoc.found()
-    scdoc_prog = find_program(scdoc.get_pkgconfig_variable('scdoc'), native: true)
-    sh = find_program('sh', native: true)
-    mandir = get_option('mandir')
-    man_files = [
-        'sway/sway.1.scd',
-        'sway/sway.5.scd',
-        'sway/sway-bar.5.scd',
-        'sway/sway-input.5.scd',
-        'sway/sway-ipc.7.scd',
-        'sway/sway-output.5.scd',
-        'swaybar/swaybar-protocol.7.scd',
-        'swaymsg/swaymsg.1.scd',
-        'swaynag/swaynag.1.scd',
-        'swaynag/swaynag.5.scd',
-    ]
-    foreach filename : man_files
-        topic = filename.split('.')[-3].split('/')[-1]
-        section = filename.split('.')[-2]
-        output = '@0@.@1@'.format(topic, section)
-
-        custom_target(
-            output,
-            input: filename,
-            output: output,
-            command: [
-                sh, '-c', '@0@ < @INPUT@ > @1@'.format(scdoc_prog.path(), output)
-            ],
-            install: true,
-            install_dir: '@0@/man@1@'.format(mandir, section)
-        )
-    endforeach
-endif
-
 add_project_arguments('-DSYSCONFDIR="/@0@"'.format(join_paths(prefix, sysconfdir)), language : 'c')
 
 version = '"@0@"'.format(meson.project_version())
@@ -246,7 +211,6 @@ summary({
     'gdk-pixbuf': gdk_pixbuf.found(),
     'sd-bus': sdbus.found(),
     'tray': have_tray,
-    'man-pages': scdoc.found(),
 }, bool_yn: true)
 
 if not wlroots_features['systemd'] and not wlroots_features['elogind'] and not wlroots_features['libseat']
