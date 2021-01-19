@@ -37,8 +37,6 @@ struct cmd_results *input_cmd_xkb_file(int argc, char **argv) {
 		if (!can_access) {
 			sway_log_errno(SWAY_ERROR, "Unable to access xkb file '%s'",
 					ic->xkb_file);
-			config_add_swaynag_warning("Unable to access xkb file '%s'",
-					ic->xkb_file);
 		}
 	}
 	ic->xkb_file_is_set = true;

@@ -8,7 +8,7 @@ struct cmd_results *cmd_include(int argc, char **argv) {
 	}
 
 	// We don't care if the included config(s) fails to load.
-	load_include_configs(argv[0], config, &config->swaynag_config_errors);
+	load_include_configs(argv[0], config);
 
 	return cmd_results_new(CMD_SUCCESS, NULL);
 }

@@ -10,7 +10,6 @@
 #include <xkbcommon/xkbcommon.h>
 #include "../include/config.h"
 #include "list.h"
-#include "swaynag.h"
 #include "tree/container.h"
 #include "sway/input/tablet.h"
 #include "sway/tree/root.h"
@@ -453,8 +452,6 @@ enum xwayland_mode {
  * The configuration struct. The result of loading a config file.
  */
 struct sway_config {
-    char *swaynag_command;
-    struct swaynag_instance swaynag_config_errors;
     list_t *symbols;
     list_t *modes;
     list_t *bars;
@@ -576,14 +573,12 @@ bool load_main_config(const char *path, bool is_active, bool validating);
 /**
  * Loads an included config. Can only be used after load_main_config.
  */
-void load_include_configs(const char *path, struct sway_config *config,
-        struct swaynag_instance *swaynag);
+void load_include_configs(const char *path, struct sway_config *config);
 
 /**
  * Reads the config from the given FILE.
  */
-bool read_config(FILE *file, struct sway_config *config,
-        struct swaynag_instance *swaynag);
+bool read_config(FILE *file, struct sway_config *config);
 
 /**
  * Run the commands that were deferred when reading the config file.
@@ -594,11 +589,6 @@ void run_deferred_commands(void);
  * Run the binding commands that were deferred when initializing the inputs
  */
 void run_deferred_bindings(void);
-
-/**
- * Adds a warning entry to the swaynag instance used for errors.
- */
-void config_add_swaynag_warning(char *fmt, ...);
 
 /**
  * Free config struct

@@ -22,7 +22,6 @@
 #include "sway/config.h"
 #include "sway/criteria.h"
 #include "sway/desktop/transaction.h"
-#include "sway/swaynag.h"
 #include "sway/tree/arrange.h"
 #include "sway/tree/root.h"
 #include "sway/tree/workspace.h"
@@ -160,7 +159,6 @@ void free_config(struct sway_config *config) {
     free(config->floating_scroll_right_cmd);
     free(config->font);
     free(config->swaybg_command);
-    free(config->swaynag_command);
     free((char *)config->current_config_path);
     free((char *)config->current_config);
     keysym_translation_state_destroy(config->keysym_translation_state);
@@ -191,15 +189,6 @@ static void destroy_removed_seats(struct sway_config *old_config,
 }
 
 static void config_defaults(struct sway_config *config) {
-    if (!(config->swaynag_command = strdup("swaynag"))) goto cleanup;
-    config->swaynag_config_errors = (struct swaynag_instance){0};
-    config->swaynag_config_errors.args = "--type error "
-            "--message 'There are errors in your config file' "
-            "--detailed-message "
-            "--button-no-terminal 'Exit sway' 'swaymsg exit' "
-            "--button-no-terminal 'Reload sway' 'swaymsg reload'";
-    config->swaynag_config_errors.detailed = true;
-
     if (!(config->symbols = create_list())) goto cleanup;
     if (!(config->modes = create_list())) goto cleanup;
     if (!(config->bars = create_list())) goto cleanup;
@@ -369,8 +358,7 @@ static char *get_config_path(void) {
     return NULL;
 }
 
-static bool load_config(const char *path, struct sway_config *config,
-        struct swaynag_instance *swaynag) {
+static bool load_config(const char *path, struct sway_config *config) {
     if (path == NULL) {
         sway_log(SWAY_ERROR, "Unable to find a config file!");
         return false;
@@ -390,7 +378,7 @@ static bool load_config(const char *path, struct sway_config *config,
         return false;
     }
 
-    bool config_load_success = read_config(f, config, swaynag);
+    bool config_load_success = read_config(f, config);
     fclose(f);
 
     if (!config_load_success) {
@@ -441,10 +429,6 @@ bool load_main_config(const char *file, bool is_active, bool validating) {
         if (!config->validating) {
             if (old_config->swaybg_client != NULL) {
                 wl_client_destroy(old_config->swaybg_client);
-            }
-
-            if (old_config->swaynag_config_errors.client != NULL) {
-                wl_client_destroy(old_config->swaynag_config_errors.client);
             }
 
             input_manager_reset_all_inputs();
@@ -505,8 +489,7 @@ bool load_main_config(const char *file, bool is_active, bool validating) {
     }
     */
 
-    success = success && load_config(path, config,
-            &config->swaynag_config_errors);
+    success = success && load_config(path, config);
 
     if (validating) {
         free_config(config);
@@ -535,9 +518,6 @@ bool load_main_config(const char *file, bool is_active, bool validating) {
         spawn_swaybg();
 
         config->reloading = false;
-        if (config->swaynag_config_errors.client != NULL) {
-            swaynag_show(&config->swaynag_config_errors);
-        }
     }
 
     if (old_config) {
@@ -549,7 +529,7 @@ bool load_main_config(const char *file, bool is_active, bool validating) {
 }
 
 static bool load_include_config(const char *path, const char *parent_dir,
-        struct sway_config *config, struct swaynag_instance *swaynag) {
+        struct sway_config *config) {
     // save parent config
     const char *parent_config = config->current_config_path;
 
@@ -593,7 +573,7 @@ static bool load_include_config(const char *path, const char *parent_dir,
     list_add(config->config_chain, real_path);
     int index = config->config_chain->length - 1;
 
-    if (!load_config(real_path, config, swaynag)) {
+    if (!load_config(real_path, config)) {
         free(real_path);
         config->current_config_path = parent_config;
         list_del(config->config_chain, index);
@@ -605,8 +585,7 @@ static bool load_include_config(const char *path, const char *parent_dir,
     return true;
 }
 
-void load_include_configs(const char *path, struct sway_config *config,
-        struct swaynag_instance *swaynag) {
+void load_include_configs(const char *path, struct sway_config *config) {
     char *wd = getcwd(NULL, 0);
     char *parent_path = strdup(config->current_config_path);
     const char *parent_dir = dirname(parent_path);
@@ -621,7 +600,7 @@ void load_include_configs(const char *path, struct sway_config *config,
         char **w = p.we_wordv;
         size_t i;
         for (i = 0; i < p.we_wordc; ++i) {
-            load_include_config(w[i], parent_dir, config, swaynag);
+            load_include_config(w[i], parent_dir, config);
         }
         wordfree(&p);
     }
@@ -741,8 +720,7 @@ static char *expand_line(const char *block, const char *line, bool add_brace) {
     return expanded;
 }
 
-bool read_config(FILE *file, struct sway_config *config,
-        struct swaynag_instance *swaynag) {
+bool read_config(FILE *file, struct sway_config *config) {
     bool reading_main_config = false;
     char *this_config = NULL;
     size_t config_size = 0;
@@ -825,11 +803,6 @@ bool read_config(FILE *file, struct sway_config *config,
         case CMD_INVALID:
             sway_log(SWAY_ERROR, "Error on line %i '%s': %s (%s)", line_number,
                 line, res->error, config->current_config_path);
-            if (!config->validating) {
-                swaynag_log(config->swaynag_command, swaynag,
-                    "Error on line %i (%s) '%s': %s", line_number,
-                    config->current_config_path, line, res->error);
-            }
             success = false;
             break;
 
@@ -878,30 +851,6 @@ bool read_config(FILE *file, struct sway_config *config,
     config->current_config_line = NULL;
 
     return success;
-}
-
-void config_add_swaynag_warning(char *fmt, ...) {
-    if (config->reading && !config->validating) {
-        va_list args;
-        va_start(args, fmt);
-        size_t length = vsnprintf(NULL, 0, fmt, args) + 1;
-        va_end(args);
-
-        char *temp = malloc(length + 1);
-        if (!temp) {
-            sway_log(SWAY_ERROR, "Failed to allocate buffer for warning.");
-            return;
-        }
-
-        va_start(args, fmt);
-        vsnprintf(temp, length, fmt, args);
-        va_end(args);
-
-        swaynag_log(config->swaynag_command, &config->swaynag_config_errors,
-            "Warning on line %i (%s) '%s': %s",
-            config->current_config_line_number, config->current_config_path,
-            config->current_config_line, temp);
-    }
 }
 
 char *do_var_replacement(char *str) {
