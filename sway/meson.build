@@ -7,7 +7,6 @@ sway_sources = files(
     'ipc-server.c',
     'main.c',
     'server.c',
-    'swaynag.c',
     'xdg_decoration.c',
 
     'desktop/desktop.c',
@@ -104,7 +103,6 @@ sway_sources = files(
     'commands/split.c',
     'commands/sticky.c',
     'commands/swaybg_command.c',
-    'commands/swaynag_command.c',
     'commands/swap.c',
     'commands/tiling_drag.c',
     'commands/tiling_drag_threshold.c',

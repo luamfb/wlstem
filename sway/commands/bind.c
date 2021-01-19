@@ -217,12 +217,6 @@ static struct cmd_results *switch_binding_add(
 		if (binding_switch_compare(binding, config_binding)) {
 			sway_log(SWAY_INFO, "Overwriting binding '%s' to `%s` from `%s`",
 					switchcombo, binding->command, config_binding->command);
-			if (warn) {
-				config_add_swaynag_warning("Overwriting binding"
-						"'%s' to `%s` from `%s`",
-						switchcombo, binding->command,
-						config_binding->command);
-			}
 			free_switch_binding(config_binding);
 			mode_bindings->items[i] = binding;
 			overwritten = true;
@@ -286,12 +280,6 @@ static struct cmd_results *binding_add(struct sway_binding *binding,
 		sway_log(SWAY_INFO, "Overwriting binding '%s' for device '%s' "
 				"to `%s` from `%s`", keycombo, binding->input,
 				binding->command, config_binding->command);
-		if (warn) {
-			config_add_swaynag_warning("Overwriting binding"
-					"'%s' for device '%s' to `%s` from `%s`",
-					keycombo, binding->input, binding->command,
-					config_binding->command);
-		}
 		free_sway_binding(config_binding);
 	} else {
 		sway_log(SWAY_DEBUG, "%s - Bound %s to command `%s` for device '%s'",

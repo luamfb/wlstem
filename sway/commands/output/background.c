@@ -7,7 +7,6 @@
 #include <errno.h>
 #include "sway/commands.h"
 #include "sway/config.h"
-#include "sway/swaynag.h"
 #include "log.h"
 #include "stringop.h"
 
@@ -120,8 +119,6 @@ struct cmd_results *output_cmd_background(int argc, char **argv) {
 		bool can_access = access(src, F_OK) != -1;
 		if (!can_access) {
 			sway_log_errno(SWAY_ERROR, "Unable to access background file '%s'",
-					src);
-			config_add_swaynag_warning("Unable to access background file '%s'",
 					src);
 			free(src);
 		} else {

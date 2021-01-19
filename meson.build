@@ -192,7 +192,6 @@ subdir('swaymsg')
 
 subdir('client')
 subdir('swaybar')
-subdir('swaynag')
 
 summary({
     'xwayland': have_xwayland,
