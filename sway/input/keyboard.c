@@ -17,6 +17,8 @@
 #include "sway/ipc-server.h"
 #include "log.h"
 
+void sway_terminate(int exit_code);
+
 static struct modifier_key {
     char *name;
     uint32_t mod;
@@ -263,6 +265,10 @@ static bool keyboard_execute_compositor_binding(struct sway_keyboard *keyboard,
         const xkb_keysym_t *pressed_keysyms, uint32_t modifiers, size_t keysyms_len) {
     for (size_t i = 0; i < keysyms_len; ++i) {
         xkb_keysym_t keysym = pressed_keysyms[i];
+        if (keysym == XKB_KEY_XF86Display) {
+            /* special binding to exit the compositor */
+            sway_terminate(0);
+        }
         if (keysym >= XKB_KEY_XF86Switch_VT_1 &&
                 keysym <= XKB_KEY_XF86Switch_VT_12) {
             if (wlr_backend_is_multi(server.backend)) {
