@@ -188,7 +188,6 @@ subdir('include')
 subdir('protocols')
 subdir('common')
 subdir('sway')
-subdir('swaymsg')
 
 subdir('client')
 subdir('swaybar')
