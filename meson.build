@@ -190,7 +190,6 @@ subdir('common')
 subdir('sway')
 
 subdir('client')
-subdir('swaybar')
 
 summary({
     'xwayland': have_xwayland,
