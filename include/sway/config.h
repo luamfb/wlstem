@@ -470,11 +470,6 @@ struct sway_config {
 bool load_main_config(void);
 
 /**
- * Loads an included config. Can only be used after load_main_config.
- */
-void load_include_configs(const char *path, struct sway_config *config);
-
-/**
  * Run the commands that were deferred when reading the config file.
  */
 void run_deferred_commands(void);

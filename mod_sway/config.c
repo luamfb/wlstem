@@ -293,9 +293,6 @@ bool load_main_config(void) {
     return true;
 }
 
-void load_include_configs(const char *path, struct sway_config *config) {
-}
-
 void run_deferred_commands(void) {
     if (!config->cmd_queue->length) {
         return;
