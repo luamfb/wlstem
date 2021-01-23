@@ -598,27 +598,6 @@ static int handle_keyboard_repeat(void *data) {
     return 0;
 }
 
-static void determine_bar_visibility(uint32_t modifiers) {
-    for (int i = 0; i < config->bars->length; ++i) {
-        struct bar_config *bar = config->bars->items[i];
-        if (bar->modifier == 0) {
-            continue;
-        }
-
-        bool vis_by_mod = (~modifiers & bar->modifier) == 0;
-        if (bar->visible_by_modifier != vis_by_mod) {
-            // If visible by modifier is set, send that it is no longer visible
-            // by modifier (regardless of bar mode and state). Otherwise, only
-            // send the visible by modifier status if mode and state are hide
-            if (bar->visible_by_modifier
-                    || strcmp(bar->mode, bar->hidden_state) == 0) {
-                bar->visible_by_modifier = vis_by_mod;
-                ipc_event_bar_state_update(bar);
-            }
-        }
-    }
-}
-
 static void handle_modifier_event(struct sway_keyboard *keyboard) {
     struct wlr_input_device *wlr_device =
         keyboard->seat_device->input_device->wlr_device;
@@ -627,9 +606,6 @@ static void handle_modifier_event(struct sway_keyboard *keyboard) {
         wlr_seat_set_keyboard(wlr_seat, wlr_device);
         wlr_seat_keyboard_notify_modifiers(wlr_seat,
                 &wlr_device->keyboard->modifiers);
-
-        uint32_t modifiers = wlr_keyboard_get_modifiers(wlr_device->keyboard);
-        determine_bar_visibility(modifiers);
     }
 
     if (wlr_device->keyboard->modifiers.group != keyboard->effective_layout) {
