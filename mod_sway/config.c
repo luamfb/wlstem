@@ -152,7 +152,6 @@ void free_config(struct sway_config *config) {
     free(config->floating_scroll_right_cmd);
     free(config->font);
     free(config->swaybg_command);
-    free((char *)config->current_config_path);
     free((char *)config->current_config);
     keysym_translation_state_destroy(config->keysym_translation_state);
     free(config);
@@ -257,7 +256,6 @@ static void config_defaults(struct sway_config *config) {
     if (!(config->swaybg_command = strdup("swaybg"))) goto cleanup;
 
     if (!(config->config_chain = create_list())) goto cleanup;
-    config->current_config_path = NULL;
     config->current_config = NULL;
 
     // borders
@@ -377,13 +375,8 @@ static bool load_config(const char *path, struct sway_config *config) {
     return config->active || config_load_success;
 }
 
-bool load_main_config(const char *file, bool is_active) {
-    char *path;
-    if (file != NULL) {
-        path = strdup(file);
-    } else {
-        path = get_config_path();
-    }
+bool load_main_config(bool is_active) {
+    char *path = get_config_path();
     if (path == NULL) {
         sway_log(SWAY_ERROR, "Cannot find config file");
         return false;
@@ -419,11 +412,7 @@ bool load_main_config(const char *file, bool is_active) {
 
         input_manager_reset_all_inputs();
     }
-
-    config->user_config_path = file ? true : false;
-    config->current_config_path = path;
     list_add(config->config_chain, real_path);
-
     config->reading = true;
 
     // Read security configs
@@ -507,90 +496,7 @@ bool load_main_config(const char *file, bool is_active) {
     return success;
 }
 
-static bool load_include_config(const char *path, const char *parent_dir,
-        struct sway_config *config) {
-    // save parent config
-    const char *parent_config = config->current_config_path;
-
-    char *full_path;
-    int len = strlen(path);
-    if (len >= 1 && path[0] != '/') {
-        len = len + strlen(parent_dir) + 2;
-        full_path = malloc(len * sizeof(char));
-        if (!full_path) {
-            sway_log(SWAY_ERROR,
-                "Unable to allocate full path to included config");
-            return false;
-        }
-        snprintf(full_path, len, "%s/%s", parent_dir, path);
-    } else {
-        full_path = strdup(path);
-    }
-
-    char *real_path = realpath(full_path, NULL);
-    free(full_path);
-
-    if (real_path == NULL) {
-        sway_log(SWAY_DEBUG, "%s not found.", path);
-        return false;
-    }
-
-    // check if config has already been included
-    int j;
-    for (j = 0; j < config->config_chain->length; ++j) {
-        char *old_path = config->config_chain->items[j];
-        if (strcmp(real_path, old_path) == 0) {
-            sway_log(SWAY_DEBUG,
-                "%s already included once, won't be included again.",
-                real_path);
-            free(real_path);
-            return false;
-        }
-    }
-
-    config->current_config_path = real_path;
-    list_add(config->config_chain, real_path);
-    int index = config->config_chain->length - 1;
-
-    if (!load_config(real_path, config)) {
-        free(real_path);
-        config->current_config_path = parent_config;
-        list_del(config->config_chain, index);
-        return false;
-    }
-
-    // restore current_config_path
-    config->current_config_path = parent_config;
-    return true;
-}
-
 void load_include_configs(const char *path, struct sway_config *config) {
-    char *wd = getcwd(NULL, 0);
-    char *parent_path = strdup(config->current_config_path);
-    const char *parent_dir = dirname(parent_path);
-
-    if (chdir(parent_dir) < 0) {
-        sway_log(SWAY_ERROR, "failed to change working directory");
-        goto cleanup;
-    }
-
-    wordexp_t p;
-    if (wordexp(path, &p, 0) == 0) {
-        char **w = p.we_wordv;
-        size_t i;
-        for (i = 0; i < p.we_wordc; ++i) {
-            load_include_config(w[i], parent_dir, config);
-        }
-        wordfree(&p);
-    }
-
-    // Attempt to restore working directory before returning.
-    if (chdir(wd) < 0) {
-        sway_log(SWAY_ERROR, "failed to change working directory");
-    }
-cleanup:
-    free(parent_path);
-    free(wd);
 }
 
 void run_deferred_commands(void) {
@@ -780,8 +686,8 @@ bool read_config(FILE *file, struct sway_config *config) {
         switch(res->status) {
         case CMD_FAILURE:
         case CMD_INVALID:
-            sway_log(SWAY_ERROR, "Error on line %i '%s': %s (%s)", line_number,
-                line, res->error, config->current_config_path);
+            sway_log(SWAY_ERROR, "Error on line %i '%s': %s", line_number,
+                line, res->error);
             success = false;
             break;
 

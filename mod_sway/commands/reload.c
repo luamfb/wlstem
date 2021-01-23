@@ -15,12 +15,7 @@ static void rebuild_textures_iterator(struct sway_container *con, void *data) {
 }
 
 static void do_reload(void *data) {
-	const char *path = NULL;
-	if (config->user_config_path) {
-		path = config->current_config_path;
-	}
-
-	if (!load_main_config(path, true)) {
+	if (!load_main_config(true)) {
 		sway_log(SWAY_ERROR, "Error(s) reloading config");
 		return;
 	}
