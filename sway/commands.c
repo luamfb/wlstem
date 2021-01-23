@@ -44,7 +44,6 @@ struct cmd_results *checkarg(int argc, const char *name, enum expected_args type
 /* Keep alphabetized */
 static struct cmd_handler handlers[] = {
 	{ "assign", cmd_assign },
-	{ "bar", cmd_bar },
 	{ "bindcode", cmd_bindcode },
 	{ "bindswitch", cmd_bindswitch },
 	{ "bindsym", cmd_bindsym },
