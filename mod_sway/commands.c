@@ -120,7 +120,6 @@ static struct cmd_handler command_handlers[] = {
 	{ "move", cmd_move },
 	{ "nop", cmd_nop },
 	{ "opacity", cmd_opacity },
-	{ "reload", cmd_reload },
 	{ "rename", cmd_rename },
 	{ "resize", cmd_resize },
 	{ "scratchpad", cmd_scratchpad },

@@ -405,7 +405,6 @@ struct sway_config {
     enum focus_wrapping_mode focus_wrapping;
     bool active;
     bool failed;
-    bool reloading;
     bool reading;
     bool auto_back_and_forth;
     bool show_marks;
@@ -468,10 +467,9 @@ struct sway_config {
 };
 
 /**
- * Loads the main config from the given path. is_active should be true when
- * reloading the config.
+ * Loads the main config from the given path.
  */
-bool load_main_config(bool is_active);
+bool load_main_config(void);
 
 /**
  * Loads an included config. Can only be used after load_main_config.

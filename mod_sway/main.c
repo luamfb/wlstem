@@ -392,7 +392,7 @@ int main(int argc, char **argv) {
     ipc_init(&server);
 
     setenv("WAYLAND_DISPLAY", server.socket, true);
-    if (!load_main_config(false)) {
+    if (!load_main_config()) {
         sway_terminate(EXIT_FAILURE);
         goto shutdown;
     }

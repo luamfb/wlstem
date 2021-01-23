@@ -209,7 +209,7 @@ struct cmd_results *cmd_gaps(int argc, char **argv) {
 		return error;
 	}
 
-	bool config_loading = !config->active || config->reloading;
+	bool config_loading = !config->active;
 
 	if (argc == 2) {
 		return gaps_set_defaults(argc, argv);

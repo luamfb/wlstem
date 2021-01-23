@@ -956,7 +956,7 @@ void sway_keyboard_configure(struct sway_keyboard *keyboard) {
     bool repeat_info_changed = keyboard->repeat_rate != repeat_rate ||
         keyboard->repeat_delay != repeat_delay;
 
-    if (keymap_changed || repeat_info_changed || config->reloading) {
+    if (keymap_changed || repeat_info_changed) {
         xkb_keymap_unref(keyboard->keymap);
         keyboard->keymap = keymap;
         keyboard->effective_layout = 0;

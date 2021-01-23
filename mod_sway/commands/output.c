@@ -97,19 +97,7 @@ struct cmd_results *cmd_output(int argc, char **argv) {
 	config->handler_context.leftovers.argc = 0;
 	config->handler_context.leftovers.argv = NULL;
 
-	bool background = output->background;
-
 	output = store_output_config(output);
-
-	// If reloading, the output configs will be applied after reading the
-	// entire config and before the deferred commands so that an auto generated
-	// workspace name is not given to re-enabled outputs.
-	if (!config->reloading) {
-		apply_output_config_to_outputs(output);
-		if (background) {
-			spawn_swaybg();
-		}
-	}
 
 	return cmd_results_new(CMD_SUCCESS, NULL);
 
