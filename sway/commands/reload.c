@@ -15,13 +15,6 @@ static void rebuild_textures_iterator(struct sway_container *con, void *data) {
 }
 
 static void do_reload(void *data) {
-	// store bar ids to check against new bars for barconfig_update events
-	list_t *bar_ids = create_list();
-	for (int i = 0; i < config->bars->length; ++i) {
-		struct bar_config *bar = config->bars->items[i];
-		list_add(bar_ids, strdup(bar->id));
-	}
-
 	const char *path = NULL;
 	if (config->user_config_path) {
 		path = config->current_config_path;
@@ -29,24 +22,10 @@ static void do_reload(void *data) {
 
 	if (!load_main_config(path, true, false)) {
 		sway_log(SWAY_ERROR, "Error(s) reloading config");
-		list_free_items_and_destroy(bar_ids);
 		return;
 	}
 
 	ipc_event_workspace(NULL, NULL, "reload");
-
-	load_swaybars();
-
-	for (int i = 0; i < config->bars->length; ++i) {
-		struct bar_config *bar = config->bars->items[i];
-		for (int j = 0; j < bar_ids->length; ++j) {
-			if (strcmp(bar->id, bar_ids->items[j]) == 0) {
-				ipc_event_barconfig_update(bar);
-				break;
-			}
-		}
-	}
-	list_free_items_and_destroy(bar_ids);
 
 	config_update_font_height(true);
 	root_for_each_container(rebuild_textures_iterator, NULL);
