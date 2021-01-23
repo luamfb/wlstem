@@ -35,10 +35,6 @@ static void execute_binding(struct sway_switch *sway_switch) {
                 binding->state != sway_switch->state) {
             continue;
         }
-        if (config->reloading && (binding->state == WLR_SWITCH_STATE_TOGGLE
-                || (binding->flags & BINDING_RELOAD) == 0)) {
-            continue;
-        }
         bool binding_locked = binding->flags & BINDING_LOCKED;
         if (!binding_locked && input_inhibited) {
             continue;

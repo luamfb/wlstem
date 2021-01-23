@@ -361,7 +361,7 @@ static void queue_output_config(struct output_config *oc,
         wlr_output_set_mode(wlr_output, mode);
     }
 
-    if (oc && (oc->subpixel != WL_OUTPUT_SUBPIXEL_UNKNOWN || config->reloading)) {
+    if (oc && (oc->subpixel != WL_OUTPUT_SUBPIXEL_UNKNOWN)) {
         sway_log(SWAY_DEBUG, "Set %s subpixel to %s", oc->name,
             sway_wl_output_subpixel_to_string(oc->subpixel));
         wlr_output_set_subpixel(wlr_output, oc->subpixel);
@@ -430,10 +430,6 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
         return true;
     }
 
-    if (config->reloading) {
-        output_damage_whole(output);
-    }
-
     if (oc) {
         enum scale_filter_mode scale_filter_old = output->scale_filter;
         switch (oc->scale_filter) {
@@ -497,25 +493,6 @@ bool test_output_config(struct output_config *oc, struct sway_output *output) {
     return ok;
 }
 
-static void default_output_config(struct output_config *oc,
-        struct wlr_output *wlr_output) {
-    oc->enabled = 1;
-    struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
-    if (mode != NULL) {
-        oc->width = mode->width;
-        oc->height = mode->height;
-        oc->refresh_rate = mode->refresh / 1000.f;
-    }
-    oc->x = oc->y = -1;
-    oc->scale = 0; // auto
-    oc->scale_filter = SCALE_FILTER_DEFAULT;
-    struct sway_output *output = wlr_output->data;
-    oc->subpixel = output->detected_subpixel;
-    oc->transform = WL_OUTPUT_TRANSFORM_NORMAL;
-    oc->dpms_state = DPMS_ON;
-    oc->max_render_time = 0;
-}
-
 static struct output_config *get_output_config(char *identifier,
         struct sway_output *sway_output) {
     const char *name = sway_output->wlr_output->name;
@@ -543,9 +520,6 @@ static struct output_config *get_output_config(char *identifier,
     }
 
     struct output_config *result = new_output_config("temp");
-    if (config->reloading) {
-        default_output_config(result, sway_output->wlr_output);
-    }
     if (oc_id_on_name) {
         // Already have an identifier on name config, use that
         free(result->name);
@@ -589,9 +563,9 @@ static struct output_config *get_output_config(char *identifier,
             free(result->name);
             result->name = strdup("*");
             merge_output_config(result, config->output_configs->items[i]);
-        } else if (!config->reloading) {
+        } else {
             // No name, identifier, or wildcard config. Since we are not
-            // reloading with defaults, the output config will be empty, so
+            // reloading ith defaults, the output config will be empty, so
             // just return NULL
             free_output_config(result);
             result = NULL;

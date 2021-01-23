@@ -236,9 +236,6 @@ static void arrange_children(list_t *children,
 }
 
 void arrange_container(struct sway_container *container) {
-    if (config->reloading) {
-        return;
-    }
     if (container->view) {
         view_autoconfigure(container->view);
         node_set_dirty(&container->node);
@@ -251,9 +248,6 @@ void arrange_container(struct sway_container *container) {
 }
 
 void arrange_workspace(struct sway_workspace *workspace) {
-    if (config->reloading) {
-        return;
-    }
     if (!workspace->output) {
         // Happens when there are no outputs connected
         return;
@@ -308,9 +302,6 @@ void arrange_workspace(struct sway_workspace *workspace) {
 }
 
 void arrange_output(struct sway_output *output) {
-    if (config->reloading) {
-        return;
-    }
     const struct wlr_box *output_box = wlr_output_layout_get_box(
             root->output_layout, output->wlr_output);
     output->lx = output_box->x;
@@ -325,9 +316,6 @@ void arrange_output(struct sway_output *output) {
 }
 
 void arrange_root(void) {
-    if (config->reloading) {
-        return;
-    }
     const struct wlr_box *layout_box =
         wlr_output_layout_get_box(root->output_layout, NULL);
     root->x = layout_box->x;

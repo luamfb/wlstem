@@ -20,7 +20,7 @@ struct cmd_results *cmd_xwayland(int argc, char **argv) {
 		xwayland = XWAYLAND_MODE_DISABLED;
 	}
 
-	if (config->reloading && config->xwayland != xwayland) {
+	if (config->xwayland != xwayland) {
 		return cmd_results_new(CMD_FAILURE,
 				"xwayland can only be enabled/disabled at launch");
 	}

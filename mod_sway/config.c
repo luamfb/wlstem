@@ -157,29 +157,6 @@ void free_config(struct sway_config *config) {
     free(config);
 }
 
-static void destroy_removed_seats(struct sway_config *old_config,
-        struct sway_config *new_config) {
-    struct seat_config *seat_config;
-    struct sway_seat *seat;
-    int i;
-    for (i = 0; i < old_config->seat_configs->length; i++) {
-        seat_config = old_config->seat_configs->items[i];
-        // Skip the wildcard seat config, it won't have a matching real seat.
-        if (strcmp(seat_config->name, "*") == 0) {
-            continue;
-        }
-
-        /* Also destroy seats that aren't present in new config */
-        if (new_config && list_seq_find(new_config->seat_configs,
-                seat_name_cmp, seat_config->name) < 0) {
-            seat = input_manager_get_seat(seat_config->name, false);
-            if (seat) {
-                seat_destroy(seat);
-            }
-        }
-    }
-}
-
 static void config_defaults(struct sway_config *config) {
     if (!(config->symbols = create_list())) goto cleanup;
     if (!(config->modes = create_list())) goto cleanup;
@@ -236,7 +213,6 @@ static void config_defaults(struct sway_config *config) {
     config->focus_follows_mouse = FOLLOWS_YES;
     config->mouse_warping = WARP_OUTPUT;
     config->focus_wrapping = WRAP_YES;
-    config->reloading = false;
     config->active = false;
     config->failed = false;
     config->auto_back_and_forth = false;
@@ -375,7 +351,7 @@ static bool load_config(const char *path, struct sway_config *config) {
     return config->active || config_load_success;
 }
 
-bool load_main_config(bool is_active) {
+bool load_main_config(void) {
     char *path = get_config_path();
     if (path == NULL) {
         sway_log(SWAY_ERROR, "Cannot find config file");
@@ -389,29 +365,12 @@ bool load_main_config(bool is_active) {
         return false;
     }
 
-    struct sway_config *old_config = config;
     config = calloc(1, sizeof(struct sway_config));
     if (!config) {
         sway_abort("Unable to allocate config");
     }
 
     config_defaults(config);
-    if (is_active) {
-        sway_log(SWAY_DEBUG, "Performing configuration file reload");
-        config->reloading = true;
-        config->active = true;
-
-        // xwayland can only be enabled/disabled at launch
-        sway_log(SWAY_DEBUG, "xwayland will remain %s",
-                old_config->xwayland ? "enabled" : "disabled");
-        config->xwayland = old_config->xwayland;
-
-        if (old_config->swaybg_client != NULL) {
-            wl_client_destroy(old_config->swaybg_client);
-        }
-
-        input_manager_reset_all_inputs();
-    }
     list_add(config->config_chain, real_path);
     config->reading = true;
 
@@ -420,33 +379,6 @@ bool load_main_config(bool is_active) {
     bool success = true;
     success = success && load_config(path, config);
 
-    if (is_active) {
-        input_manager_verify_fallback_seat();
-
-        for (int i = 0; i < config->input_configs->length; i++) {
-            input_manager_apply_input_config(config->input_configs->items[i]);
-        }
-
-        for (int i = 0; i < config->input_type_configs->length; i++) {
-            input_manager_apply_input_config(
-                    config->input_type_configs->items[i]);
-        }
-
-        for (int i = 0; i < config->seat_configs->length; i++) {
-            input_manager_apply_seat_config(config->seat_configs->items[i]);
-        }
-        sway_switch_retrigger_bindings_for_all();
-
-        reset_outputs();
-        spawn_swaybg();
-
-        config->reloading = false;
-    }
-
-    if (old_config) {
-        destroy_removed_seats(old_config, config);
-        free_config(old_config);
-    }
     config->reading = false;
     return success;
 }

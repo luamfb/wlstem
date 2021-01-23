@@ -89,10 +89,6 @@ struct cmd_results *cmd_input(int argc, char **argv) {
 			free(error);
 			return res;
 		}
-
-		if (!config->reloading) {
-			input_manager_apply_input_config(ic);
-		}
 	} else {
 		free_input_config(config->handler_context.input_config);
 	}
