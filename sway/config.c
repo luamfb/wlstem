@@ -104,12 +104,6 @@ void free_config(struct sway_config *config) {
         }
         list_free(config->modes);
     }
-    if (config->bars) {
-        for (int i = 0; i < config->bars->length; ++i) {
-            free_bar_config(config->bars->items[i]);
-        }
-        list_free(config->bars);
-    }
     list_free(config->cmd_queue);
     if (config->workspace_configs) {
         for (int i = 0; i < config->workspace_configs->length; i++) {
@@ -151,7 +145,6 @@ void free_config(struct sway_config *config) {
         list_free(config->criteria);
     }
     list_free(config->no_focus);
-    list_free(config->active_bar_modifiers);
     list_free_items_and_destroy(config->config_chain);
     free(config->floating_scroll_up_cmd);
     free(config->floating_scroll_down_cmd);
@@ -191,7 +184,6 @@ static void destroy_removed_seats(struct sway_config *old_config,
 static void config_defaults(struct sway_config *config) {
     if (!(config->symbols = create_list())) goto cleanup;
     if (!(config->modes = create_list())) goto cleanup;
-    if (!(config->bars = create_list())) goto cleanup;
     if (!(config->workspace_configs = create_list())) goto cleanup;
     if (!(config->criteria = create_list())) goto cleanup;
     if (!(config->no_focus = create_list())) goto cleanup;
@@ -262,8 +254,6 @@ static void config_defaults(struct sway_config *config) {
     config->gaps_outer.right = 0;
     config->gaps_outer.bottom = 0;
     config->gaps_outer.left = 0;
-
-    if (!(config->active_bar_modifiers = create_list())) goto cleanup;
 
     if (!(config->swaybg_command = strdup("swaybg"))) goto cleanup;
 
@@ -819,9 +809,6 @@ bool read_config(FILE *file, struct sway_config *config) {
         case CMD_BLOCK:
             sway_log(SWAY_DEBUG, "Entering block '%s'", new_block);
             list_insert(stack, 0, strdup(new_block));
-            if (strcmp(new_block, "bar") == 0) {
-                config->current_bar = NULL;
-            }
             break;
 
         case CMD_BLOCK_END:
@@ -829,9 +816,6 @@ bool read_config(FILE *file, struct sway_config *config) {
                 sway_log(SWAY_DEBUG, "Unmatched '}' on line %i", line_number);
                 success = false;
                 break;
-            }
-            if (strcmp(block, "bar") == 0) {
-                config->current_bar = NULL;
             }
 
             sway_log(SWAY_DEBUG, "Exiting block '%s'", block);

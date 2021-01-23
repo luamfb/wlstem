@@ -291,89 +291,6 @@ struct workspace_config {
     struct side_gaps gaps_outer;
 };
 
-struct bar_config {
-    char *swaybar_command;
-    struct wl_client *client;
-    struct wl_listener client_destroy;
-
-    /**
-     * One of "dock", "hide", "invisible"
-     *
-     * Always visible in dock mode. Visible only when modifier key is held in hide mode.
-     * Never visible in invisible mode.
-     */
-    char *mode;
-    /**
-     * One of "show" or "hide".
-     *
-     * In "show" mode, it will always be shown on top of the active workspace.
-     */
-    char *hidden_state;
-    bool visible_by_modifier; // only relevant in "hide" mode
-    /**
-     * Id name used to identify the bar through IPC.
-     *
-     * Defaults to bar-x, where x corresponds to the position of the
-     * embedding bar block in the config file (bar-0, bar-1, ...).
-     */
-    char *id;
-    uint32_t modifier;
-    list_t *outputs;
-    char *position;
-    list_t *bindings;
-    char *status_command;
-    bool pango_markup;
-    char *font;
-    int height; // -1 not defined
-    bool workspace_buttons;
-    bool wrap_scroll;
-    char *separator_symbol;
-    bool strip_workspace_numbers;
-    bool strip_workspace_name;
-    bool binding_mode_indicator;
-    bool verbose;
-    struct side_gaps gaps;
-    int status_padding;
-    int status_edge_padding;
-    uint32_t workspace_min_width;
-    struct {
-        char *background;
-        char *statusline;
-        char *separator;
-        char *focused_background;
-        char *focused_statusline;
-        char *focused_separator;
-        char *focused_workspace_border;
-        char *focused_workspace_bg;
-        char *focused_workspace_text;
-        char *active_workspace_border;
-        char *active_workspace_bg;
-        char *active_workspace_text;
-        char *inactive_workspace_border;
-        char *inactive_workspace_bg;
-        char *inactive_workspace_text;
-        char *urgent_workspace_border;
-        char *urgent_workspace_bg;
-        char *urgent_workspace_text;
-        char *binding_mode_border;
-        char *binding_mode_bg;
-        char *binding_mode_text;
-    } colors;
-
-#if HAVE_TRAY
-    char *icon_theme;
-    struct wl_list tray_bindings; // struct tray_binding::link
-    list_t *tray_outputs; // char *
-    int tray_padding;
-#endif
-};
-
-struct bar_binding {
-    uint32_t button;
-    bool release;
-    char *command;
-};
-
 #if HAVE_TRAY
 struct tray_binding {
     uint32_t button;
@@ -454,7 +371,6 @@ enum xwayland_mode {
 struct sway_config {
     list_t *symbols;
     list_t *modes;
-    list_t *bars;
     list_t *cmd_queue;
     list_t *workspace_configs;
     list_t *output_configs;
@@ -463,9 +379,7 @@ struct sway_config {
     list_t *seat_configs;
     list_t *criteria;
     list_t *no_focus;
-    list_t *active_bar_modifiers;
     struct sway_mode *current_mode;
-    struct bar_config *current_bar;
     uint32_t floating_mod;
     bool floating_mod_inverse;
     uint32_t dragging_key;
@@ -666,16 +580,6 @@ void free_sway_binding(struct sway_binding *sb);
 void free_switch_binding(struct sway_switch_binding *binding);
 
 void seat_execute_command(struct sway_seat *seat, struct sway_binding *binding);
-
-void load_swaybar(struct bar_config *bar);
-
-void load_swaybars(void);
-
-struct bar_config *default_bar_config(void);
-
-void free_bar_config(struct bar_config *bar);
-
-void free_bar_binding(struct bar_binding *binding);
 
 void free_workspace_config(struct workspace_config *wsc);
 
