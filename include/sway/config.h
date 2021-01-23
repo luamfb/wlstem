@@ -475,11 +475,6 @@ bool load_main_config(void);
 void load_include_configs(const char *path, struct sway_config *config);
 
 /**
- * Reads the config from the given FILE.
- */
-bool read_config(FILE *file, struct sway_config *config);
-
-/**
  * Run the commands that were deferred when reading the config file.
  */
 void run_deferred_commands(void);
