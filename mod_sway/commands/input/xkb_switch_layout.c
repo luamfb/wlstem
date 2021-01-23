@@ -44,7 +44,7 @@ struct cmd_results *input_cmd_xkb_switch_layout(int argc, char **argv) {
 		return cmd_results_new(CMD_FAILURE, "No input device defined.");
 	}
 
-	if (config->reading || !config->active) {
+	if (!config->active) {
 		return cmd_results_new(CMD_DEFER, NULL);
 	}
 

@@ -157,9 +157,7 @@ static struct cmd_handler *find_handler_ex(char *line,
 		struct cmd_handler *command_handlers, size_t command_handlers_size,
 		struct cmd_handler *handlers, size_t handlers_size) {
 	struct cmd_handler *handler = NULL;
-	if (config->reading) {
-		handler = find_handler(line, config_handlers, config_handlers_size);
-	} else if (config->active) {
+	if (config->active) {
 		handler = find_handler(line, command_handlers, command_handlers_size);
 	}
 	return handler ? handler : find_handler(line, handlers, handlers_size);

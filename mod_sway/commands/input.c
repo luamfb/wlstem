@@ -62,13 +62,7 @@ struct cmd_results *cmd_input(int argc, char **argv) {
 
 	if (find_handler(argv[1], input_config_handlers,
 			sizeof(input_config_handlers))) {
-		if (config->reading) {
-			res = config_subcommand(argv + 1, argc - 1,
-				input_config_handlers, sizeof(input_config_handlers));
-		} else {
-			res = cmd_results_new(CMD_FAILURE,
-				"Can only be used in config file.");
-		}
+        res = cmd_results_new(CMD_FAILURE, "Can only be used in config file.");
 	} else {
 		res = config_subcommand(argv + 1, argc - 1,
 			input_handlers, sizeof(input_handlers));

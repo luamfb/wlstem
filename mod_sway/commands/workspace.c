@@ -166,7 +166,7 @@ struct cmd_results *cmd_workspace(int argc, char **argv) {
 			return error;
 		}
 	} else {
-		if (config->reading || !config->active) {
+		if (!config->active) {
 			return cmd_results_new(CMD_DEFER, NULL);
 		} else if (!root->outputs->length) {
 			return cmd_results_new(CMD_INVALID,
