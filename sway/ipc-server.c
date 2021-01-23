@@ -340,34 +340,6 @@ void ipc_event_window(struct sway_container *window, const char *change) {
 	json_object_put(obj);
 }
 
-void ipc_event_barconfig_update(struct bar_config *bar) {
-	if (!ipc_has_event_listeners(IPC_EVENT_BARCONFIG_UPDATE)) {
-		return;
-	}
-	sway_log(SWAY_DEBUG, "Sending barconfig_update event");
-	json_object *json = ipc_json_describe_bar_config(bar);
-
-	const char *json_string = json_object_to_json_string(json);
-	ipc_send_event(json_string, IPC_EVENT_BARCONFIG_UPDATE);
-	json_object_put(json);
-}
-
-void ipc_event_bar_state_update(struct bar_config *bar) {
-	if (!ipc_has_event_listeners(IPC_EVENT_BAR_STATE_UPDATE)) {
-		return;
-	}
-	sway_log(SWAY_DEBUG, "Sending bar_state_update event");
-
-	json_object *json = json_object_new_object();
-	json_object_object_add(json, "id", json_object_new_string(bar->id));
-	json_object_object_add(json, "visible_by_modifier",
-			json_object_new_boolean(bar->visible_by_modifier));
-
-	const char *json_string = json_object_to_json_string(json);
-	ipc_send_event(json_string, IPC_EVENT_BAR_STATE_UPDATE);
-	json_object_put(json);
-}
-
 void ipc_event_mode(const char *mode, bool pango) {
 	if (!ipc_has_event_listeners(IPC_EVENT_MODE)) {
 		return;
@@ -727,10 +699,6 @@ void ipc_client_handle_command(struct ipc_client *client, uint32_t payload_lengt
 			const char *event_type = json_object_get_string(json_object_array_get_idx(request, i));
 			if (strcmp(event_type, "workspace") == 0) {
 				client->subscribed_events |= event_mask(IPC_EVENT_WORKSPACE);
-			} else if (strcmp(event_type, "barconfig_update") == 0) {
-				client->subscribed_events |= event_mask(IPC_EVENT_BARCONFIG_UPDATE);
-			} else if (strcmp(event_type, "bar_state_update") == 0) {
-				client->subscribed_events |= event_mask(IPC_EVENT_BAR_STATE_UPDATE);
 			} else if (strcmp(event_type, "mode") == 0) {
 				client->subscribed_events |= event_mask(IPC_EVENT_MODE);
 			} else if (strcmp(event_type, "shutdown") == 0) {
@@ -820,44 +788,6 @@ void ipc_client_handle_command(struct ipc_client *client, uint32_t payload_lengt
 		ipc_send_reply(client, payload_type, json_string,
 			(uint32_t)strlen(json_string));
 		json_object_put(version); // free
-		goto exit_cleanup;
-	}
-
-	case IPC_GET_BAR_CONFIG:
-	{
-		if (!buf[0]) {
-			// Send list of configured bar IDs
-			json_object *bars = json_object_new_array();
-			for (int i = 0; i < config->bars->length; ++i) {
-				struct bar_config *bar = config->bars->items[i];
-				json_object_array_add(bars, json_object_new_string(bar->id));
-			}
-			const char *json_string = json_object_to_json_string(bars);
-			ipc_send_reply(client, payload_type, json_string,
-				(uint32_t)strlen(json_string));
-			json_object_put(bars); // free
-		} else {
-			// Send particular bar's details
-			struct bar_config *bar = NULL;
-			for (int i = 0; i < config->bars->length; ++i) {
-				bar = config->bars->items[i];
-				if (strcmp(buf, bar->id) == 0) {
-					break;
-				}
-				bar = NULL;
-			}
-			if (!bar) {
-				const char *error = "{ \"success\": false, \"error\": \"No bar with that ID\" }";
-				ipc_send_reply(client, payload_type, error,
-					(uint32_t)strlen(error));
-				goto exit_cleanup;
-			}
-			json_object *json = ipc_json_describe_bar_config(bar);
-			const char *json_string = json_object_to_json_string(json);
-			ipc_send_reply(client, payload_type, json_string,
-				(uint32_t)strlen(json_string));
-			json_object_put(json); // free
-		}
 		goto exit_cleanup;
 	}
 
