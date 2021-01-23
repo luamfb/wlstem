@@ -89,13 +89,6 @@ struct cmd_results *output_cmd_background(int argc, char **argv) {
 			return cmd_results_new(CMD_FAILURE, "Unable to allocate resource");
 		}
 
-		if (config->reading && *src != '/') {
-			// src file is inside configuration dir
-            free(src);
-            return cmd_results_new(CMD_FAILURE,
-                "Unable to allocate resources");
-		}
-
 		bool can_access = access(src, F_OK) != -1;
 		if (!can_access) {
 			sway_log_errno(SWAY_ERROR, "Unable to access background file '%s'",

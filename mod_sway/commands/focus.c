@@ -357,7 +357,7 @@ static struct cmd_results *focus_child(void) {
 }
 
 struct cmd_results *cmd_focus(int argc, char **argv) {
-	if (config->reading || !config->active) {
+	if (!config->active) {
 		return cmd_results_new(CMD_DEFER, NULL);
 	}
 	if (!root->outputs->length) {

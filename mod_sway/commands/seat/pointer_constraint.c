@@ -32,10 +32,6 @@ struct cmd_results *seat_cmd_pointer_constraint(int argc, char **argv) {
 		return cmd_results_new(CMD_FAILURE, "Expected enable|disable|escape");
 	}
 
-	if (op == OP_ESCAPE && config->reading) {
-		return cmd_results_new(CMD_FAILURE, "Can only escape at runtime.");
-	}
-
 	struct seat_config *seat_config = config->handler_context.seat_config;
 	switch (op) {
 	case OP_ENABLE:

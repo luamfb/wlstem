@@ -124,9 +124,6 @@ struct cmd_results *input_cmd_events(int argc, char **argv) {
 	} else if (strcasecmp(argv[0], "disabled_on_external_mouse") == 0) {
 		ic->send_events =
 			LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE;
-	} else if (config->reading) {
-		return cmd_results_new(CMD_INVALID,
-			"Expected 'events <enabled|disabled|disabled_on_external_mouse>'");
 	} else if (strcasecmp(argv[0], "toggle") == 0) {
 		for (int i = 1; i < argc; ++i) {
 			if (mode_for_name(argv[i]) == -1) {

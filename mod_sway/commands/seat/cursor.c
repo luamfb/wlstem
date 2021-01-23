@@ -59,7 +59,7 @@ struct cmd_results *seat_cmd_cursor(int argc, char **argv) {
 		return cmd_results_new(CMD_FAILURE, "No seat defined");
 	}
 
-	if (config->reading || !config->active) {
+	if (!config->active) {
 		return cmd_results_new(CMD_DEFER, NULL);
 	}
 

@@ -39,12 +39,6 @@ static struct cmd_results *config_handlers(int argc, char **argv) {
 			seat_handlers, sizeof(seat_handlers));
 	if (res && res->status != CMD_SUCCESS) {
 		free_seat_config(config->handler_context.seat_config);
-	} else {
-		struct seat_config *sc =
-			store_seat_config(config->handler_context.seat_config);
-		if (!config->reading) {
-			input_manager_apply_seat_config(sc);
-		}
 	}
 	config->handler_context.seat_config = NULL;
 	return res;
@@ -57,10 +51,6 @@ struct cmd_results *cmd_seat(int argc, char **argv) {
 	}
 
 	if (!strcmp(argv[0], "-")) {
-		if (config->reading) {
-			return cmd_results_new(CMD_FAILURE,
-					"Current seat alias (-) cannot be used in the config");
-		}
 		config->handler_context.seat_config =
 			new_seat_config(config->handler_context.seat->wlr_seat->name);
 	} else {

@@ -33,7 +33,7 @@ struct cmd_results *cmd_mode(int argc, char **argv) {
 		}
 	}
 
-	if (config->reading && argc == 1) {
+	if (argc == 1) {
 		return cmd_results_new(CMD_DEFER, NULL);
 	}
 

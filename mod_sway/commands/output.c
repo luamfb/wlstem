@@ -41,11 +41,6 @@ struct cmd_results *cmd_output(int argc, char **argv) {
 
 	struct output_config *output = NULL;
 	if (strcmp(argv[0], "-") == 0 || strcmp(argv[0], "--") == 0) {
-		if (config->reading) {
-			return cmd_results_new(CMD_FAILURE,
-					"Current output alias (%s) cannot be used in the config",
-					argv[0]);
-		}
 		struct sway_output *sway_output = config->handler_context.node ?
 			node_get_output(config->handler_context.node) : NULL;
 		if (!sway_output) {
