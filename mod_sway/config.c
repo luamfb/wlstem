@@ -237,7 +237,6 @@ static void config_defaults(struct sway_config *config) {
     config->focus_follows_mouse = FOLLOWS_YES;
     config->mouse_warping = WARP_OUTPUT;
     config->focus_wrapping = WRAP_YES;
-    config->validating = false;
     config->reloading = false;
     config->active = false;
     config->failed = false;
@@ -375,10 +374,10 @@ static bool load_config(const char *path, struct sway_config *config) {
         sway_log(SWAY_ERROR, "Error(s) loading config!");
     }
 
-    return config->active || !config->validating || config_load_success;
+    return config->active || config_load_success;
 }
 
-bool load_main_config(const char *file, bool is_active, bool validating) {
+bool load_main_config(const char *file, bool is_active) {
     char *path;
     if (file != NULL) {
         path = strdup(file);
@@ -404,10 +403,8 @@ bool load_main_config(const char *file, bool is_active, bool validating) {
     }
 
     config_defaults(config);
-    config->validating = validating;
     if (is_active) {
-        sway_log(SWAY_DEBUG, "Performing configuration file %s",
-            validating ? "validation" : "reload");
+        sway_log(SWAY_DEBUG, "Performing configuration file reload");
         config->reloading = true;
         config->active = true;
 
@@ -416,13 +413,11 @@ bool load_main_config(const char *file, bool is_active, bool validating) {
                 old_config->xwayland ? "enabled" : "disabled");
         config->xwayland = old_config->xwayland;
 
-        if (!config->validating) {
-            if (old_config->swaybg_client != NULL) {
-                wl_client_destroy(old_config->swaybg_client);
-            }
-
-            input_manager_reset_all_inputs();
+        if (old_config->swaybg_client != NULL) {
+            wl_client_destroy(old_config->swaybg_client);
         }
+
+        input_manager_reset_all_inputs();
     }
 
     config->user_config_path = file ? true : false;
@@ -481,13 +476,7 @@ bool load_main_config(const char *file, bool is_active, bool validating) {
 
     success = success && load_config(path, config);
 
-    if (validating) {
-        free_config(config);
-        config = old_config;
-        return success;
-    }
-
-    if (is_active && !validating) {
+    if (is_active) {
         input_manager_verify_fallback_seat();
 
         for (int i = 0; i < config->input_configs->length; i++) {

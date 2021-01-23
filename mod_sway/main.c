@@ -242,12 +242,11 @@ static void handle_wlr_log(enum wlr_log_importance importance,
 }
 
 int main(int argc, char **argv) {
-    static int verbose = 0, debug = 0, validate = 0, allow_unsupported_gpu = 0;
+    static int verbose = 0, debug = 0, allow_unsupported_gpu = 0;
 
     static struct option long_options[] = {
         {"help", no_argument, NULL, 'h'},
         {"config", required_argument, NULL, 'c'},
-        {"validate", no_argument, NULL, 'C'},
         {"debug", no_argument, NULL, 'd'},
         {"version", no_argument, NULL, 'v'},
         {"verbose", no_argument, NULL, 'V'},
@@ -264,7 +263,6 @@ int main(int argc, char **argv) {
         "\n"
         "  -h, --help             Show help message and quit.\n"
         "  -c, --config <config>  Specify a config file.\n"
-        "  -C, --validate         Check the validity of the config file, then exit.\n"
         "  -d, --debug            Enables full logging, including debug information.\n"
         "  -v, --version          Show the version number and quit.\n"
         "  -V, --verbose          Enables more verbose logging.\n"
@@ -286,9 +284,6 @@ int main(int argc, char **argv) {
         case 'c': // config
             free(config_path);
             config_path = strdup(optarg);
-            break;
-        case 'C': // validate
-            validate = 1;
             break;
         case 'd': // debug
             debug = 1;
@@ -398,16 +393,10 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (validate) {
-        bool valid = load_main_config(config_path, false, true);
-        free(config_path);
-        return valid ? 0 : 1;
-    }
-
     ipc_init(&server);
 
     setenv("WAYLAND_DISPLAY", server.socket, true);
-    if (!load_main_config(config_path, false, false)) {
+    if (!load_main_config(config_path, false)) {
         sway_terminate(EXIT_FAILURE);
         goto shutdown;
     }
