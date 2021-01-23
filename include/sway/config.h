@@ -419,8 +419,6 @@ struct sway_config {
     struct side_gaps gaps_outer;
 
     list_t *config_chain;
-    bool user_config_path;
-    const char *current_config_path;
     const char *current_config;
     int current_config_line_number;
     char *current_config_line;
@@ -473,7 +471,7 @@ struct sway_config {
  * Loads the main config from the given path. is_active should be true when
  * reloading the config.
  */
-bool load_main_config(const char *path, bool is_active);
+bool load_main_config(bool is_active);
 
 /**
  * Loads an included config. Can only be used after load_main_config.

@@ -256,8 +256,6 @@ int main(int argc, char **argv) {
         {0, 0, 0, 0}
     };
 
-    char *config_path = NULL;
-
     const char* usage =
         "Usage: sway [options] [command]\n"
         "\n"
@@ -282,8 +280,6 @@ int main(int argc, char **argv) {
             exit(EXIT_SUCCESS);
             break;
         case 'c': // config
-            free(config_path);
-            config_path = strdup(optarg);
             break;
         case 'd': // debug
             debug = 1;
@@ -396,7 +392,7 @@ int main(int argc, char **argv) {
     ipc_init(&server);
 
     setenv("WAYLAND_DISPLAY", server.socket, true);
-    if (!load_main_config(config_path, false)) {
+    if (!load_main_config(false)) {
         sway_terminate(EXIT_FAILURE);
         goto shutdown;
     }
@@ -420,7 +416,6 @@ shutdown:
     root_destroy(root);
     root = NULL;
 
-    free(config_path);
     free_config(config);
 
     pango_cairo_font_map_set_default(NULL);
