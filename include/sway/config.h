@@ -407,7 +407,6 @@ struct sway_config {
     bool failed;
     bool reloading;
     bool reading;
-    bool validating;
     bool auto_back_and_forth;
     bool show_marks;
     enum alignment title_align;
@@ -474,7 +473,7 @@ struct sway_config {
  * Loads the main config from the given path. is_active should be true when
  * reloading the config.
  */
-bool load_main_config(const char *path, bool is_active, bool validating);
+bool load_main_config(const char *path, bool is_active);
 
 /**
  * Loads an included config. Can only be used after load_main_config.

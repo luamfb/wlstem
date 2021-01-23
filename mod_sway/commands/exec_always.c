@@ -18,7 +18,7 @@ struct cmd_results *cmd_exec_validate(int argc, char **argv) {
 	if ((error = checkarg(argc, argv[-1], EXPECTED_AT_LEAST, 1))) {
 		return error;
 	}
-	if (!config->active || config->validating) {
+	if (!config->active) {
 		return cmd_results_new(CMD_DEFER, NULL);
 	}
 	return error;

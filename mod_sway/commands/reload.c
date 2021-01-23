@@ -20,7 +20,7 @@ static void do_reload(void *data) {
 		path = config->current_config_path;
 	}
 
-	if (!load_main_config(path, true, false)) {
+	if (!load_main_config(path, true)) {
 		sway_log(SWAY_ERROR, "Error(s) reloading config");
 		return;
 	}
@@ -37,15 +37,6 @@ struct cmd_results *cmd_reload(int argc, char **argv) {
 	struct cmd_results *error = NULL;
 	if ((error = checkarg(argc, "reload", EXPECTED_EQUAL_TO, 0))) {
 		return error;
-	}
-
-	const char *path = NULL;
-	if (config->user_config_path) {
-		path = config->current_config_path;
-	}
-
-	if (!load_main_config(path, true, true)) {
-		return cmd_results_new(CMD_FAILURE, "Error(s) reloading config.");
 	}
 
 	// The reload command frees a lot of stuff, so to avoid use-after-frees
