@@ -145,7 +145,6 @@ void free_config(struct sway_config *config) {
         list_free(config->criteria);
     }
     list_free(config->no_focus);
-    list_free_items_and_destroy(config->config_chain);
     free(config->floating_scroll_up_cmd);
     free(config->floating_scroll_down_cmd);
     free(config->floating_scroll_left_cmd);
@@ -216,7 +215,6 @@ static void config_defaults(struct sway_config *config) {
     config->active = false;
     config->failed = false;
     config->auto_back_and_forth = false;
-    config->reading = false;
     config->show_marks = true;
     config->title_align = ALIGN_LEFT;
     config->tiling_drag = true;
@@ -231,7 +229,6 @@ static void config_defaults(struct sway_config *config) {
 
     if (!(config->swaybg_command = strdup("swaybg"))) goto cleanup;
 
-    if (!(config->config_chain = create_list())) goto cleanup;
     config->current_config = NULL;
 
     // borders
@@ -286,101 +283,14 @@ cleanup:
     sway_abort("Unable to allocate config structures");
 }
 
-static bool file_exists(const char *path) {
-    return path && access(path, R_OK) != -1;
-}
-
-static char *get_config_path(void) {
-    static const char *config_paths[] = {
-        "$HOME/.sway/config",
-        "$XDG_CONFIG_HOME/sway/config",
-        "$HOME/.i3/config",
-        "$XDG_CONFIG_HOME/i3/config",
-        SYSCONFDIR "/sway/config",
-        SYSCONFDIR "/i3/config",
-    };
-
-    char *config_home = getenv("XDG_CONFIG_HOME");
-    if (!config_home || !*config_home) {
-        config_paths[1] = "$HOME/.config/sway/config";
-        config_paths[3] = "$HOME/.config/i3/config";
-    }
-
-    for (size_t i = 0; i < sizeof(config_paths) / sizeof(char *); ++i) {
-        wordexp_t p;
-        if (wordexp(config_paths[i], &p, WRDE_UNDEF) == 0) {
-            char *path = strdup(p.we_wordv[0]);
-            wordfree(&p);
-            if (file_exists(path)) {
-                return path;
-            }
-            free(path);
-        }
-    }
-
-    return NULL;
-}
-
-static bool load_config(const char *path, struct sway_config *config) {
-    if (path == NULL) {
-        sway_log(SWAY_ERROR, "Unable to find a config file!");
-        return false;
-    }
-
-    sway_log(SWAY_INFO, "Loading config from %s", path);
-
-    struct stat sb;
-    if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode)) {
-        sway_log(SWAY_ERROR, "%s is a directory not a config file", path);
-        return false;
-    }
-
-    FILE *f = fopen(path, "r");
-    if (!f) {
-        sway_log(SWAY_ERROR, "Unable to open %s for reading", path);
-        return false;
-    }
-
-    bool config_load_success = read_config(f, config);
-    fclose(f);
-
-    if (!config_load_success) {
-        sway_log(SWAY_ERROR, "Error(s) loading config!");
-    }
-
-    return config->active || config_load_success;
-}
-
 bool load_main_config(void) {
-    char *path = get_config_path();
-    if (path == NULL) {
-        sway_log(SWAY_ERROR, "Cannot find config file");
-        return false;
-    }
-
-    char *real_path = realpath(path, NULL);
-    if (real_path == NULL) {
-        sway_log(SWAY_ERROR, "%s not found", path);
-        free(path);
-        return false;
-    }
-
     config = calloc(1, sizeof(struct sway_config));
     if (!config) {
         sway_abort("Unable to allocate config");
     }
 
     config_defaults(config);
-    list_add(config->config_chain, real_path);
-    config->reading = true;
-
-    // Read security configs
-    // TODO: Security
-    bool success = true;
-    success = success && load_config(path, config);
-
-    config->reading = false;
-    return success;
+    return true;
 }
 
 void load_include_configs(const char *path, struct sway_config *config) {
