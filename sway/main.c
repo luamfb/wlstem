@@ -418,7 +418,6 @@ int main(int argc, char **argv) {
     }
 
     config->active = true;
-    load_swaybars();
     run_deferred_commands();
     run_deferred_bindings();
     transaction_commit_dirty();
