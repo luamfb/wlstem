@@ -291,14 +291,6 @@ struct workspace_config {
     struct side_gaps gaps_outer;
 };
 
-#if HAVE_TRAY
-struct tray_binding {
-    uint32_t button;
-    const char *command;
-    struct wl_list link; // struct tray_binding::link
-};
-#endif
-
 struct border_colors {
     float border[4];
     float background[4];

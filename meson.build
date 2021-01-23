@@ -90,9 +90,6 @@ endif
 have_xwayland = xcb.found() and wlroots_features['xwayland']
 
 if get_option('sd-bus-provider') == 'auto'
-    if not get_option('tray').disabled()
-        assert(get_option('auto_features').auto(), 'sd-bus-provider must not be set to auto since auto_features != auto')
-    endif
     sdbus = dependency('libsystemd',
         required: false,
         version: '>=239',
@@ -109,14 +106,8 @@ if get_option('sd-bus-provider') == 'auto'
         sdbus = dependency('basu', required: false)
     endif
 else
-    sdbus = dependency(get_option('sd-bus-provider'), required: get_option('tray'))
+    sdbus = dependency(get_option('sd-bus-provider'))
 endif
-
-tray_deps_found = sdbus.found()
-if get_option('tray').enabled() and not tray_deps_found
-    error('Building with -Dtray=enabled, but sd-bus has not been not found')
-endif
-have_tray = (not get_option('tray').disabled()) and tray_deps_found
 
 conf_data = configuration_data()
 
@@ -125,7 +116,6 @@ conf_data.set10('HAVE_GDK_PIXBUF', gdk_pixbuf.found())
 conf_data.set10('HAVE_LIBSYSTEMD', sdbus.found() and sdbus.name() == 'libsystemd')
 conf_data.set10('HAVE_LIBELOGIND', sdbus.found() and sdbus.name() == 'libelogind')
 conf_data.set10('HAVE_BASU', sdbus.found() and sdbus.name() == 'basu')
-conf_data.set10('HAVE_TRAY', have_tray)
 
 add_project_arguments('-DSYSCONFDIR="/@0@"'.format(join_paths(prefix, sysconfdir)), language : 'c')
 
@@ -195,7 +185,6 @@ summary({
     'xwayland': have_xwayland,
     'gdk-pixbuf': gdk_pixbuf.found(),
     'sd-bus': sdbus.found(),
-    'tray': have_tray,
 }, bool_yn: true)
 
 if not wlroots_features['systemd'] and not wlroots_features['elogind'] and not wlroots_features['libseat']
