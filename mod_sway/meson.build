@@ -62,7 +62,6 @@ sway_sources = files(
     'commands/hide_edge_borders.c',
     'commands/inhibit_idle.c',
     'commands/kill.c',
-    'commands/mark.c',
     'commands/max_render_time.c',
     'commands/opacity.c',
     'commands/input.c',
@@ -90,7 +89,6 @@ sway_sources = files(
     'commands/seat/shortcuts_inhibitor.c',
     'commands/seat/xcursor_theme.c',
     'commands/set.c',
-    'commands/show_marks.c',
     'commands/shortcuts_inhibitor.c',
     'commands/smart_borders.c',
     'commands/smart_gaps.c',
@@ -103,7 +101,6 @@ sway_sources = files(
     'commands/title_format.c',
     'commands/titlebar_border_thickness.c',
     'commands/titlebar_padding.c',
-    'commands/unmark.c',
     'commands/urgent.c',
     'commands/workspace.c',
 
