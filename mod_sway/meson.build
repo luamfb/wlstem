@@ -97,10 +97,6 @@ sway_sources = files(
     'commands/swap.c',
     'commands/tiling_drag.c',
     'commands/tiling_drag_threshold.c',
-    'commands/title_align.c',
-    'commands/title_format.c',
-    'commands/titlebar_border_thickness.c',
-    'commands/titlebar_padding.c',
     'commands/urgent.c',
     'commands/workspace.c',
 
