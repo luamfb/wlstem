@@ -84,7 +84,6 @@ static struct cmd_handler handlers[] = {
 
 /* Runtime-only commands. Keep alphabetized */
 static struct cmd_handler command_handlers[] = {
-	{ "exit", cmd_exit },
 	{ "floating", cmd_floating },
 	{ "fullscreen", cmd_fullscreen },
 	{ "inhibit_idle", cmd_inhibit_idle },
