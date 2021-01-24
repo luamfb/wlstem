@@ -277,6 +277,11 @@ static void config_defaults(struct sway_config *config) {
     config->keysym_translation_state =
         keysym_translation_state_create(rules);
 
+    // Add Alt+Enter binding to summon a terminal
+    char *args[] = { "Alt+Return",  "exec",  "weston-terminal" };
+    size_t arg_count = sizeof(args) / sizeof(args[0]);
+    cmd_bindsym(arg_count, args);
+
     return;
 cleanup:
     sway_abort("Unable to allocate config structures");
