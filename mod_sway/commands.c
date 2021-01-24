@@ -97,7 +97,6 @@ static struct cmd_handler handlers[] = {
 
 /* Config-time only commands. Keep alphabetized */
 static struct cmd_handler config_handlers[] = {
-	{ "default_orientation", cmd_default_orientation },
 	{ "workspace_layout", cmd_workspace_layout },
 	{ "xwayland", cmd_xwayland },
 };
