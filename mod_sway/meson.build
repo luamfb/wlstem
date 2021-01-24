@@ -90,7 +90,6 @@ sway_sources = files(
     'commands/swap.c',
     'commands/tiling_drag.c',
     'commands/tiling_drag_threshold.c',
-    'commands/urgent.c',
     'commands/workspace.c',
 
     'commands/input/accel_profile.c',

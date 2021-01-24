@@ -111,7 +111,6 @@ sway_cmd cmd_client_noop;
 sway_cmd cmd_client_focused;
 sway_cmd cmd_client_focused_inactive;
 sway_cmd cmd_client_unfocused;
-sway_cmd cmd_client_urgent;
 sway_cmd cmd_client_placeholder;
 sway_cmd cmd_client_background;
 sway_cmd cmd_commands;
@@ -171,7 +170,6 @@ sway_cmd cmd_tiling_drag_threshold;
 sway_cmd cmd_unbindcode;
 sway_cmd cmd_unbindswitch;
 sway_cmd cmd_unbindsym;
-sway_cmd cmd_urgent;
 sway_cmd cmd_workspace;
 
 sway_cmd input_cmd_seat;
