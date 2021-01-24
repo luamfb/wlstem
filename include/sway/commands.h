@@ -176,7 +176,6 @@ sway_cmd cmd_splith;
 sway_cmd cmd_splitt;
 sway_cmd cmd_splitv;
 sway_cmd cmd_sticky;
-sway_cmd cmd_swaybg_command;
 sway_cmd cmd_swap;
 sway_cmd cmd_tiling_drag;
 sway_cmd cmd_tiling_drag_threshold;
