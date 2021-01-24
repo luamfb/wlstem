@@ -51,7 +51,6 @@ sway_sources = files(
     'commands/floating_minmax_size.c',
     'commands/floating_modifier.c',
     'commands/focus.c',
-    'commands/focus_follows_mouse.c',
     'commands/focus_on_window_activation.c',
     'commands/focus_wrapping.c',
     'commands/font.c',
