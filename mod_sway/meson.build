@@ -107,7 +107,6 @@ sway_sources = files(
     'commands/unmark.c',
     'commands/urgent.c',
     'commands/workspace.c',
-    'commands/xwayland.c',
 
     'commands/input/accel_profile.c',
     'commands/input/calibration_matrix.c',
