@@ -405,7 +405,6 @@ struct sway_config {
     enum focus_wrapping_mode focus_wrapping;
     bool active;
     bool failed;
-    bool auto_back_and_forth;
     bool show_marks;
     enum alignment title_align;
 

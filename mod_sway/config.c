@@ -214,7 +214,6 @@ static void config_defaults(struct sway_config *config) {
     config->focus_wrapping = WRAP_YES;
     config->active = false;
     config->failed = false;
-    config->auto_back_and_forth = false;
     config->show_marks = true;
     config->title_align = ALIGN_LEFT;
     config->tiling_drag = true;

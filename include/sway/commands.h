@@ -191,7 +191,6 @@ sway_cmd cmd_unmark;
 sway_cmd cmd_urgent;
 sway_cmd cmd_workspace;
 sway_cmd cmd_workspace_layout;
-sway_cmd cmd_ws_auto_back_and_forth;
 sway_cmd cmd_xwayland;
 
 sway_cmd input_cmd_seat;

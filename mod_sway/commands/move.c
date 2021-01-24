@@ -408,8 +408,7 @@ static bool container_move_in_direction(struct sway_container *container,
 
 static struct cmd_results *cmd_move_to_scratchpad(void);
 
-static struct cmd_results *cmd_move_container(bool no_auto_back_and_forth,
-		int argc, char **argv) {
+static struct cmd_results *cmd_move_container(int argc, char **argv) {
 	struct cmd_results *error = NULL;
 	if ((error = checkarg(argc, "move container/window",
 				EXPECTED_AT_LEAST, 2))) {
@@ -449,15 +448,6 @@ static struct cmd_results *cmd_move_container(bool no_auto_back_and_forth,
 				strcasecmp(argv[1], "prev_on_output") == 0 ||
 				strcasecmp(argv[1], "current") == 0) {
 			ws = workspace_by_name(argv[1]);
-		} else if (strcasecmp(argv[1], "back_and_forth") == 0) {
-			if (!(ws = workspace_by_name(argv[1]))) {
-				if (seat->prev_workspace_name) {
-					ws_name = strdup(seat->prev_workspace_name);
-				} else {
-					return cmd_results_new(CMD_FAILURE,
-							"No workspace was previously active.");
-				}
-			}
 		} else {
 			if (strcasecmp(argv[1], "number") == 0) {
 				// move [window|container] [to] "workspace number x"
@@ -473,18 +463,6 @@ static struct cmd_results *cmd_move_container(bool no_auto_back_and_forth,
 			} else {
 				ws_name = join_args(argv + 1, argc - 1);
 				ws = workspace_by_name(ws_name);
-			}
-
-			if (!no_auto_back_and_forth && config->auto_back_and_forth &&
-					seat->prev_workspace_name) {
-				// auto back and forth move
-				if (old_ws && old_ws->name &&
-						strcmp(old_ws->name, ws_name) == 0) {
-					// if target workspace is the current one
-					free(ws_name);
-					ws_name = strdup(seat->prev_workspace_name);
-					ws = workspace_by_name(ws_name);
-				}
 			}
 		}
 		if (!ws) {
@@ -1010,12 +988,6 @@ struct cmd_results *cmd_move(int argc, char **argv) {
 		return cmd_move_workspace(argc, argv);
 	}
 
-	bool no_auto_back_and_forth = false;
-	if (strcasecmp(argv[0], "--no-auto-back-and-forth") == 0) {
-		no_auto_back_and_forth = true;
-		--argc; ++argv;
-	}
-
 	if (argc > 0 && (strcasecmp(argv[0], "window") == 0 ||
 			strcasecmp(argv[0], "container") == 0)) {
 		--argc; ++argv;
@@ -1031,14 +1003,14 @@ struct cmd_results *cmd_move(int argc, char **argv) {
 
 	// Only `move [window|container] [to] workspace` supports
 	// `--no-auto-back-and-forth` so treat others as invalid syntax
-	if (no_auto_back_and_forth && strcasecmp(argv[0], "workspace") != 0) {
+	if (strcasecmp(argv[0], "workspace") != 0) {
 		return cmd_results_new(CMD_INVALID, expected_full_syntax);
 	}
 
 	if (strcasecmp(argv[0], "workspace") == 0 ||
 			strcasecmp(argv[0], "output") == 0 ||
 			strcasecmp(argv[0], "mark") == 0) {
-		return cmd_move_container(no_auto_back_and_forth, argc, argv);
+		return cmd_move_container(argc, argv);
 	} else if (strcasecmp(argv[0], "scratchpad") == 0) {
 		return cmd_move_to_scratchpad();
 	} else if (strcasecmp(argv[0], "position") == 0 ||
