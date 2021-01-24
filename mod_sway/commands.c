@@ -95,10 +95,6 @@ static struct cmd_handler handlers[] = {
 	{ "workspace", cmd_workspace },
 };
 
-/* Config-time only commands. Keep alphabetized */
-static struct cmd_handler config_handlers[] = {
-};
-
 /* Runtime-only commands. Keep alphabetized */
 static struct cmd_handler command_handlers[] = {
 	{ "border", cmd_border },
@@ -147,7 +143,6 @@ struct cmd_handler *find_handler(char *line, struct cmd_handler *handlers,
 }
 
 static struct cmd_handler *find_handler_ex(char *line,
-		struct cmd_handler *config_handlers, size_t config_handlers_size,
 		struct cmd_handler *command_handlers, size_t command_handlers_size,
 		struct cmd_handler *handlers, size_t handlers_size) {
 	struct cmd_handler *handler = NULL;
@@ -158,7 +153,7 @@ static struct cmd_handler *find_handler_ex(char *line,
 }
 
 static struct cmd_handler *find_core_handler(char *line) {
-	return find_handler_ex(line, config_handlers, sizeof(config_handlers),
+	return find_handler_ex(line,
 			command_handlers, sizeof(command_handlers),
 			handlers, sizeof(handlers));
 }
