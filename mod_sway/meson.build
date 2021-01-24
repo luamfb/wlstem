@@ -110,7 +110,6 @@ sway_sources = files(
     'commands/urgent.c',
     'commands/workspace.c',
     'commands/workspace_layout.c',
-    'commands/ws_auto_back_and_forth.c',
     'commands/xwayland.c',
 
     'commands/input/accel_profile.c',

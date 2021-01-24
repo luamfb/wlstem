@@ -93,7 +93,6 @@ static struct cmd_handler handlers[] = {
 	{ "unbindswitch", cmd_unbindswitch },
 	{ "unbindsym", cmd_unbindsym },
 	{ "workspace", cmd_workspace },
-	{ "workspace_auto_back_and_forth", cmd_ws_auto_back_and_forth },
 };
 
 /* Config-time only commands. Keep alphabetized */

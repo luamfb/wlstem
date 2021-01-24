@@ -72,7 +72,6 @@ struct cmd_results *cmd_rename(int argc, char **argv) {
 			strcasecmp(new_name, "prev") == 0 ||
 			strcasecmp(new_name, "next_on_output") == 0 ||
 			strcasecmp(new_name, "prev_on_output") == 0 ||
-			strcasecmp(new_name, "back_and_forth") == 0 ||
 			strcasecmp(new_name, "current") == 0 ||
 			strcasecmp(new_name, "number") == 0) {
 		free(new_name);

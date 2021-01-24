@@ -227,7 +227,6 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
                 strncmp(_target, "prev_on_output",
                     strlen("next_on_output")) == 0 ||
                 strcmp(_target, "number") == 0 ||
-                strcmp(_target, "back_and_forth") == 0 ||
                 strcmp(_target, "current") == 0) {
             free(_target);
             free(dup);
@@ -370,13 +369,6 @@ struct sway_workspace *workspace_by_name(const char *name) {
         return workspace_output_next(current, false);
     } else if (strcmp(name, "current") == 0) {
         return current;
-    } else if (strcasecmp(name, "back_and_forth") == 0) {
-        struct sway_seat *seat = input_manager_current_seat();
-        if (!seat->prev_workspace_name) {
-            return NULL;
-        }
-        return root_find_workspace(_workspace_by_name,
-                (void*)seat->prev_workspace_name);
     } else {
         return root_find_workspace(_workspace_by_name, (void*)name);
     }
@@ -561,25 +553,8 @@ struct sway_workspace *workspace_output_prev(
     return workspace_output_prev_next_impl(current->output, -1, create);
 }
 
-bool workspace_switch(struct sway_workspace *workspace,
-        bool no_auto_back_and_forth) {
+bool workspace_switch(struct sway_workspace *workspace) {
     struct sway_seat *seat = input_manager_current_seat();
-    struct sway_workspace *active_ws = NULL;
-    struct sway_node *focus = seat_get_focus_inactive(seat, &root->node);
-    if (focus && focus->type == N_WORKSPACE) {
-        active_ws = focus->sway_workspace;
-    } else if (focus && focus->type == N_CONTAINER) {
-        active_ws = focus->sway_container->workspace;
-    }
-
-    if (!no_auto_back_and_forth && config->auto_back_and_forth && active_ws
-            && active_ws == workspace && seat->prev_workspace_name) {
-        struct sway_workspace *new_ws =
-            workspace_by_name(seat->prev_workspace_name);
-        workspace = new_ws ?
-            new_ws :
-            workspace_create(NULL, seat->prev_workspace_name);
-    }
 
     sway_log(SWAY_DEBUG, "Switching to workspace %p:%s",
         workspace, workspace->name);
