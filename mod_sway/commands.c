@@ -61,7 +61,6 @@ static struct cmd_handler handlers[] = {
 	{ "floating_minimum_size", cmd_floating_minimum_size },
 	{ "floating_modifier", cmd_floating_modifier },
 	{ "focus", cmd_focus },
-	{ "focus_follows_mouse", cmd_focus_follows_mouse },
 	{ "focus_on_window_activation", cmd_focus_on_window_activation },
 	{ "focus_wrapping", cmd_focus_wrapping },
 	{ "font", cmd_font },
