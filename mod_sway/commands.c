@@ -84,9 +84,6 @@ static struct cmd_handler handlers[] = {
 	{ "smart_gaps", cmd_smart_gaps },
 	{ "tiling_drag", cmd_tiling_drag },
 	{ "tiling_drag_threshold", cmd_tiling_drag_threshold },
-	{ "title_align", cmd_title_align },
-	{ "titlebar_border_thickness", cmd_titlebar_border_thickness },
-	{ "titlebar_padding", cmd_titlebar_padding },
 	{ "unbindcode", cmd_unbindcode },
 	{ "unbindswitch", cmd_unbindswitch },
 	{ "unbindsym", cmd_unbindsym },
@@ -117,7 +114,6 @@ static struct cmd_handler command_handlers[] = {
 	{ "splitv", cmd_splitv },
 	{ "sticky", cmd_sticky },
 	{ "swap", cmd_swap },
-	{ "title_format", cmd_title_format },
 	{ "urgent", cmd_urgent },
 };
 
