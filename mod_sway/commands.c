@@ -97,7 +97,6 @@ static struct cmd_handler handlers[] = {
 
 /* Config-time only commands. Keep alphabetized */
 static struct cmd_handler config_handlers[] = {
-	{ "xwayland", cmd_xwayland },
 };
 
 /* Runtime-only commands. Keep alphabetized */

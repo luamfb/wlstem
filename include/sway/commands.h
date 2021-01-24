@@ -188,7 +188,6 @@ sway_cmd cmd_unbindsym;
 sway_cmd cmd_unmark;
 sway_cmd cmd_urgent;
 sway_cmd cmd_workspace;
-sway_cmd cmd_xwayland;
 
 sway_cmd input_cmd_seat;
 sway_cmd input_cmd_accel_profile;
