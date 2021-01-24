@@ -7,23 +7,8 @@
 
 // must be in order for the bsearch
 static struct cmd_handler output_handlers[] = {
-	{ "adaptive_sync", output_cmd_adaptive_sync },
 	{ "background", output_cmd_background },
 	{ "bg", output_cmd_background },
-	{ "disable", output_cmd_disable },
-	{ "dpms", output_cmd_dpms },
-	{ "enable", output_cmd_enable },
-	{ "max_render_time", output_cmd_max_render_time },
-	{ "mode", output_cmd_mode },
-	{ "pos", output_cmd_position },
-	{ "position", output_cmd_position },
-	{ "res", output_cmd_mode },
-	{ "resolution", output_cmd_mode },
-	{ "scale", output_cmd_scale },
-	{ "scale_filter", output_cmd_scale_filter },
-	{ "subpixel", output_cmd_subpixel },
-	{ "toggle", output_cmd_toggle },
-	{ "transform", output_cmd_transform },
 };
 
 struct cmd_results *cmd_output(int argc, char **argv) {
