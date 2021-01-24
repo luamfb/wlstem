@@ -113,7 +113,6 @@ sway_cmd cmd_client_unfocused;
 sway_cmd cmd_client_placeholder;
 sway_cmd cmd_client_background;
 sway_cmd cmd_commands;
-sway_cmd cmd_create_output;
 sway_cmd cmd_exec;
 sway_cmd cmd_exec_always;
 sway_cmd cmd_exit;
