@@ -52,7 +52,6 @@ static struct cmd_handler handlers[] = {
 	{ "client.focused_inactive", cmd_client_focused_inactive },
 	{ "client.placeholder", cmd_client_noop },
 	{ "client.unfocused", cmd_client_unfocused },
-	{ "client.urgent", cmd_client_urgent },
 	{ "exec", cmd_exec },
 	{ "exec_always", cmd_exec_always },
 	{ "floating_maximum_size", cmd_floating_maximum_size },
@@ -107,7 +106,6 @@ static struct cmd_handler command_handlers[] = {
 	{ "splitv", cmd_splitv },
 	{ "sticky", cmd_sticky },
 	{ "swap", cmd_swap },
-	{ "urgent", cmd_urgent },
 };
 
 static int handler_compare(const void *_a, const void *_b) {
