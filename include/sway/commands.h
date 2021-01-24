@@ -115,7 +115,6 @@ sway_cmd cmd_client_background;
 sway_cmd cmd_commands;
 sway_cmd cmd_exec;
 sway_cmd cmd_exec_always;
-sway_cmd cmd_exit;
 sway_cmd cmd_floating;
 sway_cmd cmd_floating_maximum_size;
 sway_cmd cmd_floating_minimum_size;
