@@ -49,7 +49,6 @@ static struct cmd_handler handlers[] = {
 	{ "exec", cmd_exec },
 	{ "exec_always", cmd_exec_always },
 	{ "input", cmd_input },
-	{ "output", cmd_output },
 	{ "seat", cmd_seat },
 	{ "set", cmd_set },
 	{ "unbindcode", cmd_unbindcode },
