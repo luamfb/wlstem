@@ -49,7 +49,6 @@ sway_sources = files(
     'commands/move.c',
     'commands/output.c',
     'commands/resize.c',
-    'commands/scratchpad.c',
     'commands/seat.c',
     'commands/seat/attach.c',
     'commands/seat/cursor.c',
