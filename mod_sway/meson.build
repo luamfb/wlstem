@@ -50,7 +50,6 @@ sway_sources = files(
     'commands/swap.c',
     'commands/workspace.c',
 
-    'commands/input/tool_mode.c',
     'commands/input/xkb_file.c',
     'commands/input/xkb_switch_layout.c',
 
