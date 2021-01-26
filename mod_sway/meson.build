@@ -42,7 +42,6 @@ sway_sources = files(
     'commands/exec_always.c',
     'commands/focus.c',
     'commands/for_window.c',
-    'commands/gaps.c',
     'commands/inhibit_idle.c',
     'commands/kill.c',
     'commands/input.c',
