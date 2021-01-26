@@ -55,7 +55,6 @@ static struct cmd_handler handlers[] = {
 	{ "exec_always", cmd_exec_always },
 	{ "focus", cmd_focus },
 	{ "for_window", cmd_for_window },
-	{ "fullscreen", cmd_fullscreen },
 	{ "gaps", cmd_gaps },
 	{ "input", cmd_input },
 	{ "mode", cmd_mode },
@@ -71,7 +70,6 @@ static struct cmd_handler handlers[] = {
 
 /* Runtime-only commands. Keep alphabetized */
 static struct cmd_handler command_handlers[] = {
-	{ "fullscreen", cmd_fullscreen },
 	{ "inhibit_idle", cmd_inhibit_idle },
 	{ "kill", cmd_kill },
 	{ "layout", cmd_layout },
