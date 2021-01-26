@@ -48,7 +48,6 @@ static struct cmd_handler handlers[] = {
 	{ "bindsym", cmd_bindsym },
 	{ "exec", cmd_exec },
 	{ "exec_always", cmd_exec_always },
-	{ "for_window", cmd_for_window },
 	{ "input", cmd_input },
 	{ "output", cmd_output },
 	{ "seat", cmd_seat },
@@ -327,7 +326,6 @@ struct cmd_results *config_command(char *exec, char **new_block) {
 				&& handler->handle != cmd_bindcode
 				&& handler->handle != cmd_bindswitch
 				&& handler->handle != cmd_set
-				&& handler->handle != cmd_for_window
 				&& (*argv[i] == '\"' || *argv[i] == '\'')) {
 			strip_quotes(argv[i]);
 		}
