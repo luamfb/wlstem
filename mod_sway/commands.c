@@ -48,7 +48,6 @@ static struct cmd_handler handlers[] = {
 	{ "bindsym", cmd_bindsym },
 	{ "exec", cmd_exec },
 	{ "exec_always", cmd_exec_always },
-	{ "focus", cmd_focus },
 	{ "for_window", cmd_for_window },
 	{ "input", cmd_input },
 	{ "output", cmd_output },
