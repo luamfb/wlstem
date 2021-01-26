@@ -40,7 +40,6 @@ sway_sources = files(
     'commands/bind.c',
     'commands/exec.c',
     'commands/exec_always.c',
-    'commands/input.c',
     'commands/resize.c',
     'commands/seat.c',
     'commands/seat/attach.c',
@@ -49,9 +48,6 @@ sway_sources = files(
     'commands/set.c',
     'commands/swap.c',
     'commands/workspace.c',
-
-    'commands/input/xkb_file.c',
-    'commands/input/xkb_switch_layout.c',
 
     'tree/arrange.c',
     'tree/container.c',
