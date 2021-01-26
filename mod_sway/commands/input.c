@@ -8,7 +8,6 @@
 
 // must be in order for the bsearch
 static struct cmd_handler input_handlers[] = {
-	{ "events", input_cmd_events },
 	{ "map_from_region", input_cmd_map_from_region },
 	{ "map_to_region", input_cmd_map_to_region },
 	{ "tool_mode", input_cmd_tool_mode },
