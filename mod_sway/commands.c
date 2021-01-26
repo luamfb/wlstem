@@ -74,7 +74,6 @@ static struct cmd_handler command_handlers[] = {
 	{ "splith", cmd_splith },
 	{ "splitt", cmd_splitt },
 	{ "splitv", cmd_splitv },
-	{ "sticky", cmd_sticky },
 	{ "swap", cmd_swap },
 };
 
