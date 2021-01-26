@@ -67,7 +67,6 @@ static struct cmd_handler command_handlers[] = {
 	{ "kill", cmd_kill },
 	{ "layout", cmd_layout },
 	{ "move", cmd_move },
-	{ "rename", cmd_rename },
 	{ "resize", cmd_resize },
 	{ "scratchpad", cmd_scratchpad },
 	{ "swap", cmd_swap },
