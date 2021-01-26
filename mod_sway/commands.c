@@ -50,7 +50,6 @@ static struct cmd_handler handlers[] = {
 	{ "exec_always", cmd_exec_always },
 	{ "focus", cmd_focus },
 	{ "for_window", cmd_for_window },
-	{ "gaps", cmd_gaps },
 	{ "input", cmd_input },
 	{ "mode", cmd_mode },
 	{ "output", cmd_output },
