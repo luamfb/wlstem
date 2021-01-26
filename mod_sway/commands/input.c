@@ -8,7 +8,6 @@
 
 // must be in order for the bsearch
 static struct cmd_handler input_handlers[] = {
-	{ "tool_mode", input_cmd_tool_mode },
 	{ "xkb_file", input_cmd_xkb_file },
 	{ "xkb_switch_layout", input_cmd_xkb_switch_layout },
 };
