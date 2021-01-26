@@ -18,7 +18,6 @@ static struct cmd_handler seat_handlers[] = {
 	{ "attach", seat_cmd_attach },
 	{ "idle_inhibit", seat_cmd_idle_inhibit },
 	{ "idle_wake", seat_cmd_idle_wake },
-	{ "shortcuts_inhibitor", seat_cmd_shortcuts_inhibitor },
 };
 
 static struct cmd_results *action_handlers(int argc, char **argv) {
