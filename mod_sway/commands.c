@@ -58,7 +58,6 @@ static struct cmd_handler handlers[] = {
 	{ "gaps", cmd_gaps },
 	{ "input", cmd_input },
 	{ "mode", cmd_mode },
-	{ "no_focus", cmd_no_focus },
 	{ "output", cmd_output },
 	{ "seat", cmd_seat },
 	{ "set", cmd_set },
