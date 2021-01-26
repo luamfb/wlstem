@@ -38,7 +38,6 @@ sway_sources = files(
     'config/input.c',
 
     'commands/bind.c',
-    'commands/client.c',
     'commands/exec.c',
     'commands/exec_always.c',
     'commands/focus.c',
