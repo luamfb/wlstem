@@ -336,58 +336,6 @@ void run_deferred_bindings(void) {
     }
 }
 
-char *do_var_replacement(char *str) {
-    int i;
-    char *find = str;
-    while ((find = strchr(find, '$'))) {
-        // Skip if escaped.
-        if (find > str && find[-1] == '\\') {
-            if (find == str + 1 || !(find > str + 1 && find[-2] == '\\')) {
-                ++find;
-                continue;
-            }
-        }
-        // Unescape double $ and move on
-        if (find[1] == '$') {
-            size_t length = strlen(find + 1);
-            memmove(find, find + 1, length);
-            find[length] = '\0';
-            ++find;
-            continue;
-        }
-        // Find matching variable
-        for (i = 0; i < config->symbols->length; ++i) {
-            struct sway_variable *var = config->symbols->items[i];
-            int vnlen = strlen(var->name);
-            if (strncmp(find, var->name, vnlen) == 0) {
-                int vvlen = strlen(var->value);
-                char *newstr = malloc(strlen(str) - vnlen + vvlen + 1);
-                if (!newstr) {
-                    sway_log(SWAY_ERROR,
-                        "Unable to allocate replacement "
-                        "during variable expansion");
-                    break;
-                }
-                char *newptr = newstr;
-                int offset = find - str;
-                strncpy(newptr, str, offset);
-                newptr += offset;
-                strncpy(newptr, var->value, vvlen);
-                newptr += vvlen;
-                strcpy(newptr, find + vnlen);
-                free(str);
-                str = newstr;
-                find = str + offset + vvlen;
-                break;
-            }
-        }
-        if (i == config->symbols->length) {
-            ++find;
-        }
-    }
-    return str;
-}
-
 // the naming is intentional (albeit long): a workspace_output_cmp function
 // would compare two structs in full, while this method only compares the
 // workspace.

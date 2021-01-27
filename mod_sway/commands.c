@@ -193,11 +193,6 @@ list_t *execute_command(char *_exec, struct sway_seat *seat,
 			goto cleanup;
 		}
 
-		// Var replacement, for all but first argument of set
-		for (int i = handler->handle == cmd_set ? 2 : 1; i < argc; ++i) {
-			argv[i] = do_var_replacement(argv[i]);
-		}
-
 		if (!config->handler_context.using_criteria) {
 			// The container or workspace which this command will run on.
 			struct sway_node *node = con ? &con->node :
@@ -275,19 +270,6 @@ struct cmd_results *config_command(char *exec, char **new_block) {
 		goto cleanup;
 	}
 
-	// Make sure the command is not stored in a variable
-	if (*argv[0] == '$') {
-		argv[0] = do_var_replacement(argv[0]);
-		char *temp = join_args(argv, argc);
-		free_argv(argc, argv);
-		argv = split_args(temp, &argc);
-		free(temp);
-		if (!argc) {
-			results = cmd_results_new(CMD_SUCCESS, NULL);
-			goto cleanup;
-		}
-	}
-
 	// Determine the command handler
 	sway_log(SWAY_INFO, "Config command: %s", exec);
 	struct cmd_handler *handler = find_core_handler(argv[0]);
@@ -308,7 +290,7 @@ struct cmd_results *config_command(char *exec, char **new_block) {
 		free(argv[1]);
 		argv[1] = temp;
 	}
-	char *command = do_var_replacement(join_args(argv, argc));
+	char *command = join_args(argv, argc);
 	sway_log(SWAY_INFO, "After replacement: %s", command);
 	free_argv(argc, argv);
 	argv = split_args(command, &argc);
