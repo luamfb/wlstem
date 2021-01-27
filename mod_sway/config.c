@@ -91,12 +91,6 @@ void free_config(struct sway_config *config) {
 
     memset(&config->handler_context, 0, sizeof(config->handler_context));
 
-    // TODO: handle all currently unhandled lists as we add implementations
-    if (config->symbols) {
-        for (int i = 0; i < config->symbols->length; ++i) {
-        }
-        list_free(config->symbols);
-    }
     if (config->modes) {
         for (int i = 0; i < config->modes->length; ++i) {
             free_mode(config->modes->items[i]);
@@ -156,7 +150,6 @@ void free_config(struct sway_config *config) {
 }
 
 static void config_defaults(struct sway_config *config) {
-    if (!(config->symbols = create_list())) goto cleanup;
     if (!(config->modes = create_list())) goto cleanup;
     if (!(config->workspace_configs = create_list())) goto cleanup;
     if (!(config->criteria = create_list())) goto cleanup;
