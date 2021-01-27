@@ -48,7 +48,6 @@ static struct cmd_handler handlers[] = {
 	{ "bindsym", cmd_bindsym },
 	{ "exec", cmd_exec },
 	{ "exec_always", cmd_exec_always },
-	{ "set", cmd_set },
 	{ "unbindcode", cmd_unbindcode },
 	{ "unbindswitch", cmd_unbindswitch },
 	{ "unbindsym", cmd_unbindsym },
@@ -281,15 +280,6 @@ struct cmd_results *config_command(char *exec, char **new_block) {
 		goto cleanup;
 	}
 
-	// Do variable replacement
-	if (handler->handle == cmd_set && argc > 1 && *argv[1] == '$') {
-		// Escape the variable name so it does not get replaced by one shorter
-		char *temp = calloc(1, strlen(argv[1]) + 2);
-		temp[0] = '$';
-		strcpy(&temp[1], argv[1]);
-		free(argv[1]);
-		argv[1] = temp;
-	}
 	char *command = join_args(argv, argc);
 	sway_log(SWAY_INFO, "After replacement: %s", command);
 	free_argv(argc, argv);
@@ -297,12 +287,11 @@ struct cmd_results *config_command(char *exec, char **new_block) {
 	free(command);
 
 	// Strip quotes and unescape the string
-	for (int i = handler->handle == cmd_set ? 2 : 1; i < argc; ++i) {
+	for (int i = 1; i < argc; ++i) {
 		if (handler->handle != cmd_exec && handler->handle != cmd_exec_always
 				&& handler->handle != cmd_bindsym
 				&& handler->handle != cmd_bindcode
 				&& handler->handle != cmd_bindswitch
-				&& handler->handle != cmd_set
 				&& (*argv[i] == '\"' || *argv[i] == '\'')) {
 			strip_quotes(argv[i]);
 		}
