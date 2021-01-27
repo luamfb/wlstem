@@ -483,8 +483,6 @@ void run_deferred_bindings(void);
  */
 void free_config(struct sway_config *config);
 
-void free_sway_variable(struct sway_variable *var);
-
 int input_identifier_cmp(const void *item, const void *data);
 
 struct input_config *new_input_config(const char* identifier);
