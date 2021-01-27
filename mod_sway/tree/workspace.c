@@ -213,7 +213,6 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
 
     if (strcmp("workspace", cmd) == 0 && name) {
         char *_target = strdup(name);
-        _target = do_var_replacement(_target);
         strip_quotes(_target);
         sway_log(SWAY_DEBUG, "Got valid workspace command for target: '%s'",
                 _target);

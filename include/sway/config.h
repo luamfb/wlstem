@@ -485,11 +485,6 @@ void free_config(struct sway_config *config);
 
 void free_sway_variable(struct sway_variable *var);
 
-/**
- * Does variable replacement for a string based on the config's currently loaded variables.
- */
-char *do_var_replacement(char *str);
-
 int input_identifier_cmp(const void *item, const void *data);
 
 struct input_config *new_input_config(const char* identifier);
