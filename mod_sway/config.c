@@ -84,6 +84,12 @@ static void free_mode(struct sway_mode *mode) {
     free(mode);
 }
 
+void free_workspace_config(struct workspace_config *wsc) {
+    free(wsc->workspace);
+    list_free_items_and_destroy(wsc->outputs);
+    free(wsc);
+}
+
 void free_config(struct sway_config *config) {
     if (!config) {
         return;
