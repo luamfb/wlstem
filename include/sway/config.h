@@ -385,11 +385,6 @@ struct sway_config {
     enum sway_popup_during_fullscreen popup_during_fullscreen;
     enum xwayland_mode xwayland;
 
-    // swaybg
-    char *swaybg_command;
-    struct wl_client *swaybg_client;
-    struct wl_listener swaybg_client_destroy;
-
     // Flags
     enum focus_follows_mouse_mode focus_follows_mouse;
     enum mouse_warping_mode mouse_warping;
@@ -526,8 +521,6 @@ void apply_output_config_to_outputs(struct output_config *oc);
 void reset_outputs(void);
 
 void free_output_config(struct output_config *oc);
-
-bool spawn_swaybg(void);
 
 int workspace_output_cmp_workspace(const void *a, const void *b);
 

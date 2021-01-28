@@ -114,9 +114,6 @@ void free_config(struct sway_config *config) {
         }
         list_free(config->output_configs);
     }
-    if (config->swaybg_client != NULL) {
-        wl_client_destroy(config->swaybg_client);
-    }
     if (config->input_configs) {
         for (int i = 0; i < config->input_configs->length; i++) {
             free_input_config(config->input_configs->items[i]);
@@ -136,7 +133,6 @@ void free_config(struct sway_config *config) {
         list_free(config->seat_configs);
     }
     free(config->font);
-    free(config->swaybg_command);
     free((char *)config->current_config);
     keysym_translation_state_destroy(config->keysym_translation_state);
     free(config);
@@ -201,8 +197,6 @@ static void config_defaults(struct sway_config *config) {
     config->gaps_outer.right = 0;
     config->gaps_outer.bottom = 0;
     config->gaps_outer.left = 0;
-
-    if (!(config->swaybg_command = strdup("swaybg"))) goto cleanup;
 
     config->current_config = NULL;
 
