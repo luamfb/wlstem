@@ -11,7 +11,6 @@ enum criteria_type {
 	CT_ASSIGN_OUTPUT           = 1 << 1,
 	CT_ASSIGN_WORKSPACE        = 1 << 2,
 	CT_ASSIGN_WORKSPACE_NUMBER = 1 << 3,
-	CT_NO_FOCUS                = 1 << 4,
 };
 
 enum pattern_type {

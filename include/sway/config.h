@@ -369,7 +369,6 @@ struct sway_config {
     list_t *input_type_configs;
     list_t *seat_configs;
     list_t *criteria;
-    list_t *no_focus;
     struct sway_mode *current_mode;
     uint32_t floating_mod;
     bool floating_mod_inverse;

@@ -596,7 +596,6 @@ static bool should_focus(struct sway_view *view) {
     }
 
     // If the view is the only one in the focused workspace, it'll get focus
-    // regardless of any no_focus criteria.
     if (!view->container->parent && !prev_con) {
         size_t num_children = view->container->workspace->tiling->length +
             view->container->workspace->floating->length;
@@ -605,11 +604,7 @@ static bool should_focus(struct sway_view *view) {
         }
     }
 
-    // Check no_focus criteria
-    list_t *criterias = criteria_for_view(view, CT_NO_FOCUS);
-    size_t len = criterias->length;
-    list_free(criterias);
-    return len == 0;
+    return true;
 }
 
 static void handle_foreign_activate_request(
