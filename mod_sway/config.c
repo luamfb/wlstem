@@ -136,10 +136,6 @@ void free_config(struct sway_config *config) {
         }
         list_free(config->seat_configs);
     }
-    free(config->floating_scroll_up_cmd);
-    free(config->floating_scroll_down_cmd);
-    free(config->floating_scroll_left_cmd);
-    free(config->floating_scroll_right_cmd);
     free(config->font);
     free(config->swaybg_command);
     free((char *)config->current_config);
@@ -173,10 +169,6 @@ static void config_defaults(struct sway_config *config) {
     config->dragging_key = BTN_LEFT;
     config->resizing_key = BTN_RIGHT;
 
-    if (!(config->floating_scroll_up_cmd = strdup(""))) goto cleanup;
-    if (!(config->floating_scroll_down_cmd = strdup(""))) goto cleanup;
-    if (!(config->floating_scroll_left_cmd = strdup(""))) goto cleanup;
-    if (!(config->floating_scroll_right_cmd = strdup(""))) goto cleanup;
     config->default_layout = L_NONE;
     config->default_orientation = L_NONE;
     if (!(config->font = strdup("monospace 10"))) goto cleanup;
