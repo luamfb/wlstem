@@ -42,7 +42,6 @@ sway_sources = files(
     'commands/exec_always.c',
     'commands/resize.c',
     'commands/swap.c',
-    'commands/workspace.c',
 
     'tree/arrange.c',
     'tree/container.c',
