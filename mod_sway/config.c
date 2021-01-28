@@ -102,7 +102,6 @@ void free_config(struct sway_config *config) {
         }
         list_free(config->modes);
     }
-    list_free(config->cmd_queue);
     if (config->workspace_configs) {
         for (int i = 0; i < config->workspace_configs->length; i++) {
             free_workspace_config(config->workspace_configs->items[i]);
@@ -151,8 +150,6 @@ static void config_defaults(struct sway_config *config) {
 
     if (!(config->input_type_configs = create_list())) goto cleanup;
     if (!(config->input_configs = create_list())) goto cleanup;
-
-    if (!(config->cmd_queue = create_list())) goto cleanup;
 
     if (!(config->current_mode = malloc(sizeof(struct sway_mode))))
         goto cleanup;
@@ -278,25 +275,6 @@ bool load_main_config(void) {
 }
 
 void run_deferred_commands(void) {
-    if (!config->cmd_queue->length) {
-        return;
-    }
-    sway_log(SWAY_DEBUG, "Running deferred commands");
-    while (config->cmd_queue->length) {
-        char *line = config->cmd_queue->items[0];
-        list_t *res_list = execute_command(line, NULL, NULL);
-        for (int i = 0; i < res_list->length; ++i) {
-            struct cmd_results *res = res_list->items[i];
-            if (res->status != CMD_SUCCESS) {
-                sway_log(SWAY_ERROR, "Error on line '%s': %s",
-                        line, res->error);
-            }
-            free_cmd_results(res);
-        }
-        list_del(config->cmd_queue, 0);
-        list_free(res_list);
-        free(line);
-    }
 }
 
 void run_deferred_bindings(void) {
