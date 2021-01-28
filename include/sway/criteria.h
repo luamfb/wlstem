@@ -8,7 +8,6 @@
 
 enum criteria_type {
 	CT_COMMAND                 = 1 << 0,
-	CT_ASSIGN_OUTPUT           = 1 << 1,
 };
 
 enum pattern_type {
