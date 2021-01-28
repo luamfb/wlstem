@@ -54,7 +54,6 @@ static struct cmd_handler handlers[] = {
 
 /* Runtime-only commands. Keep alphabetized */
 static struct cmd_handler command_handlers[] = {
-	{ "resize", cmd_resize },
 	{ "swap", cmd_swap },
 };
 

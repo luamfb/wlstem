@@ -82,15 +82,6 @@ void free_cmd_results(struct cmd_results *results);
 char *cmd_results_to_json(list_t *res_list);
 
 /**
- * TODO: Move this function and its dependent functions to container.c.
- */
-void container_resize_tiled(struct sway_container *parent, uint32_t axis,
-        int amount);
-
-struct sway_container *container_find_resize_parent(struct sway_container *con,
-        uint32_t edge);
-
-/**
  * Handlers shared by exec and exec_always.
  */
 sway_cmd cmd_exec_validate;
@@ -101,7 +92,6 @@ sway_cmd cmd_bindswitch;
 sway_cmd cmd_bindsym;
 sway_cmd cmd_exec;
 sway_cmd cmd_exec_always;
-sway_cmd cmd_resize;
 sway_cmd cmd_swap;
 sway_cmd cmd_unbindcode;
 sway_cmd cmd_unbindswitch;
