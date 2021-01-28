@@ -5,7 +5,6 @@
 #include "sway/desktop.h"
 #include "sway/input/cursor.h"
 #include "sway/input/seat.h"
-#include "sway/ipc-server.h"
 #include "sway/output.h"
 #include "sway/tree/arrange.h"
 #include "sway/tree/node.h"
@@ -261,7 +260,6 @@ static void finalize_move(struct sway_seat *seat) {
 				container_split(target, new_layout);
 			}
 			container_add_sibling(target, con, after);
-			ipc_event_window(con, "move");
 		}
 	} else {
 		// Target is a workspace which requires splitting

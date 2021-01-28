@@ -18,7 +18,6 @@
 #include "sway/desktop/transaction.h"
 #include "sway/desktop/idle_inhibit_v1.h"
 #include "sway/input/cursor.h"
-#include "sway/ipc-server.h"
 #include "sway/output.h"
 #include "sway/input/seat.h"
 #include "sway/server.h"
@@ -661,7 +660,6 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     } else if (ws) {
         container = workspace_add_tiling(ws, container);
     }
-    ipc_event_window(view->container, "new");
 
     view_init_subsurfaces(view, wlr_surface);
     wl_signal_add(&wlr_surface->events.new_subsurface,
@@ -1141,8 +1139,6 @@ void view_update_title(struct sway_view *view, bool force) {
     // Update title after the global font height is updated
     container_update_title_textures(view->container);
 
-    ipc_event_window(view->container, "title");
-
     if (view->foreign_toplevel && title) {
         wlr_foreign_toplevel_handle_v1_set_title(view->foreign_toplevel, title);
     }
@@ -1214,8 +1210,6 @@ void view_set_urgent(struct sway_view *view, bool enable) {
         }
     }
     container_damage_whole(view->container);
-
-    ipc_event_window(view->container, "urgent");
 
     if (!container_is_scratchpad_hidden(view->container)) {
         workspace_detect_urgent(view->container->workspace);

@@ -23,7 +23,6 @@
 #include "sway/input/seat.h"
 #include "sway/input/switch.h"
 #include "sway/input/tablet.h"
-#include "sway/ipc-server.h"
 #include "sway/layers.h"
 #include "sway/output.h"
 #include "sway/server.h"
@@ -1040,7 +1039,6 @@ static void set_workspace(struct sway_seat *seat,
         }
     }
 
-    ipc_event_workspace(seat->workspace, new_ws, "focus");
     seat->workspace = new_ws;
 }
 
@@ -1149,11 +1147,7 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         seat_send_focus(&container->node, seat);
     }
 
-    // emit ipc events
     set_workspace(seat, new_workspace);
-    if (container && container->view) {
-        ipc_event_window(container, "focus");
-    }
 
     // Move sticky containers to new workspace
     if (new_workspace && new_output_last_ws

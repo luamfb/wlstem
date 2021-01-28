@@ -5,7 +5,6 @@
 #include <wlr/types/wlr_output_layout.h>
 #include "sway/desktop/transaction.h"
 #include "sway/input/seat.h"
-#include "sway/ipc-server.h"
 #include "sway/output.h"
 #include "sway/tree/arrange.h"
 #include "sway/tree/container.h"
@@ -94,8 +93,6 @@ void root_scratchpad_add_container(struct sway_container *con, struct sway_works
         }
         seat_set_focus(seat, new_focus);
     }
-
-    ipc_event_window(con, "move");
 }
 
 void root_scratchpad_remove_container(struct sway_container *con) {
@@ -106,7 +103,6 @@ void root_scratchpad_remove_container(struct sway_container *con) {
     int index = list_find(root->scratchpad, con);
     if (index != -1) {
         list_del(root->scratchpad, index);
-        ipc_event_window(con, "move");
     }
 }
 
@@ -179,8 +175,6 @@ void root_scratchpad_hide(struct sway_container *con) {
         seat_set_focus(seat, seat_get_focus_inactive(seat, &ws->node));
     }
     list_move_to_end(root->scratchpad, con);
-
-    ipc_event_window(con, "move");
 }
 
 struct pid_workspace {

@@ -10,7 +10,6 @@
 #include "sway/config.h"
 #include "sway/input/cursor.h"
 #include "sway/input/keyboard.h"
-#include "sway/ipc-server.h"
 #include "list.h"
 #include "log.h"
 #include "stringop.h"
@@ -616,20 +615,15 @@ void seat_execute_command(struct sway_seat *seat, struct sway_binding *binding) 
 	}
 
 	list_t *res_list = execute_command(binding->command, seat, con);
-	bool success = true;
 	for (int i = 0; i < res_list->length; ++i) {
 		struct cmd_results *results = res_list->items[i];
 		if (results->status != CMD_SUCCESS) {
 			sway_log(SWAY_DEBUG, "could not run command for binding: %s (%s)",
 				binding->command, results->error);
-			success = false;
 		}
 		free_cmd_results(results);
 	}
 	list_free(res_list);
-	if (success) {
-		ipc_event_binding(binding);
-	}
 }
 
 /**
