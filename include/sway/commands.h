@@ -49,13 +49,6 @@ struct cmd_results *checkarg(int argc, const char *name,
 struct cmd_handler *find_handler(char *line, struct cmd_handler *cmd_handlers,
         size_t handlers_size);
 
-/**
- * Parse and executes a command.
- *
- * If the command string contains criteria then the command will be executed on
- * all matching containers. Otherwise, it'll run on the `con` container. If
- * `con` is NULL then it'll run on the currently focused container.
- */
 list_t *execute_command(char *command,  struct sway_seat *seat,
         struct sway_container *con);
 /**

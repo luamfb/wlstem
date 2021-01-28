@@ -322,7 +322,6 @@ enum command_context {
     CONTEXT_CONFIG = 1 << 0,
     CONTEXT_BINDING = 1 << 1,
     CONTEXT_IPC = 1 << 2,
-    CONTEXT_CRITERIA = 1 << 3,
     CONTEXT_ALL = 0xFFFFFFFF,
 };
 
@@ -368,7 +367,6 @@ struct sway_config {
     list_t *input_configs;
     list_t *input_type_configs;
     list_t *seat_configs;
-    list_t *criteria;
     struct sway_mode *current_mode;
     uint32_t floating_mod;
     bool floating_mod_inverse;
@@ -453,7 +451,6 @@ struct sway_config {
         struct sway_node *node;
         struct sway_container *container;
         struct sway_workspace *workspace;
-        bool using_criteria;
         struct {
             int argc;
             char **argv;

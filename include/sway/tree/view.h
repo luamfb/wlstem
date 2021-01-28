@@ -105,8 +105,6 @@ struct sway_view {
 
     bool destroying;
 
-    list_t *executed_criteria; // struct criteria *
-
     union {
         struct wlr_xdg_surface *wlr_xdg_surface;
 #if HAVE_XWAYLAND
@@ -339,12 +337,6 @@ struct sway_view *view_from_wlr_surface(struct wlr_surface *surface);
  * changed.
  */
 void view_update_title(struct sway_view *view, bool force);
-
-/**
- * Run any criteria that match the view and haven't been run on this view
- * before.
- */
-void view_execute_criteria(struct sway_view *view);
 
 /**
  * Returns true if there's a possibility the view may be rendered on screen.

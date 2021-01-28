@@ -8,7 +8,6 @@
 #include <json.h>
 #include "sway/commands.h"
 #include "sway/config.h"
-#include "sway/criteria.h"
 #include "sway/input/input-manager.h"
 #include "sway/input/seat.h"
 #include "sway/tree/view.h"
@@ -141,27 +140,6 @@ list_t *execute_command(char *_exec, struct sway_seat *seat,
 
 	do {
 		for (; isspace(*head); ++head) {}
-		// Extract criteria (valid for this command list only).
-		if (matched_delim == ';') {
-			config->handler_context.using_criteria = false;
-			if (*head == '[') {
-				char *error = NULL;
-				struct criteria *criteria = criteria_parse(head, &error);
-				if (!criteria) {
-					list_add(res_list,
-							cmd_results_new(CMD_INVALID, "%s", error));
-					free(error);
-					goto cleanup;
-				}
-				list_free(containers);
-				containers = criteria_get_containers(criteria);
-				head += strlen(criteria->raw);
-				criteria_destroy(criteria);
-				config->handler_context.using_criteria = true;
-				// Skip leading whitespace
-				for (; isspace(*head); ++head) {}
-			}
-		}
 		// Split command list
 		cmd = argsep(&head, ";,", &matched_delim);
 		for (; isspace(*cmd); ++cmd) {}
@@ -191,7 +169,7 @@ list_t *execute_command(char *_exec, struct sway_seat *seat,
 			goto cleanup;
 		}
 
-		if (!config->handler_context.using_criteria) {
+		{
 			// The container or workspace which this command will run on.
 			struct sway_node *node = con ? &con->node :
 					seat_get_focus_inactive(seat, &root->node);
@@ -202,32 +180,6 @@ list_t *execute_command(char *_exec, struct sway_seat *seat,
 				free_argv(argc, argv);
 				goto cleanup;
 			}
-		} else if (containers->length == 0) {
-			list_add(res_list,
-					cmd_results_new(CMD_FAILURE, "No matching node."));
-		} else {
-			struct cmd_results *fail_res = NULL;
-			for (int i = 0; i < containers->length; ++i) {
-				struct sway_container *container = containers->items[i];
-				set_config_node(&container->node);
-				struct cmd_results *res = handler->handle(argc-1, argv+1);
-				if (res->status == CMD_SUCCESS) {
-					free_cmd_results(res);
-				} else {
-					// last failure will take precedence
-					if (fail_res) {
-						free_cmd_results(fail_res);
-					}
-					fail_res = res;
-					if (res->status == CMD_INVALID) {
-						list_add(res_list, fail_res);
-						free_argv(argc, argv);
-						goto cleanup;
-					}
-				}
-			}
-			list_add(res_list,
-					fail_res ? fail_res : cmd_results_new(CMD_SUCCESS, NULL));
 		}
 		free_argv(argc, argv);
 	} while(head);
@@ -357,7 +309,6 @@ struct cmd_results *config_commands_command(char *exec) {
 		{ "config", CONTEXT_CONFIG },
 		{ "binding", CONTEXT_BINDING },
 		{ "ipc", CONTEXT_IPC },
-		{ "criteria", CONTEXT_CRITERIA },
 		{ "all", CONTEXT_ALL },
 	};
 
