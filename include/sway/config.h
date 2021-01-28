@@ -321,7 +321,6 @@ enum sway_popup_during_fullscreen {
 enum command_context {
     CONTEXT_CONFIG = 1 << 0,
     CONTEXT_BINDING = 1 << 1,
-    CONTEXT_IPC = 1 << 2,
     CONTEXT_ALL = 0xFFFFFFFF,
 };
 

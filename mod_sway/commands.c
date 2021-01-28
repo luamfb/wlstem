@@ -308,7 +308,6 @@ struct cmd_results *config_commands_command(char *exec) {
 	} context_names[] = {
 		{ "config", CONTEXT_CONFIG },
 		{ "binding", CONTEXT_BINDING },
-		{ "ipc", CONTEXT_IPC },
 		{ "all", CONTEXT_ALL },
 	};
 

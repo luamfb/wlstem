@@ -2,8 +2,6 @@ sway_sources = files(
     'commands.c',
     'config.c',
     'decoration.c',
-    'ipc-json.c',
-    'ipc-server.c',
     'main.c',
     'server.c',
     'xdg_decoration.c',
