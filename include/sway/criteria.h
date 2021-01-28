@@ -7,7 +7,7 @@
 #include "tree/view.h"
 
 enum criteria_type {
-	CT_COMMAND                 = 1 << 0,
+    CT_UNUSED,
 };
 
 enum pattern_type {
