@@ -51,7 +51,6 @@ static struct cmd_handler handlers[] = {
 	{ "unbindcode", cmd_unbindcode },
 	{ "unbindswitch", cmd_unbindswitch },
 	{ "unbindsym", cmd_unbindsym },
-	{ "workspace", cmd_workspace },
 };
 
 /* Runtime-only commands. Keep alphabetized */
