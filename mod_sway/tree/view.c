@@ -530,23 +530,7 @@ static void view_populate_pid(struct sway_view *view) {
 static struct sway_workspace *select_workspace(struct sway_view *view) {
     struct sway_seat *seat = input_manager_current_seat();
 
-    // Check if there's any `assign` criteria for the view
-    list_t *criterias = criteria_for_view(view,
-            CT_ASSIGN_OUTPUT);
     struct sway_workspace *ws = NULL;
-    for (int i = 0; i < criterias->length; ++i) {
-        struct criteria *criteria = criterias->items[i];
-        struct sway_output *output = output_by_name_or_id(criteria->target);
-        if (output) {
-            ws = output_get_active_workspace(output);
-            break;
-        }
-    }
-    list_free(criterias);
-    if (ws) {
-        root_remove_workspace_pid(view->pid);
-        return ws;
-    }
 
     // Check if there's a PID mapping
     ws = root_workspace_for_pid(view->pid);
