@@ -251,7 +251,6 @@ static void finalize_move(struct sway_seat *seat) {
 		// Moving container before/after another
 		struct sway_container *target = target_node->sway_container;
 		if (swap) {
-			container_swap(target_node->sway_container, con);
 		} else {
 			enum sway_container_layout layout = container_parent_layout(target);
 			if (edge && !is_parallel(layout, edge)) {
