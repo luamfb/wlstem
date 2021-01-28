@@ -372,10 +372,6 @@ struct sway_config {
     bool floating_mod_inverse;
     uint32_t dragging_key;
     uint32_t resizing_key;
-    char *floating_scroll_up_cmd;
-    char *floating_scroll_down_cmd;
-    char *floating_scroll_left_cmd;
-    char *floating_scroll_right_cmd;
     enum sway_container_layout default_orientation;
     enum sway_container_layout default_layout;
     char *font;
