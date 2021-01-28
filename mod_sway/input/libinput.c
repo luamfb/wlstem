@@ -6,7 +6,6 @@
 #include "sway/config.h"
 #include "sway/output.h"
 #include "sway/input/input-manager.h"
-#include "sway/ipc-server.h"
 
 static void log_status(enum libinput_config_status status) {
     if (status != LIBINPUT_CONFIG_STATUS_SUCCESS) {
@@ -257,10 +256,6 @@ void sway_input_configure_libinput_device(struct sway_input_device *input_device
     if (ic->calibration_matrix.configured) {
         changed |= set_calibration_matrix(device, ic->calibration_matrix.matrix);
     }
-
-    if (changed) {
-        ipc_event_input("libinput_config", input_device);
-    }
 }
 
 void sway_input_reset_libinput_device(struct sway_input_device *input_device) {
@@ -307,8 +302,4 @@ void sway_input_reset_libinput_device(struct sway_input_device *input_device) {
     float matrix[6];
     libinput_device_config_calibration_get_default_matrix(device, matrix);
     changed |= set_calibration_matrix(device, matrix);
-
-    if (changed) {
-        ipc_event_input("libinput_config", input_device);
-    }
 }

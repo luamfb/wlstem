@@ -13,7 +13,6 @@
 #include "sway/desktop/transaction.h"
 #include "sway/input/input-manager.h"
 #include "sway/input/seat.h"
-#include "sway/ipc-server.h"
 #include "sway/output.h"
 #include "sway/server.h"
 #include "sway/tree/arrange.h"
@@ -85,9 +84,6 @@ void container_destroy(struct sway_container *con) {
 }
 
 void container_begin_destroy(struct sway_container *con) {
-    if (con->view) {
-        ipc_event_window(con, "close");
-    }
     // The workspace must have the fullscreen pointer cleared so that the
     // seat code can find an appropriate new focus.
     if (con->fullscreen_mode == FULLSCREEN_WORKSPACE && con->workspace) {
@@ -820,8 +816,6 @@ void container_set_floating(struct sway_container *container, bool enable) {
     }
 
     container_end_mouse_operation(container);
-
-    ipc_event_window(container, "floating");
 }
 
 void container_set_geometry_from_content(struct sway_container *con) {
@@ -1019,7 +1013,6 @@ static void container_fullscreen_workspace(struct sway_container *con) {
     }
 
     container_end_mouse_operation(con);
-    ipc_event_window(con, "fullscreen_mode");
 }
 
 static void container_fullscreen_global(struct sway_container *con) {
@@ -1047,7 +1040,6 @@ static void container_fullscreen_global(struct sway_container *con) {
 
     con->fullscreen_mode = FULLSCREEN_GLOBAL;
     container_end_mouse_operation(con);
-    ipc_event_window(con, "fullscreen_mode");
 }
 
 void container_fullscreen_disable(struct sway_container *con) {
@@ -1083,7 +1075,6 @@ void container_fullscreen_disable(struct sway_container *con) {
 
     con->fullscreen_mode = FULLSCREEN_NONE;
     container_end_mouse_operation(con);
-    ipc_event_window(con, "fullscreen_mode");
 
     if (con->scratchpad) {
         struct sway_seat *seat;
@@ -1479,7 +1470,6 @@ bool container_find_and_unmark(char *mark) {
             free(con_mark);
             list_del(con->marks, i);
             container_update_marks_textures(con);
-            ipc_event_window(con, "mark");
             return true;
         }
     }
@@ -1491,7 +1481,6 @@ void container_clear_marks(struct sway_container *con) {
         free(con->marks->items[i]);
     }
     con->marks->length = 0;
-    ipc_event_window(con, "mark");
 }
 
 bool container_has_mark(struct sway_container *con, char *mark) {
@@ -1506,7 +1495,6 @@ bool container_has_mark(struct sway_container *con, char *mark) {
 
 void container_add_mark(struct sway_container *con, char *mark) {
     list_add(con->marks, strdup(mark));
-    ipc_event_window(con, "mark");
 }
 
 static void update_marks_texture(struct sway_container *con,

@@ -17,7 +17,6 @@
 #include "sway/server.h"
 #include "sway/desktop/transaction.h"
 #include "sway/tree/root.h"
-#include "sway/ipc-server.h"
 #include "log.h"
 #include "stringop.h"
 #include "util.h"
@@ -35,7 +34,6 @@ void sway_terminate(int exit_code) {
         // Running as server
         terminate_request = true;
         exit_value = exit_code;
-        ipc_event_shutdown("exit");
         wl_display_terminate(server.wl_display);
     }
 }
@@ -358,8 +356,6 @@ int main(int argc, char **argv) {
     if (!server_init(&server)) {
         return 1;
     }
-
-    ipc_init(&server);
 
     setenv("WAYLAND_DISPLAY", server.socket, true);
     if (!load_main_config()) {

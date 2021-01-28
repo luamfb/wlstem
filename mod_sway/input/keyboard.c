@@ -14,7 +14,6 @@
 #include "sway/input/keyboard.h"
 #include "sway/input/seat.h"
 #include "sway/input/cursor.h"
-#include "sway/ipc-server.h"
 #include "log.h"
 
 void sway_terminate(int exit_code);
@@ -610,10 +609,6 @@ static void handle_modifier_event(struct sway_keyboard *keyboard) {
 
     if (wlr_device->keyboard->modifiers.group != keyboard->effective_layout) {
         keyboard->effective_layout = wlr_device->keyboard->modifiers.group;
-
-        if (!wlr_keyboard_group_from_wlr_keyboard(wlr_device->keyboard)) {
-            ipc_event_input("xkb_layout", keyboard->seat_device->input_device);
-        }
     }
 }
 
@@ -942,7 +937,6 @@ void sway_keyboard_configure(struct sway_keyboard *keyboard) {
 
     bool keymap_changed = keyboard->keymap ?
         !wlr_keyboard_keymaps_match(keyboard->keymap, keymap) : true;
-    bool effective_layout_changed = keyboard->effective_layout != 0;
 
     int repeat_rate = 25;
     if (input_config && input_config->repeat_rate != INT_MIN) {
@@ -1025,14 +1019,6 @@ void sway_keyboard_configure(struct sway_keyboard *keyboard) {
     wl_signal_add(&wlr_device->keyboard->events.modifiers,
         &keyboard->keyboard_modifiers);
     keyboard->keyboard_modifiers.notify = handle_keyboard_modifiers;
-
-    if (keymap_changed) {
-        ipc_event_input("xkb_keymap",
-            keyboard->seat_device->input_device);
-    } else if (effective_layout_changed) {
-        ipc_event_input("xkb_layout",
-            keyboard->seat_device->input_device);
-    }
 }
 
 void sway_keyboard_destroy(struct sway_keyboard *keyboard) {

@@ -4,7 +4,6 @@
 #include <string.h>
 #include <strings.h>
 #include <wlr/types/wlr_output_damage.h>
-#include "sway/ipc-server.h"
 #include "sway/layers.h"
 #include "sway/output.h"
 #include "sway/tree/arrange.h"
@@ -42,16 +41,13 @@ static void restore_workspaces(struct sway_output *output) {
             if (highest == output) {
                 workspace_detach(ws);
                 output_add_workspace(output, ws);
-                ipc_event_workspace(NULL, ws, "move");
                 j--;
             }
         }
 
         if (other->workspaces->length == 0) {
             char *next = workspace_next_name(other->wlr_output->name);
-            struct sway_workspace *ws = workspace_create(other, next);
             free(next);
-            ipc_event_workspace(NULL, ws, "init");
         }
     }
 
@@ -80,8 +76,6 @@ static void restore_workspaces(struct sway_output *output) {
                 container_floating_resize_and_center(floater);
             }
         }
-
-        ipc_event_workspace(NULL, ws, "move");
     }
 
     output_sort_workspaces(output);
@@ -134,7 +128,6 @@ void output_enable(struct sway_output *output) {
             }
         }
         free(ws_name);
-        ipc_event_workspace(NULL, ws, "init");
     }
 
     if (ws && config->default_orientation == L_NONE) {
@@ -164,7 +157,6 @@ static void evacuate_sticky(struct sway_workspace *old_ws,
         workspace_add_floating(new_ws, sticky);
         container_handle_fullscreen_reparent(sticky);
         container_floating_move_to_center(sticky);
-        ipc_event_window(sticky, "move");
     }
     workspace_detect_urgent(new_ws);
 }
@@ -215,7 +207,6 @@ static void output_evacuate(struct sway_output *output) {
         workspace_output_add_priority(workspace, new_output);
         output_add_workspace(new_output, workspace);
         output_sort_workspaces(new_output);
-        ipc_event_workspace(NULL, workspace, "move");
 
         // If there is an old workspace (the noop output may not have one),
         // check to see if it is empty and should be destroyed.
