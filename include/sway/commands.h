@@ -92,7 +92,6 @@ sway_cmd cmd_bindswitch;
 sway_cmd cmd_bindsym;
 sway_cmd cmd_exec;
 sway_cmd cmd_exec_always;
-sway_cmd cmd_swap;
 sway_cmd cmd_unbindcode;
 sway_cmd cmd_unbindswitch;
 sway_cmd cmd_unbindsym;
