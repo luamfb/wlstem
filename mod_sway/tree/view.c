@@ -13,7 +13,6 @@
 #endif
 #include "list.h"
 #include "log.h"
-#include "sway/criteria.h"
 #include "sway/commands.h"
 #include "sway/desktop.h"
 #include "sway/desktop/transaction.h"
@@ -36,7 +35,6 @@ void view_init(struct sway_view *view, enum sway_view_type type,
         const struct sway_view_impl *impl) {
     view->type = type;
     view->impl = impl;
-    view->executed_criteria = create_list();
     wl_list_init(&view->saved_buffers);
     view->allow_request_urgent = true;
     view->shortcuts_inhibit = SHORTCUTS_INHIBIT_DEFAULT;
@@ -59,7 +57,6 @@ void view_destroy(struct sway_view *view) {
     if (!wl_list_empty(&view->saved_buffers)) {
         view_remove_saved_buffer(view);
     }
-    list_free(view->executed_criteria);
 
     free(view->title_format);
 
@@ -473,9 +470,6 @@ static void view_handle_surface_new_subsurface(struct wl_listener *listener,
     view_subsurface_create(view, subsurface);
 }
 
-void view_execute_criteria(struct sway_view *view) {
-}
-
 static void view_populate_pid(struct sway_view *view) {
     pid_t pid;
     switch (view->type) {
@@ -711,8 +705,6 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
             arrange_workspace(container->workspace);
         }
     }
-
-    view_execute_criteria(view);
 
     if (should_focus(view)) {
         input_manager_set_focus(&view->container->node);

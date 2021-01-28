@@ -20,7 +20,6 @@
 #include "sway/input/switch.h"
 #include "sway/commands.h"
 #include "sway/config.h"
-#include "sway/criteria.h"
 #include "sway/desktop/transaction.h"
 #include "sway/tree/arrange.h"
 #include "sway/tree/root.h"
@@ -137,12 +136,6 @@ void free_config(struct sway_config *config) {
         }
         list_free(config->seat_configs);
     }
-    if (config->criteria) {
-        for (int i = 0; i < config->criteria->length; ++i) {
-            criteria_destroy(config->criteria->items[i]);
-        }
-        list_free(config->criteria);
-    }
     free(config->floating_scroll_up_cmd);
     free(config->floating_scroll_down_cmd);
     free(config->floating_scroll_left_cmd);
@@ -157,7 +150,6 @@ void free_config(struct sway_config *config) {
 static void config_defaults(struct sway_config *config) {
     if (!(config->modes = create_list())) goto cleanup;
     if (!(config->workspace_configs = create_list())) goto cleanup;
-    if (!(config->criteria = create_list())) goto cleanup;
     if (!(config->seat_configs = create_list())) goto cleanup;
     if (!(config->output_configs = create_list())) goto cleanup;
 

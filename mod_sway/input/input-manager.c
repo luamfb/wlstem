@@ -337,7 +337,7 @@ static void handle_keyboard_shortcuts_inhibit_new_inhibitor(
     struct sway_seat *seat = inhibitor->seat->data;
     wl_list_insert(&seat->keyboard_shortcuts_inhibitors, &sway_inhibitor->link);
 
-    // per-view, seat-agnostic config via criteria
+    // per-view, seat-agnostic config
     struct sway_view *view = view_from_wlr_surface(inhibitor->surface);
     enum seat_config_shortcuts_inhibit inhibit = SHORTCUTS_INHIBIT_DEFAULT;
     if (view) {
