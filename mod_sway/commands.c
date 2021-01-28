@@ -54,7 +54,6 @@ static struct cmd_handler handlers[] = {
 
 /* Runtime-only commands. Keep alphabetized */
 static struct cmd_handler command_handlers[] = {
-	{ "swap", cmd_swap },
 };
 
 static int handler_compare(const void *_a, const void *_b) {
