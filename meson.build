@@ -35,7 +35,6 @@ if is_freebsd
     add_project_arguments('-D_C11_SOURCE', language: 'c')
 endif
 
-jsonc          = dependency('json-c', version: '>=0.13')
 pcre           = dependency('libpcre')
 wayland_server = dependency('wayland-server')
 wayland_client = dependency('wayland-client')

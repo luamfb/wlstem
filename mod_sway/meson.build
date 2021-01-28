@@ -49,7 +49,6 @@ sway_sources = files(
 
 sway_deps = [
     cairo,
-    jsonc,
     libevdev,
     libinput,
     math,
