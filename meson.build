@@ -46,7 +46,6 @@ xkbcommon      = dependency('xkbcommon')
 cairo          = dependency('cairo')
 pango          = dependency('pango')
 pangocairo     = dependency('pangocairo')
-gdk_pixbuf     = dependency('gdk-pixbuf-2.0', required: get_option('gdk-pixbuf'))
 pixman         = dependency('pixman-1')
 glesv2         = dependency('glesv2')
 libevdev       = dependency('libevdev')
@@ -112,7 +111,6 @@ endif
 conf_data = configuration_data()
 
 conf_data.set10('HAVE_XWAYLAND', have_xwayland)
-conf_data.set10('HAVE_GDK_PIXBUF', gdk_pixbuf.found())
 conf_data.set10('HAVE_LIBSYSTEMD', sdbus.found() and sdbus.name() == 'libsystemd')
 conf_data.set10('HAVE_LIBELOGIND', sdbus.found() and sdbus.name() == 'libelogind')
 conf_data.set10('HAVE_BASU', sdbus.found() and sdbus.name() == 'basu')
@@ -183,7 +181,6 @@ subdir('client')
 
 summary({
     'xwayland': have_xwayland,
-    'gdk-pixbuf': gdk_pixbuf.found(),
     'sd-bus': sdbus.found(),
 }, bool_yn: true)
 
