@@ -74,12 +74,6 @@ struct cmd_results *cmd_results_new(enum cmd_status status, const char *error, .
  * Frees a cmd_results object.
  */
 void free_cmd_results(struct cmd_results *results);
-/**
- * Serializes a list of cmd_results to a JSON string.
- *
- * Free the JSON string later on.
- */
-char *cmd_results_to_json(list_t *res_list);
 
 /**
  * Handlers shared by exec and exec_always.
