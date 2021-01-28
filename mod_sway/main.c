@@ -18,7 +18,6 @@
 #include "sway/desktop/transaction.h"
 #include "sway/tree/root.h"
 #include "sway/ipc-server.h"
-#include "ipc-client.h"
 #include "log.h"
 #include "stringop.h"
 #include "util.h"
@@ -118,15 +117,6 @@ void detect_proprietary(int allow_unsupported_gpu) {
     }
     free(line);
     fclose(f);
-}
-
-void run_as_ipc_client(char *command, char *socket_path) {
-    int socketfd = ipc_open_socket(socket_path);
-    uint32_t len = strlen(command);
-    char *resp = ipc_single_command(socketfd, IPC_COMMAND, command, &len);
-    printf("%s\n", resp);
-    free(resp);
-    close(socketfd);
 }
 
 static void log_env(void) {
@@ -340,29 +330,9 @@ int main(int argc, char **argv) {
     detect_proprietary(allow_unsupported_gpu);
     detect_raspi();
 
-    if (optind < argc) { // Behave as IPC client
-        if (optind != 1) {
-            sway_log(SWAY_ERROR,
-                    "Detected both options and positional arguments. If you "
-                    "are trying to use the IPC client, options are not "
-                    "supported. Otherwise, check the provided arguments for "
-                    "issues. See `man 1 sway` or `sway -h` for usage. If you "
-                    "are trying to generate a debug log, use "
-                    "`sway -d 2>sway.log`.");
-            exit(EXIT_FAILURE);
-        }
-        if (!drop_permissions()) {
-            exit(EXIT_FAILURE);
-        }
-        char *socket_path = getenv("SWAYSOCK");
-        if (!socket_path) {
-            sway_log(SWAY_ERROR, "Unable to retrieve socket path");
-            exit(EXIT_FAILURE);
-        }
-        char *command = join_args(argv + optind, argc - optind);
-        run_as_ipc_client(command, socket_path);
-        free(command);
-        return 0;
+    if (optind < argc) {
+        sway_log(SWAY_ERROR, "invalid args.");
+        return 1;
     }
 
     if (!server_privileged_prepare(&server)) {
