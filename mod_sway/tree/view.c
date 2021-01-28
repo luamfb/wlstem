@@ -532,7 +532,7 @@ static struct sway_workspace *select_workspace(struct sway_view *view) {
 
     // Check if there's any `assign` criteria for the view
     list_t *criterias = criteria_for_view(view,
-            CT_ASSIGN_WORKSPACE | CT_ASSIGN_WORKSPACE_NUMBER | CT_ASSIGN_OUTPUT);
+            CT_ASSIGN_WORKSPACE | CT_ASSIGN_OUTPUT);
     struct sway_workspace *ws = NULL;
     for (int i = 0; i < criterias->length; ++i) {
         struct criteria *criteria = criterias->items[i];
@@ -543,11 +543,8 @@ static struct sway_workspace *select_workspace(struct sway_view *view) {
                 break;
             }
         } else {
-            // CT_ASSIGN_WORKSPACE(_NUMBER)
-            ws = criteria->type == CT_ASSIGN_WORKSPACE_NUMBER ?
-                workspace_by_number(criteria->target) :
-                workspace_by_name(criteria->target);
-
+            // CT_ASSIGN_WORKSPACE
+            ws = workspace_by_name(criteria->target);
             if (!ws) {
                 ws = workspace_create(NULL, criteria->target);
             }
