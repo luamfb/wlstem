@@ -43,7 +43,7 @@ enum expected_args {
     EXPECTED_EQUAL_TO
 };
 
-struct cmd_results *checkarg(int argc, const char *name,
+bool checkarg(int argc, const char *name,
         enum expected_args type, int val);
 
 struct cmd_handler *find_handler(char *line, struct cmd_handler *cmd_handlers,

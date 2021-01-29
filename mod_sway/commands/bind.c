@@ -110,12 +110,12 @@ static int key_qsort_cmp(const void *keyp_a, const void *keyp_b) {
 
 /**
  * From a keycode, bindcode, or bindsym name and the most likely binding type,
- * identify the appropriate numeric value corresponding to the key. Return NULL
- * and set *key_val if successful, otherwise return a specific error. Change
+ * identify the appropriate numeric value corresponding to the key. Return true
+ * and set *key_val if successful, otherwise return false. Change
  * the value of *type if the initial type guess was incorrect and if this
  * was the first identified key.
  */
-static struct cmd_results *identify_key(const char* name, bool first_key,
+static bool identify_key(const char* name, bool first_key,
 		uint32_t* key_val, enum binding_input_type* type) {
 	if (*type == BINDING_MOUSECODE) {
 		// check for mouse bindcodes
@@ -123,13 +123,12 @@ static struct cmd_results *identify_key(const char* name, bool first_key,
 		uint32_t button = get_mouse_bindcode(name, &message);
 		if (!button) {
 			if (message) {
-				struct cmd_results *error =
-					cmd_results_new(CMD_INVALID, message);
+                sway_log(SWAY_ERROR, "%s\n", message);
 				free(message);
-				return error;
+                return false;
 			} else {
-				return cmd_results_new(CMD_INVALID,
-						"Unknown button code %s", name);
+				sway_log(SWAY_ERROR, "Unknown button code %s", name);
+                return false;
 			}
 		}
 		*key_val = button;
@@ -139,12 +138,12 @@ static struct cmd_results *identify_key(const char* name, bool first_key,
 		uint32_t button = get_mouse_bindsym(name, &message);
 		if (!button) {
 			if (message) {
-				struct cmd_results *error =
-					cmd_results_new(CMD_INVALID, message);
+                sway_log(SWAY_ERROR, "%s\n", message);
 				free(message);
-				return error;
+				return false;
 			} else {
-				return cmd_results_new(CMD_INVALID, "Unknown button %s", name);
+				sway_log(SWAY_ERROR, "Unknown button %s", name);
+                return false;
 			}
 		}
 		*key_val = button;
@@ -157,18 +156,19 @@ static struct cmd_results *identify_key(const char* name, bool first_key,
 			if (button) {
 				*type = BINDING_MOUSECODE;
 				*key_val = button;
-				return NULL;
+				return true;
 			}
 		}
 
 		xkb_keycode_t keycode = strtol(name, NULL, 10);
 		if (!xkb_keycode_is_legal_ext(keycode)) {
 			if (first_key) {
-				return cmd_results_new(CMD_INVALID,
+				sway_log(SWAY_ERROR,
 						"Invalid keycode or button code '%s'", name);
+                return false;
 			} else {
-				return cmd_results_new(CMD_INVALID,
-						"Invalid keycode '%s'", name);
+				sway_log(SWAY_ERROR, "Invalid keycode '%s'", name);
+                return false;
 			}
 		}
 		*key_val = keycode;
@@ -178,14 +178,13 @@ static struct cmd_results *identify_key(const char* name, bool first_key,
 			char *message = NULL;
 			uint32_t button = get_mouse_bindsym(name, &message);
 			if (message) {
-				struct cmd_results *error =
-					cmd_results_new(CMD_INVALID, message);
+                sway_log(SWAY_ERROR, "%s\n", message);
 				free(message);
-				return error;
+				return false;
 			} else if (button) {
 				*type = BINDING_MOUSESYM;
 				*key_val = button;
-				return NULL;
+				return true;
 			}
 		}
 
@@ -193,18 +192,20 @@ static struct cmd_results *identify_key(const char* name, bool first_key,
 				XKB_KEYSYM_CASE_INSENSITIVE);
 		if (!keysym) {
 			if (first_key) {
-				return cmd_results_new(CMD_INVALID,
+				sway_log(SWAY_ERROR,
 						"Unknown key or button '%s'", name);
+                return false;
 			} else {
-				return cmd_results_new(CMD_INVALID, "Unknown key '%s'", name);
+				sway_log(SWAY_ERROR, "Unknown key '%s'", name);
+                return false;
 			}
 		}
 		*key_val = keysym;
 	}
-	return NULL;
+	return true;
 }
 
-static struct cmd_results *switch_binding_add(
+static bool switch_binding_add(
 		struct sway_switch_binding *binding, const char *bindtype,
 		const char *switchcombo, bool warn) {
 	list_t *mode_bindings = config->current_mode->switch_bindings;
@@ -225,10 +226,10 @@ static struct cmd_results *switch_binding_add(
 		sway_log(SWAY_DEBUG, "%s - Bound %s", bindtype, switchcombo);
 	}
 
-	return cmd_results_new(CMD_SUCCESS, NULL);
+	return true;
 }
 
-static struct cmd_results *switch_binding_remove(
+static bool switch_binding_remove(
 		struct sway_switch_binding *binding, const char *bindtype,
 		const char *switchcombo) {
 	list_t *mode_bindings = config->current_mode->switch_bindings;
@@ -240,13 +241,13 @@ static struct cmd_results *switch_binding_remove(
 			list_del(mode_bindings, i);
 			sway_log(SWAY_DEBUG, "%s - Unbound %s switch",
 					bindtype, switchcombo);
-			return cmd_results_new(CMD_SUCCESS, NULL);
+			return true;
 		}
 	}
 
 	free_switch_binding(binding);
-	return cmd_results_new(CMD_FAILURE, "Could not find switch binding `%s`",
-			switchcombo);
+    sway_log(SWAY_ERROR, "Could not find switch binding `%s`", switchcombo);
+	return false;
 }
 
 /**
@@ -267,7 +268,7 @@ static struct sway_binding *binding_upsert(struct sway_binding *binding,
 	return NULL;
 }
 
-static struct cmd_results *binding_add(struct sway_binding *binding,
+static bool binding_add(struct sway_binding *binding,
 		list_t *mode_bindings, const char *bindtype,
 		const char *keycombo, bool warn) {
 	struct sway_binding *config_binding = binding_upsert(binding, mode_bindings);
@@ -280,11 +281,10 @@ static struct cmd_results *binding_add(struct sway_binding *binding,
 		sway_log(SWAY_DEBUG, "%s - Bound %s for device '%s'",
 				bindtype, keycombo, binding->input);
 	}
-
-	return cmd_results_new(CMD_SUCCESS, NULL);
+	return true;
 }
 
-static struct cmd_results *binding_remove(struct sway_binding *binding,
+static bool binding_remove(struct sway_binding *binding,
 		list_t *mode_bindings, const char *bindtype,
 		const char *keycombo) {
 	for (int i = 0; i < mode_bindings->length; ++i) {
@@ -295,15 +295,17 @@ static struct cmd_results *binding_remove(struct sway_binding *binding,
 			free_sway_binding(config_binding);
 			free_sway_binding(binding);
 			list_del(mode_bindings, i);
-			return cmd_results_new(CMD_SUCCESS, NULL);
+			return true;
 		}
 	}
 	free_sway_binding(binding);
-	return cmd_results_new(CMD_FAILURE, "Could not find binding `%s` "
-			"for the given flags", keycombo);
+	sway_log(SWAY_ERROR,
+        "Could not find binding `%s` for the given flags",
+        keycombo);
+    return false;
 }
 
-static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
+static bool cmd_bindsym_or_bindcode(int argc, char **argv,
         binding_callback_type callback, bool unbind) {
 	const char *bindtype;
 	int minargs = 1;
@@ -313,14 +315,15 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 		bindtype = "bindsym";
 	}
 
-	struct cmd_results *error = NULL;
-	if ((error = checkarg(argc, bindtype, EXPECTED_AT_LEAST, minargs))) {
-		return error;
+	if (!checkarg(argc, bindtype, EXPECTED_AT_LEAST, minargs)) {
+        sway_log(SWAY_ERROR, "checkarg error!");
+		return false;
 	}
 
 	struct sway_binding *binding = calloc(1, sizeof(struct sway_binding));
 	if (!binding) {
-		return cmd_results_new(CMD_FAILURE, "Unable to allocate binding");
+        sway_log(SWAY_ERROR, "Unable to allocate binding");
+		return false;
 	}
 	binding->input = strdup("*");
 	binding->keys = create_list();
@@ -340,10 +343,11 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 
 	if (argc < minargs) {
 		free_sway_binding(binding);
-		return cmd_results_new(CMD_FAILURE,
+		sway_log(SWAY_ERROR,
 			"Invalid %s command "
 			"(expected at least %d non-option arguments, got %d)",
 			bindtype, minargs, argc);
+        return false;
 	}
 
 	list_t *split = split_string(argv[0], "+");
@@ -353,15 +357,17 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 			if (binding->group != XKB_LAYOUT_INVALID) {
 				free_sway_binding(binding);
 				list_free_items_and_destroy(split);
-				return cmd_results_new(CMD_FAILURE,
+				sway_log(SWAY_ERROR,
 						"Only one group can be specified");
+                return false;
 			}
 			char *end;
 			int group = strtol(split->items[i] + strlen("Group"), &end, 10);
 			if (group < 1 || group > 4 || end[0] != '\0') {
 				free_sway_binding(binding);
 				list_free_items_and_destroy(split);
-				return cmd_results_new(CMD_FAILURE, "Invalid group");
+				sway_log(SWAY_ERROR, "Invalid group");
+                return false;
 			}
 			binding->group = group - 1;
 			continue;
@@ -370,8 +376,9 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 			if (binding->group != XKB_LAYOUT_INVALID) {
 				free_sway_binding(binding);
 				list_free_items_and_destroy(split);
-				return cmd_results_new(CMD_FAILURE,
+				sway_log(SWAY_ERROR,
 						"Only one group can be specified");
+                return false;
 			}
 			binding->group = 1;
 		}
@@ -385,20 +392,20 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 
 		// Identify the key and possibly change binding->type
 		uint32_t key_val = 0;
-		error = identify_key(split->items[i], binding->keys->length == 0,
+		bool success = identify_key(split->items[i], binding->keys->length == 0,
 				     &key_val, &binding->type);
-		if (error) {
+		if (!success) {
 			free_sway_binding(binding);
 			list_free(split);
-			return error;
+			return false;
 		}
 
 		uint32_t *key = calloc(1, sizeof(uint32_t));
 		if (!key) {
 			free_sway_binding(binding);
 			list_free_items_and_destroy(split);
-			return cmd_results_new(CMD_FAILURE,
-					"Unable to allocate binding key");
+			sway_log(SWAY_ERROR, "Unable to allocate binding key");
+            return false;
 		}
 		*key = key_val;
 		list_add(binding->keys, key);
@@ -441,7 +448,7 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 	return binding_add(binding, mode_bindings, bindtype, argv[0], warn);
 }
 
-struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
+bool cmd_bind_or_unbind_switch(int argc, char **argv,
 		binding_callback_type callback, bool unbind) {
 	int minargs = 2;
 	char *bindtype = "bindswitch";
@@ -450,30 +457,33 @@ struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
 		bindtype = "unbindswitch";
 	}
 
-	struct cmd_results *error = NULL;
-	if ((error = checkarg(argc, bindtype, EXPECTED_AT_LEAST, minargs))) {
-		return error;
+	if (!checkarg(argc, bindtype, EXPECTED_AT_LEAST, minargs)) {
+		sway_log(SWAY_ERROR, "checkarg error!");
+        return false;
 	}
 	struct sway_switch_binding *binding = calloc(1, sizeof(struct sway_switch_binding));
 	if (!binding) {
-		return cmd_results_new(CMD_FAILURE, "Unable to allocate binding");
+		sway_log(SWAY_ERROR, "Unable to allocate binding");
+        return false;
 	}
 
 	bool warn = true;
 
 	if (argc < minargs) {
 		free(binding);
-		return cmd_results_new(CMD_FAILURE,
+		sway_log(SWAY_ERROR,
 				"Invalid %s command (expected at least %d "
 				"non-option arguments, got %d)", bindtype, minargs, argc);
+        return false;
 	}
 
 	list_t *split = split_string(argv[0], ":");
 	if (split->length != 2) {
 		free_switch_binding(binding);
-		return cmd_results_new(CMD_FAILURE,
+		sway_log(SWAY_ERROR,
 				"Invalid %s command (expected binding with the form "
-				"<switch>:<state>)", bindtype, argc);
+				"<switch>:<state>)", bindtype);
+        return false;
 	}
 	if (strcmp(split->items[0], "tablet") == 0) {
 		binding->type = WLR_SWITCH_TYPE_TABLET_MODE;
@@ -481,9 +491,10 @@ struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
 		binding->type = WLR_SWITCH_TYPE_LID;
 	} else {
 		free_switch_binding(binding);
-		return cmd_results_new(CMD_FAILURE,
+		sway_log(SWAY_ERROR,
 				"Invalid %s command (expected switch binding: "
-				"unknown switch %s)", bindtype, split->items[0]);
+				"unknown switch)", bindtype);
+        return false;
 	}
 	if (strcmp(split->items[1], "on") == 0) {
 		binding->state = WLR_SWITCH_STATE_ON;
@@ -493,36 +504,35 @@ struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
 		binding->state = WLR_SWITCH_STATE_TOGGLE;
 	} else {
 		free_switch_binding(binding);
-		return cmd_results_new(CMD_FAILURE,
-				"Invalid %s command "
-				"(expected switch state: unknown state %d)",
-				bindtype, split->items[0]);
+		sway_log(SWAY_ERROR,
+				"Invalid %s command ", bindtype);
+        return false;
 	}
 	list_free_items_and_destroy(split);
 
 	if (unbind) {
-		return switch_binding_remove(binding, bindtype, argv[0]);
+        return switch_binding_remove(binding, bindtype, argv[0]);
 	}
 	binding->callback = callback;
 	return switch_binding_add(binding, bindtype, argv[0], warn);
 }
 
-struct cmd_results *cmd_bindsym(int argc, char **argv,
+bool cmd_bindsym(int argc, char **argv,
         binding_callback_type callback) {
 	return cmd_bindsym_or_bindcode(argc, argv, callback, false);
 }
 
-struct cmd_results *cmd_unbindsym(int argc, char **argv,
+bool cmd_unbindsym(int argc, char **argv,
         binding_callback_type callback) {
 	return cmd_bindsym_or_bindcode(argc, argv, callback, true);
 }
 
-struct cmd_results *cmd_bindswitch(int argc, char **argv,
+bool cmd_bindswitch(int argc, char **argv,
         binding_callback_type callback) {
 	return cmd_bind_or_unbind_switch(argc, argv, callback, false);
 }
 
-struct cmd_results *cmd_unbindswitch(int argc, char **argv,
+bool cmd_unbindswitch(int argc, char **argv,
         binding_callback_type callback) {
 	return cmd_bind_or_unbind_switch(argc, argv, callback, true);
 }
