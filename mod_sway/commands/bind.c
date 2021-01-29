@@ -332,35 +332,6 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 	bool exclude_titlebar = false;
 	bool warn = true;
 
-	while (argc > 0) {
-		if (strcmp("--release", argv[0]) == 0) {
-			binding->flags |= BINDING_RELEASE;
-		} else if (strcmp("--locked", argv[0]) == 0) {
-			binding->flags |= BINDING_LOCKED;
-		} else if (strcmp("--inhibited", argv[0]) == 0) {
-			binding->flags |= BINDING_INHIBITED;
-		} else if (strcmp("--whole-window", argv[0]) == 0) {
-			binding->flags |= BINDING_BORDER | BINDING_CONTENTS | BINDING_TITLEBAR;
-		} else if (strcmp("--border", argv[0]) == 0) {
-			binding->flags |= BINDING_BORDER;
-		} else if (strcmp("--to-code", argv[0]) == 0) {
-            binding->flags |= BINDING_CODE;
-		} else if (strcmp("--exclude-titlebar", argv[0]) == 0) {
-			exclude_titlebar = true;
-		} else if (strncmp("--input-device=", argv[0],
-					strlen("--input-device=")) == 0) {
-			free(binding->input);
-			binding->input = strdup(argv[0] + strlen("--input-device="));
-		} else if (strcmp("--no-warn", argv[0]) == 0) {
-			warn = false;
-		} else if (strcmp("--no-repeat", argv[0]) == 0) {
-			binding->flags |= BINDING_NOREPEAT;
-		} else {
-			break;
-		}
-		argv++;
-		argc--;
-	}
 	if (binding->flags & (BINDING_BORDER | BINDING_CONTENTS | BINDING_TITLEBAR)
 			|| exclude_titlebar) {
 		binding->type = binding->type == BINDING_KEYCODE ?
@@ -489,21 +460,6 @@ struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
 	}
 
 	bool warn = true;
-
-	// Handle flags
-	while (argc > 0) {
-		if (strcmp("--locked", argv[0]) == 0) {
-			binding->flags |= BINDING_LOCKED;
-		} else if (strcmp("--no-warn", argv[0]) == 0) {
-			warn = false;
-		} else if (strcmp("--reload", argv[0]) == 0) {
-			binding->flags |= BINDING_RELOAD;
-		} else {
-			break;
-		}
-		argv++;
-		argc--;
-	}
 
 	if (argc < minargs) {
 		free(binding);
