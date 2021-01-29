@@ -196,15 +196,9 @@ static bool workspace_valid_on_output(const char *output_name,
 
 static void workspace_name_from_binding(const struct sway_binding * binding,
         const char* output_name, int *min_order, char **earliest_name) {
-    char *cmdlist = strdup(binding->command);
-    char *dup = cmdlist;
     char *name = NULL;
-
     // workspace n
-    char *cmd = argsep(&cmdlist, " ", NULL);
-    if (cmdlist) {
-        name = argsep(&cmdlist, ",;", NULL);
-    }
+    char *cmd = "workspace number 1";
 
     // TODO: support "move container to workspace" bindings as well
 
@@ -225,7 +219,6 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
                 strcmp(_target, "number") == 0 ||
                 strcmp(_target, "current") == 0) {
             free(_target);
-            free(dup);
             return;
         }
 
@@ -242,7 +235,6 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
             // Make sure the workspace number doesn't already exist
             if (isdigit(_target[0]) && workspace_by_number(_target)) {
                 free(_target);
-                free(dup);
                 return;
             }
         }
@@ -250,7 +242,6 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
         // Make sure that the workspace doesn't already exist
         if (workspace_by_name(_target)) {
             free(_target);
-            free(dup);
             return;
         }
 
@@ -258,7 +249,6 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
         // output
         if (!workspace_valid_on_output(output_name, _target)) {
             free(_target);
-            free(dup);
             return;
         }
 
@@ -271,7 +261,6 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
             free(_target);
         }
     }
-    free(dup);
 }
 
 char *workspace_next_name(const char *output_name) {
