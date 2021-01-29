@@ -138,10 +138,14 @@ void free_config(struct sway_config *config) {
     free(config);
 }
 
+bool spawn_terminal(void) {
+    return wls_try_exec("weston-terminal");
+}
+
 static void insert_default_keybindings() {
-    char *args[] = { "Alt+Return",  "exec",  "weston-terminal" };
+    char *args[] = { "Alt+Return" };
     size_t arg_count = sizeof(args) / sizeof(args[0]);
-    cmd_bindsym(arg_count, args);
+    cmd_bindsym(arg_count, args, spawn_terminal);
 }
 
 static void config_defaults(struct sway_config *config) {
