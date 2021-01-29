@@ -45,6 +45,8 @@ enum binding_flags {
     BINDING_NOREPEAT = 1 << 8, // keyboard only; do not trigger when repeating a held key
 };
 
+typedef bool(*binding_callback_type)(void);
+
 /**
  * A key binding and an associated command.
  */
@@ -57,15 +59,20 @@ struct sway_binding {
     list_t *syms; // sorted in ascending order; NULL if BINDING_CODE is not set
     uint32_t modifiers;
     xkb_layout_index_t group;
-    char *command;
+    binding_callback_type callback;
 };
+
+bool wls_try_exec(char *cmd);
+
+struct cmd_results *cmd_bindsym(int argc, char **argv,
+        binding_callback_type callback);
 
 /**
  * A mouse binding and an associated command.
  */
 struct sway_mouse_binding {
     uint32_t button;
-    char *command;
+    binding_callback_type callback;
 };
 
 /**
@@ -75,7 +82,7 @@ struct sway_switch_binding {
     enum wlr_switch_type type;
     enum wlr_switch_state state;
     uint32_t flags;
-    char *command;
+    binding_callback_type callback;
 };
 
 /**
