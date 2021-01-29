@@ -52,7 +52,7 @@ static void execute_binding(struct sway_switch *sway_switch) {
             calloc(1, sizeof(struct sway_binding));
         dummy_binding->type = BINDING_SWITCH;
         dummy_binding->flags = matched_binding->flags;
-        dummy_binding->command = matched_binding->command;
+        dummy_binding->callback = matched_binding->callback;
 
         seat_execute_command(seat, dummy_binding);
         free(dummy_binding);
