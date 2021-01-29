@@ -24,8 +24,8 @@ void free_sway_binding(struct sway_binding *binding) {
 
 	list_free_items_and_destroy(binding->keys);
 	list_free_items_and_destroy(binding->syms);
+    binding->callback = NULL;
 	free(binding->input);
-	free(binding->command);
 	free(binding);
 }
 
@@ -33,7 +33,6 @@ void free_switch_binding(struct sway_switch_binding *binding) {
 	if (!binding) {
 		return;
 	}
-	free(binding->command);
 	free(binding);
 }
 
@@ -214,8 +213,7 @@ static struct cmd_results *switch_binding_add(
 	for (int i = 0; i < mode_bindings->length; ++i) {
 		struct sway_switch_binding *config_binding = mode_bindings->items[i];
 		if (binding_switch_compare(binding, config_binding)) {
-			sway_log(SWAY_INFO, "Overwriting binding '%s' to `%s` from `%s`",
-					switchcombo, binding->command, config_binding->command);
+			sway_log(SWAY_INFO, "Overwriting binding '%s'", switchcombo);
 			free_switch_binding(config_binding);
 			mode_bindings->items[i] = binding;
 			overwritten = true;
@@ -224,8 +222,7 @@ static struct cmd_results *switch_binding_add(
 
 	if (!overwritten) {
 		list_add(mode_bindings, binding);
-		sway_log(SWAY_DEBUG, "%s - Bound %s to command `%s`",
-				bindtype, switchcombo, binding->command);
+		sway_log(SWAY_DEBUG, "%s - Bound %s", bindtype, switchcombo);
 	}
 
 	return cmd_results_new(CMD_SUCCESS, NULL);
@@ -276,13 +273,12 @@ static struct cmd_results *binding_add(struct sway_binding *binding,
 	struct sway_binding *config_binding = binding_upsert(binding, mode_bindings);
 
 	if (config_binding) {
-		sway_log(SWAY_INFO, "Overwriting binding '%s' for device '%s' "
-				"to `%s` from `%s`", keycombo, binding->input,
-				binding->command, config_binding->command);
+		sway_log(SWAY_INFO, "Overwriting binding '%s' for device '%s'",
+            keycombo, binding->input);
 		free_sway_binding(config_binding);
 	} else {
-		sway_log(SWAY_DEBUG, "%s - Bound %s to command `%s` for device '%s'",
-				bindtype, keycombo, binding->command, binding->input);
+		sway_log(SWAY_DEBUG, "%s - Bound %s for device '%s'",
+				bindtype, keycombo, binding->input);
 	}
 
 	return cmd_results_new(CMD_SUCCESS, NULL);
@@ -307,12 +303,12 @@ static struct cmd_results *binding_remove(struct sway_binding *binding,
 			"for the given flags", keycombo);
 }
 
-static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv, bool unbind) {
+static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
+        binding_callback_type callback, bool unbind) {
 	const char *bindtype;
-	int minargs = 2;
+	int minargs = 1;
 	if (unbind) {
 		bindtype = "unbindsym";
-		minargs--;
 	} else {
 		bindtype = "bindsym";
 	}
@@ -469,13 +465,13 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv, bool u
 		return binding_remove(binding, mode_bindings, bindtype, argv[0]);
 	}
 
-	binding->command = join_args(argv + 1, argc - 1);
+	binding->callback = callback;
 	binding->order = binding_order++;
 	return binding_add(binding, mode_bindings, bindtype, argv[0], warn);
 }
 
 struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
-		bool unbind) {
+		binding_callback_type callback, bool unbind) {
 	int minargs = 2;
 	char *bindtype = "bindswitch";
 	if (unbind) {
@@ -551,68 +547,43 @@ struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
 	if (unbind) {
 		return switch_binding_remove(binding, bindtype, argv[0]);
 	}
-	binding->command = join_args(argv + 1, argc - 1);
+	binding->callback = callback;
 	return switch_binding_add(binding, bindtype, argv[0], warn);
 }
 
-struct cmd_results *cmd_bindsym(int argc, char **argv) {
-	return cmd_bindsym_or_bindcode(argc, argv, false);
+struct cmd_results *cmd_bindsym(int argc, char **argv,
+        binding_callback_type callback) {
+	return cmd_bindsym_or_bindcode(argc, argv, callback, false);
 }
 
-struct cmd_results *cmd_unbindsym(int argc, char **argv) {
-	return cmd_bindsym_or_bindcode(argc, argv, true);
+struct cmd_results *cmd_unbindsym(int argc, char **argv,
+        binding_callback_type callback) {
+	return cmd_bindsym_or_bindcode(argc, argv, callback, true);
 }
 
-struct cmd_results *cmd_bindswitch(int argc, char **argv) {
-	return cmd_bind_or_unbind_switch(argc, argv, false);
+struct cmd_results *cmd_bindswitch(int argc, char **argv,
+        binding_callback_type callback) {
+	return cmd_bind_or_unbind_switch(argc, argv, callback, false);
 }
 
-struct cmd_results *cmd_unbindswitch(int argc, char **argv) {
-	return cmd_bind_or_unbind_switch(argc, argv, true);
+struct cmd_results *cmd_unbindswitch(int argc, char **argv,
+        binding_callback_type callback) {
+	return cmd_bind_or_unbind_switch(argc, argv, callback, true);
 }
 
 /**
  * Execute the command associated to a binding
  */
 void seat_execute_command(struct sway_seat *seat, struct sway_binding *binding) {
-	if (!config->active) {
-		sway_log(SWAY_DEBUG, "deferring command for binding: %s",
-				binding->command);
-		struct sway_binding *deferred = calloc(1, sizeof(struct sway_binding));
-		if (!deferred) {
-			sway_log(SWAY_ERROR, "Failed to allocate deferred binding");
-			return;
-		}
-		memcpy(deferred, binding, sizeof(struct sway_binding));
-		deferred->command = binding->command ? strdup(binding->command) : NULL;
-		list_add(seat->deferred_bindings, deferred);
-		return;
-	}
-
-	sway_log(SWAY_DEBUG, "running command for binding: %s", binding->command);
-	struct sway_container *con = NULL;
-	if (binding->type == BINDING_MOUSESYM
-			|| binding->type == BINDING_MOUSECODE) {
-		struct wlr_surface *surface = NULL;
-		double sx, sy;
-		struct sway_node *node = node_at_coords(seat,
-				seat->cursor->cursor->x, seat->cursor->cursor->y,
-				&surface, &sx, &sy);
-		if (node && node->type == N_CONTAINER) {
-			con = node->sway_container;
-		}
-	}
-
-	list_t *res_list = execute_command(binding->command, seat, con);
-	for (int i = 0; i < res_list->length; ++i) {
-		struct cmd_results *results = res_list->items[i];
-		if (results->status != CMD_SUCCESS) {
-			sway_log(SWAY_DEBUG, "could not run command for binding: %s (%s)",
-				binding->command, results->error);
-		}
-		free_cmd_results(results);
-	}
-	list_free(res_list);
+    sway_log(SWAY_DEBUG, "running command for binding");
+    if (!binding->callback) {
+        sway_log(SWAY_DEBUG,
+            "attempted to call NULL binding callback; misconfigured binding?");
+    }
+    bool success = binding->callback();
+    if (!success) {
+        sway_log(SWAY_INFO, "command failed for binding!");
+    }
 }
 
 /**
@@ -720,9 +691,8 @@ void binding_add_translated(struct sway_binding *binding,
 		binding_upsert(binding, mode_bindings);
 
 	if (config_binding) {
-		sway_log(SWAY_INFO, "Overwriting binding for device '%s' "
-				"to `%s` from `%s`", binding->input,
-				binding->command, config_binding->command);
+		sway_log(SWAY_INFO, "Overwriting binding for device '%s'",
+            binding->input);
 		free_sway_binding(config_binding);
 	}
 }

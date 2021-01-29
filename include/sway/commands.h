@@ -81,13 +81,7 @@ void free_cmd_results(struct cmd_results *results);
 sway_cmd cmd_exec_validate;
 sway_cmd cmd_exec_process;
 
-sway_cmd cmd_bindcode;
-sway_cmd cmd_bindswitch;
-sway_cmd cmd_bindsym;
 sway_cmd cmd_exec;
 sway_cmd cmd_exec_always;
-sway_cmd cmd_unbindcode;
-sway_cmd cmd_unbindswitch;
-sway_cmd cmd_unbindsym;
 
 #endif
