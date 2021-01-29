@@ -307,15 +307,14 @@ static struct cmd_results *binding_remove(struct sway_binding *binding,
 			"for the given flags", keycombo);
 }
 
-static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
-		bool bindcode, bool unbind) {
+static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv, bool unbind) {
 	const char *bindtype;
 	int minargs = 2;
 	if (unbind) {
-		bindtype = bindcode ? "unbindcode" : "unbindsym";
+		bindtype = "unbindsym";
 		minargs--;
 	} else {
-		bindtype = bindcode ? "bindcode": "bindsym";
+		bindtype = "bindsym";
 	}
 
 	struct cmd_results *error = NULL;
@@ -332,7 +331,7 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 	binding->group = XKB_LAYOUT_INVALID;
 	binding->modifiers = 0;
 	binding->flags = 0;
-	binding->type = bindcode ? BINDING_KEYCODE : BINDING_KEYSYM;
+	binding->type = BINDING_KEYSYM;
 
 	bool exclude_titlebar = false;
 	bool warn = true;
@@ -349,9 +348,7 @@ static struct cmd_results *cmd_bindsym_or_bindcode(int argc, char **argv,
 		} else if (strcmp("--border", argv[0]) == 0) {
 			binding->flags |= BINDING_BORDER;
 		} else if (strcmp("--to-code", argv[0]) == 0) {
-			if (!bindcode) {
-				binding->flags |= BINDING_CODE;
-			}
+            binding->flags |= BINDING_CODE;
 		} else if (strcmp("--exclude-titlebar", argv[0]) == 0) {
 			exclude_titlebar = true;
 		} else if (strncmp("--input-device=", argv[0],
@@ -559,19 +556,11 @@ struct cmd_results *cmd_bind_or_unbind_switch(int argc, char **argv,
 }
 
 struct cmd_results *cmd_bindsym(int argc, char **argv) {
-	return cmd_bindsym_or_bindcode(argc, argv, false, false);
-}
-
-struct cmd_results *cmd_bindcode(int argc, char **argv) {
-	return cmd_bindsym_or_bindcode(argc, argv, true, false);
+	return cmd_bindsym_or_bindcode(argc, argv, false);
 }
 
 struct cmd_results *cmd_unbindsym(int argc, char **argv) {
-	return cmd_bindsym_or_bindcode(argc, argv, false, true);
-}
-
-struct cmd_results *cmd_unbindcode(int argc, char **argv) {
-	return cmd_bindsym_or_bindcode(argc, argv, true, true);
+	return cmd_bindsym_or_bindcode(argc, argv, true);
 }
 
 struct cmd_results *cmd_bindswitch(int argc, char **argv) {

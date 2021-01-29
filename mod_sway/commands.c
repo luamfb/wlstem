@@ -41,14 +41,8 @@ struct cmd_results *checkarg(int argc, const char *name, enum expected_args type
 
 /* Keep alphabetized */
 static struct cmd_handler handlers[] = {
-	{ "bindcode", cmd_bindcode },
 	{ "bindswitch", cmd_bindswitch },
 	{ "bindsym", cmd_bindsym },
-	{ "exec", cmd_exec },
-	{ "exec_always", cmd_exec_always },
-	{ "unbindcode", cmd_unbindcode },
-	{ "unbindswitch", cmd_unbindswitch },
-	{ "unbindsym", cmd_unbindsym },
 };
 
 /* Runtime-only commands. Keep alphabetized */
@@ -236,9 +230,7 @@ struct cmd_results *config_command(char *exec, char **new_block) {
 
 	// Strip quotes and unescape the string
 	for (int i = 1; i < argc; ++i) {
-		if (handler->handle != cmd_exec && handler->handle != cmd_exec_always
-				&& handler->handle != cmd_bindsym
-				&& handler->handle != cmd_bindcode
+		if (handler->handle != cmd_bindsym
 				&& handler->handle != cmd_bindswitch
 				&& (*argv[i] == '\"' || *argv[i] == '\'')) {
 			strip_quotes(argv[i]);
