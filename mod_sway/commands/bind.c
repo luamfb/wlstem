@@ -352,37 +352,6 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 
 	list_t *split = split_string(argv[0], "+");
 	for (int i = 0; i < split->length; ++i) {
-		// Check for group
-		if (strncmp(split->items[i], "Group", strlen("Group")) == 0) {
-			if (binding->group != XKB_LAYOUT_INVALID) {
-				free_sway_binding(binding);
-				list_free_items_and_destroy(split);
-				sway_log(SWAY_ERROR,
-						"Only one group can be specified");
-                return false;
-			}
-			char *end;
-			int group = strtol(split->items[i] + strlen("Group"), &end, 10);
-			if (group < 1 || group > 4 || end[0] != '\0') {
-				free_sway_binding(binding);
-				list_free_items_and_destroy(split);
-				sway_log(SWAY_ERROR, "Invalid group");
-                return false;
-			}
-			binding->group = group - 1;
-			continue;
-		} else if (strcmp(split->items[i], "Mode_switch") == 0) {
-			// For full i3 compatibility, Mode_switch is an alias for Group2
-			if (binding->group != XKB_LAYOUT_INVALID) {
-				free_sway_binding(binding);
-				list_free_items_and_destroy(split);
-				sway_log(SWAY_ERROR,
-						"Only one group can be specified");
-                return false;
-			}
-			binding->group = 1;
-		}
-
 		// Check for a modifier key
 		uint32_t mod;
 		if ((mod = get_modifier_mask_by_name(split->items[i])) > 0) {
