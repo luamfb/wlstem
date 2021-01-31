@@ -140,12 +140,23 @@ void free_config(struct sway_config *config) {
     free(config);
 }
 
+void sway_terminate(int exit_code);
+
+bool terminate_ok(void) {
+    sway_log(SWAY_DEBUG, "Termination keybinding pressed.");
+    sway_terminate(0);
+    return true;
+}
+
 bool spawn_terminal(void) {
     return wls_try_exec("weston-terminal");
 }
 
 static void insert_default_keybindings() {
     cmd_bindsym(WLR_MODIFIER_ALT, XKB_KEY_Return, spawn_terminal);
+    cmd_bindsym(WLR_MODIFIER_CTRL | WLR_MODIFIER_ALT,
+        XKB_KEY_BackSpace,
+        terminate_ok);
 }
 
 static void config_defaults(struct sway_config *config) {
