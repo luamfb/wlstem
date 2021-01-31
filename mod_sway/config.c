@@ -16,6 +16,7 @@
 #include <linux/input-event-codes.h>
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_keyboard.h>
+#include <xkbcommon/xkbcommon-keysyms.h>
 #include "sway/input/input-manager.h"
 #include "sway/input/seat.h"
 #include "sway/input/switch.h"
@@ -144,9 +145,7 @@ bool spawn_terminal(void) {
 }
 
 static void insert_default_keybindings() {
-    char *args[] = { "Return" };
-    size_t arg_count = sizeof(args) / sizeof(args[0]);
-    cmd_bindsym(arg_count, args, WLR_MODIFIER_ALT, spawn_terminal);
+    cmd_bindsym(WLR_MODIFIER_ALT, XKB_KEY_Return, spawn_terminal);
 }
 
 static void config_defaults(struct sway_config *config) {

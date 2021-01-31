@@ -91,103 +91,6 @@ static int key_qsort_cmp(const void *keyp_a, const void *keyp_b) {
 }
 
 /**
- * From a keycode, bindcode, or bindsym name and the most likely binding type,
- * identify the appropriate numeric value corresponding to the key. Return true
- * and set *key_val if successful, otherwise return false. Change
- * the value of *type if the initial type guess was incorrect and if this
- * was the first identified key.
- */
-static bool identify_key(const char* name, bool first_key,
-		uint32_t* key_val, enum binding_input_type* type) {
-	if (*type == BINDING_MOUSECODE) {
-		// check for mouse bindcodes
-		char *message = NULL;
-		uint32_t button = get_mouse_bindcode(name, &message);
-		if (!button) {
-			if (message) {
-                sway_log(SWAY_ERROR, "%s\n", message);
-				free(message);
-                return false;
-			} else {
-				sway_log(SWAY_ERROR, "Unknown button code %s", name);
-                return false;
-			}
-		}
-		*key_val = button;
-	} else if (*type == BINDING_MOUSESYM) {
-		// check for mouse bindsyms (x11 buttons or event names)
-		char *message = NULL;
-		uint32_t button = get_mouse_bindsym(name, &message);
-		if (!button) {
-			if (message) {
-                sway_log(SWAY_ERROR, "%s\n", message);
-				free(message);
-				return false;
-			} else {
-				sway_log(SWAY_ERROR, "Unknown button %s", name);
-                return false;
-			}
-		}
-		*key_val = button;
-	} else if (*type == BINDING_KEYCODE) {
-		// check for keycode. If it is the first key, allow mouse bindcodes
-		if (first_key) {
-			char *message = NULL;
-			uint32_t button = get_mouse_bindcode(name, &message);
-			free(message);
-			if (button) {
-				*type = BINDING_MOUSECODE;
-				*key_val = button;
-				return true;
-			}
-		}
-
-		xkb_keycode_t keycode = strtol(name, NULL, 10);
-		if (!xkb_keycode_is_legal_ext(keycode)) {
-			if (first_key) {
-				sway_log(SWAY_ERROR,
-						"Invalid keycode or button code '%s'", name);
-                return false;
-			} else {
-				sway_log(SWAY_ERROR, "Invalid keycode '%s'", name);
-                return false;
-			}
-		}
-		*key_val = keycode;
-	} else {
-		// check for keysym. If it is the first key, allow mouse bindsyms
-		if (first_key) {
-			char *message = NULL;
-			uint32_t button = get_mouse_bindsym(name, &message);
-			if (message) {
-                sway_log(SWAY_ERROR, "%s\n", message);
-				free(message);
-				return false;
-			} else if (button) {
-				*type = BINDING_MOUSESYM;
-				*key_val = button;
-				return true;
-			}
-		}
-
-		xkb_keysym_t keysym = xkb_keysym_from_name(name,
-				XKB_KEYSYM_CASE_INSENSITIVE);
-		if (!keysym) {
-			if (first_key) {
-				sway_log(SWAY_ERROR,
-						"Unknown key or button '%s'", name);
-                return false;
-			} else {
-				sway_log(SWAY_ERROR, "Unknown key '%s'", name);
-                return false;
-			}
-		}
-		*key_val = keysym;
-	}
-	return true;
-}
-
-/**
  * Insert or update the binding.
  * Return the binding which has been replaced or NULL.
  */
@@ -207,28 +110,27 @@ static struct sway_binding *binding_upsert(struct sway_binding *binding,
 
 static bool binding_add(struct sway_binding *binding,
 		list_t *mode_bindings, const char *bindtype,
-		const char *keycombo, bool warn) {
+		bool warn) {
 	struct sway_binding *config_binding = binding_upsert(binding, mode_bindings);
 
 	if (config_binding) {
-		sway_log(SWAY_INFO, "Overwriting binding '%s' for device '%s'",
-            keycombo, binding->input);
+		sway_log(SWAY_INFO, "Overwriting binding for device '%s'",
+            binding->input);
 		free_sway_binding(config_binding);
 	} else {
-		sway_log(SWAY_DEBUG, "%s - Bound %s for device '%s'",
-				bindtype, keycombo, binding->input);
+		sway_log(SWAY_DEBUG, "%s - Bound for device '%s'",
+				bindtype, binding->input);
 	}
 	return true;
 }
 
 static bool binding_remove(struct sway_binding *binding,
-		list_t *mode_bindings, const char *bindtype,
-		const char *keycombo) {
+		list_t *mode_bindings, const char *bindtype) {
 	for (int i = 0; i < mode_bindings->length; ++i) {
 		struct sway_binding *config_binding = mode_bindings->items[i];
 		if (binding_key_compare(binding, config_binding)) {
-			sway_log(SWAY_DEBUG, "%s - Unbound `%s` from device '%s'",
-					bindtype, keycombo, binding->input);
+			sway_log(SWAY_DEBUG, "%s - Unbound from device '%s'",
+					bindtype, binding->input);
 			free_sway_binding(config_binding);
 			free_sway_binding(binding);
 			list_del(mode_bindings, i);
@@ -237,25 +139,20 @@ static bool binding_remove(struct sway_binding *binding,
 	}
 	free_sway_binding(binding);
 	sway_log(SWAY_ERROR,
-        "Could not find binding `%s` for the given flags",
-        keycombo);
+        "Could not find binding for the given flags");
     return false;
 }
 
-static bool cmd_bindsym_or_bindcode(int argc, char **argv,
+static bool cmd_bindsym_or_bindcode(
         uint32_t modifiers,
-        binding_callback_type callback, bool unbind) {
+        xkb_keysym_t key,
+        binding_callback_type callback,
+        bool unbind) {
 	const char *bindtype;
-	int minargs = 1;
 	if (unbind) {
 		bindtype = "unbindsym";
 	} else {
 		bindtype = "bindsym";
-	}
-
-	if (!checkarg(argc, bindtype, EXPECTED_AT_LEAST, minargs)) {
-        sway_log(SWAY_ERROR, "checkarg error!");
-		return false;
 	}
 
 	struct sway_binding *binding = calloc(1, sizeof(struct sway_binding));
@@ -279,38 +176,14 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 			BINDING_MOUSECODE : BINDING_MOUSESYM;
 	}
 
-	if (argc < minargs) {
-		free_sway_binding(binding);
-		sway_log(SWAY_ERROR,
-			"Invalid %s command "
-			"(expected at least %d non-option arguments, got %d)",
-			bindtype, minargs, argc);
+    uint32_t *_key = calloc(1, sizeof(uint32_t));
+    if (!_key) {
+        free_sway_binding(binding);
+        sway_log(SWAY_ERROR, "Unable to allocate binding key");
         return false;
 	}
-
-	list_t *split = split_string(argv[0], "+");
-	for (int i = 0; i < split->length; ++i) {
-		// Identify the key and possibly change binding->type
-		uint32_t key_val = 0;
-		bool success = identify_key(split->items[i], binding->keys->length == 0,
-				     &key_val, &binding->type);
-		if (!success) {
-			free_sway_binding(binding);
-			list_free(split);
-			return false;
-		}
-
-		uint32_t *key = calloc(1, sizeof(uint32_t));
-		if (!key) {
-			free_sway_binding(binding);
-			list_free_items_and_destroy(split);
-			sway_log(SWAY_ERROR, "Unable to allocate binding key");
-            return false;
-		}
-		*key = key_val;
-		list_add(binding->keys, key);
-	}
-	list_free_items_and_destroy(split);
+    *_key = key;
+    list_add(binding->keys, _key);
 
 	// refine region of interest for mouse binding once we are certain
 	// that this is one
@@ -327,7 +200,7 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 	// translate keysyms into keycodes
 	if (!translate_binding(binding)) {
 		sway_log(SWAY_INFO,
-				"Unable to translate bindsym into bindcode: %s", argv[0]);
+				"Unable to translate bindsym into bindcode");
 	}
 
 	list_t *mode_bindings;
@@ -340,24 +213,26 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 	}
 
 	if (unbind) {
-		return binding_remove(binding, mode_bindings, bindtype, argv[0]);
+		return binding_remove(binding, mode_bindings, bindtype);
 	}
 
 	binding->callback = callback;
 	binding->order = binding_order++;
-	return binding_add(binding, mode_bindings, bindtype, argv[0], warn);
+	return binding_add(binding, mode_bindings, bindtype, warn);
 }
 
-bool cmd_bindsym(int argc, char **argv,
+bool cmd_bindsym(
         uint32_t modifiers,
+        xkb_keysym_t key,
         binding_callback_type callback) {
-	return cmd_bindsym_or_bindcode(argc, argv, modifiers, callback, false);
+	return cmd_bindsym_or_bindcode(modifiers, key, callback, false);
 }
 
-bool cmd_unbindsym(int argc, char **argv,
+bool cmd_unbindsym(
         uint32_t modifiers,
+        xkb_keysym_t key,
         binding_callback_type callback) {
-	return cmd_bindsym_or_bindcode(argc, argv, modifiers, callback, true);
+	return cmd_bindsym_or_bindcode(modifiers, key, callback, true);
 }
 
 /**
