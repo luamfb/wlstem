@@ -1,5 +1,4 @@
 sway_sources = files(
-    'commands.c',
     'config.c',
     'decoration.c',
     'main.c',
