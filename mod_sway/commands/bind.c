@@ -243,6 +243,7 @@ static bool binding_remove(struct sway_binding *binding,
 }
 
 static bool cmd_bindsym_or_bindcode(int argc, char **argv,
+        uint32_t modifiers,
         binding_callback_type callback, bool unbind) {
 	const char *bindtype;
 	int minargs = 1;
@@ -265,7 +266,7 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 	binding->input = strdup("*");
 	binding->keys = create_list();
 	binding->group = XKB_LAYOUT_INVALID;
-	binding->modifiers = 0;
+	binding->modifiers = modifiers;
 	binding->flags = 0;
 	binding->type = BINDING_KEYSYM;
 
@@ -289,13 +290,6 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 
 	list_t *split = split_string(argv[0], "+");
 	for (int i = 0; i < split->length; ++i) {
-		// Check for a modifier key
-		uint32_t mod;
-		if ((mod = get_modifier_mask_by_name(split->items[i])) > 0) {
-			binding->modifiers |= mod;
-			continue;
-		}
-
 		// Identify the key and possibly change binding->type
 		uint32_t key_val = 0;
 		bool success = identify_key(split->items[i], binding->keys->length == 0,
@@ -355,13 +349,15 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 }
 
 bool cmd_bindsym(int argc, char **argv,
+        uint32_t modifiers,
         binding_callback_type callback) {
-	return cmd_bindsym_or_bindcode(argc, argv, callback, false);
+	return cmd_bindsym_or_bindcode(argc, argv, modifiers, callback, false);
 }
 
 bool cmd_unbindsym(int argc, char **argv,
+        uint32_t modifiers,
         binding_callback_type callback) {
-	return cmd_bindsym_or_bindcode(argc, argv, callback, true);
+	return cmd_bindsym_or_bindcode(argc, argv, modifiers, callback, true);
 }
 
 /**
