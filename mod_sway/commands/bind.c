@@ -37,24 +37,6 @@ void free_switch_binding(struct sway_switch_binding *binding) {
 }
 
 /**
- * Returns true if the bindings have the same switch type and state combinations.
- */
-static bool binding_switch_compare(struct sway_switch_binding *binding_a,
-		struct sway_switch_binding *binding_b) {
-	if (binding_a->type != binding_b->type) {
-		return false;
-	}
-	if (binding_a->state != binding_b->state) {
-		return false;
-	}
-	if ((binding_a->flags & BINDING_LOCKED) !=
-			(binding_b->flags & BINDING_LOCKED)) {
-		return false;
-	}
-	return true;
-}
-
-/**
  * Returns true if the bindings have the same key and modifier combinations.
  * Note that keyboard layout is not considered, so the bindings might actually
  * not be equivalent on some layouts.
@@ -203,51 +185,6 @@ static bool identify_key(const char* name, bool first_key,
 		*key_val = keysym;
 	}
 	return true;
-}
-
-static bool switch_binding_add(
-		struct sway_switch_binding *binding, const char *bindtype,
-		const char *switchcombo, bool warn) {
-	list_t *mode_bindings = config->current_mode->switch_bindings;
-	// overwrite the binding if it already exists
-	bool overwritten = false;
-	for (int i = 0; i < mode_bindings->length; ++i) {
-		struct sway_switch_binding *config_binding = mode_bindings->items[i];
-		if (binding_switch_compare(binding, config_binding)) {
-			sway_log(SWAY_INFO, "Overwriting binding '%s'", switchcombo);
-			free_switch_binding(config_binding);
-			mode_bindings->items[i] = binding;
-			overwritten = true;
-		}
-	}
-
-	if (!overwritten) {
-		list_add(mode_bindings, binding);
-		sway_log(SWAY_DEBUG, "%s - Bound %s", bindtype, switchcombo);
-	}
-
-	return true;
-}
-
-static bool switch_binding_remove(
-		struct sway_switch_binding *binding, const char *bindtype,
-		const char *switchcombo) {
-	list_t *mode_bindings = config->current_mode->switch_bindings;
-	for (int i = 0; i < mode_bindings->length; ++i) {
-		struct sway_switch_binding *config_binding = mode_bindings->items[i];
-		if (binding_switch_compare(binding, config_binding)) {
-			free_switch_binding(config_binding);
-			free_switch_binding(binding);
-			list_del(mode_bindings, i);
-			sway_log(SWAY_DEBUG, "%s - Unbound %s switch",
-					bindtype, switchcombo);
-			return true;
-		}
-	}
-
-	free_switch_binding(binding);
-    sway_log(SWAY_ERROR, "Could not find switch binding `%s`", switchcombo);
-	return false;
 }
 
 /**
@@ -417,75 +354,6 @@ static bool cmd_bindsym_or_bindcode(int argc, char **argv,
 	return binding_add(binding, mode_bindings, bindtype, argv[0], warn);
 }
 
-bool cmd_bind_or_unbind_switch(int argc, char **argv,
-		binding_callback_type callback, bool unbind) {
-	int minargs = 2;
-	char *bindtype = "bindswitch";
-	if (unbind) {
-		minargs--;
-		bindtype = "unbindswitch";
-	}
-
-	if (!checkarg(argc, bindtype, EXPECTED_AT_LEAST, minargs)) {
-		sway_log(SWAY_ERROR, "checkarg error!");
-        return false;
-	}
-	struct sway_switch_binding *binding = calloc(1, sizeof(struct sway_switch_binding));
-	if (!binding) {
-		sway_log(SWAY_ERROR, "Unable to allocate binding");
-        return false;
-	}
-
-	bool warn = true;
-
-	if (argc < minargs) {
-		free(binding);
-		sway_log(SWAY_ERROR,
-				"Invalid %s command (expected at least %d "
-				"non-option arguments, got %d)", bindtype, minargs, argc);
-        return false;
-	}
-
-	list_t *split = split_string(argv[0], ":");
-	if (split->length != 2) {
-		free_switch_binding(binding);
-		sway_log(SWAY_ERROR,
-				"Invalid %s command (expected binding with the form "
-				"<switch>:<state>)", bindtype);
-        return false;
-	}
-	if (strcmp(split->items[0], "tablet") == 0) {
-		binding->type = WLR_SWITCH_TYPE_TABLET_MODE;
-	} else if (strcmp(split->items[0], "lid") == 0) {
-		binding->type = WLR_SWITCH_TYPE_LID;
-	} else {
-		free_switch_binding(binding);
-		sway_log(SWAY_ERROR,
-				"Invalid %s command (expected switch binding: "
-				"unknown switch)", bindtype);
-        return false;
-	}
-	if (strcmp(split->items[1], "on") == 0) {
-		binding->state = WLR_SWITCH_STATE_ON;
-	} else if (strcmp(split->items[1], "off") == 0) {
-		binding->state = WLR_SWITCH_STATE_OFF;
-	} else if (strcmp(split->items[1], "toggle") == 0) {
-		binding->state = WLR_SWITCH_STATE_TOGGLE;
-	} else {
-		free_switch_binding(binding);
-		sway_log(SWAY_ERROR,
-				"Invalid %s command ", bindtype);
-        return false;
-	}
-	list_free_items_and_destroy(split);
-
-	if (unbind) {
-        return switch_binding_remove(binding, bindtype, argv[0]);
-	}
-	binding->callback = callback;
-	return switch_binding_add(binding, bindtype, argv[0], warn);
-}
-
 bool cmd_bindsym(int argc, char **argv,
         binding_callback_type callback) {
 	return cmd_bindsym_or_bindcode(argc, argv, callback, false);
@@ -494,16 +362,6 @@ bool cmd_bindsym(int argc, char **argv,
 bool cmd_unbindsym(int argc, char **argv,
         binding_callback_type callback) {
 	return cmd_bindsym_or_bindcode(argc, argv, callback, true);
-}
-
-bool cmd_bindswitch(int argc, char **argv,
-        binding_callback_type callback) {
-	return cmd_bind_or_unbind_switch(argc, argv, callback, false);
-}
-
-bool cmd_unbindswitch(int argc, char **argv,
-        binding_callback_type callback) {
-	return cmd_bind_or_unbind_switch(argc, argv, callback, true);
 }
 
 /**
