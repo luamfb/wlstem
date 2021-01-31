@@ -65,6 +65,7 @@ struct sway_binding {
 bool wls_try_exec(char *cmd);
 
 bool cmd_bindsym(int argc, char **argv,
+        uint32_t modifiers,
         binding_callback_type callback);
 
 /**
