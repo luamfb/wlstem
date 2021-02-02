@@ -135,7 +135,6 @@ void free_config(struct sway_config *config) {
         list_free(config->seat_configs);
     }
     free(config->font);
-    free((char *)config->current_config);
     keysym_translation_state_destroy(config->keysym_translation_state);
     free(config);
 }
@@ -218,8 +217,6 @@ static void config_defaults(struct sway_config *config) {
     config->gaps_outer.right = 0;
     config->gaps_outer.bottom = 0;
     config->gaps_outer.left = 0;
-
-    config->current_config = NULL;
 
     // borders
     config->border = B_NORMAL;
