@@ -284,9 +284,6 @@ bool load_main_config(void) {
     return true;
 }
 
-void run_deferred_commands(void) {
-}
-
 void run_deferred_bindings(void) {
     struct sway_seat *seat;
     wl_list_for_each(seat, &(server.input->seats), link) {

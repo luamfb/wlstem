@@ -451,11 +451,6 @@ struct sway_config {
 bool load_main_config(void);
 
 /**
- * Run the commands that were deferred when reading the config file.
- */
-void run_deferred_commands(void);
-
-/**
  * Run the binding commands that were deferred when initializing the inputs
  */
 void run_deferred_bindings(void);
