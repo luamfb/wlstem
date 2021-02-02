@@ -19,28 +19,7 @@
 #include "log.h"
 #include "util.h"
 
-struct workspace_config *workspace_find_config(const char *ws_name) {
-    for (int i = 0; i < config->workspace_configs->length; ++i) {
-        struct workspace_config *wsc = config->workspace_configs->items[i];
-        if (strcmp(wsc->workspace, ws_name) == 0) {
-            return wsc;
-        }
-    }
-    return NULL;
-}
-
 struct sway_output *workspace_get_initial_output(const char *name) {
-    // Check workspace configs for a workspace<->output pair
-    struct workspace_config *wsc = workspace_find_config(name);
-    if (wsc) {
-        for (int i = 0; i < wsc->outputs->length; i++) {
-            struct sway_output *output =
-                output_by_name_or_id(wsc->outputs->items[i]);
-            if (output) {
-                return output;
-            }
-        }
-    }
     // Otherwise try to put it on the focused output
     struct sway_seat *seat = input_manager_current_seat();
     struct sway_node *focus = seat_get_focus_inactive(seat, &root->node);
@@ -77,34 +56,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
 
     ws->gaps_outer = config->gaps_outer;
     ws->gaps_inner = config->gaps_inner;
-    if (name) {
-        struct workspace_config *wsc = workspace_find_config(name);
-        if (wsc) {
-            if (wsc->gaps_outer.top != INT_MIN) {
-                ws->gaps_outer.top = wsc->gaps_outer.top;
-            }
-            if (wsc->gaps_outer.right != INT_MIN) {
-                ws->gaps_outer.right = wsc->gaps_outer.right;
-            }
-            if (wsc->gaps_outer.bottom != INT_MIN) {
-                ws->gaps_outer.bottom = wsc->gaps_outer.bottom;
-            }
-            if (wsc->gaps_outer.left != INT_MIN) {
-                ws->gaps_outer.left = wsc->gaps_outer.left;
-            }
-            if (wsc->gaps_inner != INT_MIN) {
-                ws->gaps_inner = wsc->gaps_inner;
-            }
-
-            // Add output priorities
-            for (int i = 0; i < wsc->outputs->length; ++i) {
-                char *name = wsc->outputs->items[i];
-                if (strcmp(name, "*") != 0) {
-                    list_add(ws->output_priority, strdup(name));
-                }
-            }
-        }
-    }
 
     // If not already added, add the output to the lowest priority
     workspace_output_add_priority(ws, output);
@@ -170,7 +121,7 @@ void workspace_consider_destroy(struct sway_workspace *ws) {
 
 static bool workspace_valid_on_output(const char *output_name,
         const char *ws_name) {
-    struct workspace_config *wsc = workspace_find_config(ws_name);
+    struct workspace_config *wsc = NULL;
     char identifier[128];
     struct sway_output *output = output_by_name_or_id(output_name);
     if (!output) {
@@ -287,27 +238,6 @@ char *workspace_next_name(const char *output_name) {
     for (int i = 0; i < mode->keycode_bindings->length; ++i) {
         workspace_name_from_binding(mode->keycode_bindings->items[i],
                 output_name, &order, &target);
-    }
-    for (int i = 0; i < config->workspace_configs->length; ++i) {
-        // Unlike with bindings, this does not guarantee order
-        const struct workspace_config *wsc = config->workspace_configs->items[i];
-        if (workspace_by_name(wsc->workspace)) {
-            continue;
-        }
-        bool found = false;
-        for (int j = 0; j < wsc->outputs->length; ++j) {
-            if (strcmp(wsc->outputs->items[j], "*") == 0 ||
-                    strcmp(wsc->outputs->items[j], output_name) == 0 ||
-                    strcmp(wsc->outputs->items[j], identifier) == 0) {
-                found = true;
-                free(target);
-                target = strdup(wsc->workspace);
-                break;
-            }
-        }
-        if (found) {
-            break;
-        }
     }
     if (target != NULL) {
         return target;

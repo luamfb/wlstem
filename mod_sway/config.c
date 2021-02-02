@@ -104,12 +104,6 @@ void free_config(struct sway_config *config) {
         }
         list_free(config->modes);
     }
-    if (config->workspace_configs) {
-        for (int i = 0; i < config->workspace_configs->length; i++) {
-            free_workspace_config(config->workspace_configs->items[i]);
-        }
-        list_free(config->workspace_configs);
-    }
     if (config->output_configs) {
         for (int i = 0; i < config->output_configs->length; i++) {
             free_output_config(config->output_configs->items[i]);
@@ -160,7 +154,6 @@ static void insert_default_keybindings() {
 
 static void config_defaults(struct sway_config *config) {
     if (!(config->modes = create_list())) goto cleanup;
-    if (!(config->workspace_configs = create_list())) goto cleanup;
     if (!(config->seat_configs = create_list())) goto cleanup;
     if (!(config->output_configs = create_list())) goto cleanup;
 
