@@ -74,10 +74,6 @@ void seat_destroy(struct sway_seat *seat) {
     wl_list_remove(&seat->request_set_primary_selection.link);
     wl_list_remove(&seat->link);
     wlr_seat_destroy(seat->wlr_seat);
-    for (int i = 0; i < seat->deferred_bindings->length; i++) {
-        free_sway_binding(seat->deferred_bindings->items[i]);
-    }
-    list_free(seat->deferred_bindings);
     free(seat->prev_workspace_name);
     free(seat);
 }
@@ -576,8 +572,6 @@ struct sway_seat *seat_create(const char *seat_name) {
 
     root_for_each_workspace(collect_focus_workspace_iter, seat);
     root_for_each_container(collect_focus_container_iter, seat);
-
-    seat->deferred_bindings = create_list();
 
     wl_signal_add(&root->events.new_node, &seat->new_node);
     seat->new_node.notify = handle_new_node;

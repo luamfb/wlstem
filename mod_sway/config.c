@@ -284,23 +284,6 @@ bool load_main_config(void) {
     return true;
 }
 
-void run_deferred_bindings(void) {
-    struct sway_seat *seat;
-    wl_list_for_each(seat, &(server.input->seats), link) {
-        if (!seat->deferred_bindings->length) {
-            continue;
-        }
-        sway_log(SWAY_DEBUG, "Running deferred bindings for seat %s",
-                seat->wlr_seat->name);
-        while (seat->deferred_bindings->length) {
-            struct sway_binding *binding = seat->deferred_bindings->items[0];
-            seat_execute_command(seat, binding);
-            list_del(seat->deferred_bindings, 0);
-            free_sway_binding(binding);
-        }
-    }
-}
-
 // the naming is intentional (albeit long): a workspace_output_cmp function
 // would compare two structs in full, while this method only compares the
 // workspace.
