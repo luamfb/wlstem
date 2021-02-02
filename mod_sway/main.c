@@ -369,7 +369,6 @@ int main(int argc, char **argv) {
     }
 
     config->active = true;
-    run_deferred_bindings();
     transaction_commit_dirty();
 
     server_run(&server);

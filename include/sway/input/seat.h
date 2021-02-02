@@ -96,8 +96,6 @@ struct sway_seat {
 
     uint32_t idle_inhibit_sources, idle_wake_sources;
 
-    list_t *deferred_bindings; // struct sway_binding
-
     struct sway_input_method_relay im_relay;
 
     struct wl_listener focus_destroy;
