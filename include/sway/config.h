@@ -359,7 +359,6 @@ enum xwayland_mode {
  */
 struct sway_config {
     list_t *modes;
-    list_t *workspace_configs;
     list_t *output_configs;
     list_t *input_configs;
     list_t *input_type_configs;
