@@ -398,10 +398,6 @@ struct sway_config {
     int gaps_inner;
     struct side_gaps gaps_outer;
 
-    const char *current_config;
-    int current_config_line_number;
-    char *current_config_line;
-
     enum sway_container_border border;
     enum sway_container_border floating_border;
     int border_thickness;
