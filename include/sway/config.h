@@ -15,16 +15,6 @@
 #include "sway/tree/root.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 
-// TODO: Refactor this shit
-
-/**
- * Describes a variable created via the `set` command.
- */
-struct sway_variable {
-    char *name;
-    char *value;
-};
-
 enum binding_input_type {
     BINDING_KEYCODE,
     BINDING_KEYSYM,
