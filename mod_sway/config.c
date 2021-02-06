@@ -53,26 +53,6 @@ static void keysym_translation_state_destroy(
     xkb_state_unref(state);
 }
 
-static void free_mode(struct sway_mode *mode) {
-    if (!mode) {
-        return;
-    }
-    free(mode->name);
-    if (mode->keysym_bindings) {
-        for (int i = 0; i < mode->keysym_bindings->length; i++) {
-            free_sway_binding(mode->keysym_bindings->items[i]);
-        }
-        list_free(mode->keysym_bindings);
-    }
-    if (mode->keycode_bindings) {
-        for (int i = 0; i < mode->keycode_bindings->length; i++) {
-            free_sway_binding(mode->keycode_bindings->items[i]);
-        }
-        list_free(mode->keycode_bindings);
-    }
-    free(mode);
-}
-
 void free_workspace_config(struct workspace_config *wsc) {
     free(wsc->workspace);
     list_free_items_and_destroy(wsc->outputs);
@@ -86,12 +66,6 @@ void free_config(struct sway_config *config) {
 
     config->current_seat = NULL;
 
-    if (config->modes) {
-        for (int i = 0; i < config->modes->length; ++i) {
-            free_mode(config->modes->items[i]);
-        }
-        list_free(config->modes);
-    }
     if (config->output_configs) {
         for (int i = 0; i < config->output_configs->length; i++) {
             free_output_config(config->output_configs->items[i]);
@@ -141,7 +115,6 @@ static void insert_default_keybindings() {
 }
 
 static void config_defaults(struct sway_config *config) {
-    if (!(config->modes = create_list())) goto cleanup;
     if (!(config->seat_configs = create_list())) goto cleanup;
     if (!(config->output_configs = create_list())) goto cleanup;
 
@@ -154,7 +127,6 @@ static void config_defaults(struct sway_config *config) {
     strcpy(config->current_mode->name, "default");
     if (!(config->current_mode->keysym_bindings = create_list())) goto cleanup;
     if (!(config->current_mode->keycode_bindings = create_list())) goto cleanup;
-    list_add(config->modes, config->current_mode);
 
     if (!(config->font = strdup("monospace 10"))) goto cleanup;
     config->font_height = 17; // height of monospace 10
@@ -307,21 +279,19 @@ void translate_keysyms(struct input_config *input_config) {
     config->keysym_translation_state =
         keysym_translation_state_create(rules);
 
-    for (int i = 0; i < config->modes->length; ++i) {
-        struct sway_mode *mode = config->modes->items[i];
+    struct sway_mode *mode = config->current_mode;
 
-        list_t *bindsyms = create_list();
-        list_t *bindcodes = create_list();
+    list_t *bindsyms = create_list();
+    list_t *bindcodes = create_list();
 
-        translate_binding_list(mode->keysym_bindings, bindsyms, bindcodes);
-        translate_binding_list(mode->keycode_bindings, bindsyms, bindcodes);
+    translate_binding_list(mode->keysym_bindings, bindsyms, bindcodes);
+    translate_binding_list(mode->keycode_bindings, bindsyms, bindcodes);
 
-        list_free(mode->keysym_bindings);
-        list_free(mode->keycode_bindings);
+    list_free(mode->keysym_bindings);
+    list_free(mode->keycode_bindings);
 
-        mode->keysym_bindings = bindsyms;
-        mode->keycode_bindings = bindcodes;
-    }
+    mode->keysym_bindings = bindsyms;
+    mode->keycode_bindings = bindcodes;
 
     sway_log(SWAY_DEBUG, "Translated keysyms using config for device '%s'",
             input_config->identifier);

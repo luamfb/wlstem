@@ -297,7 +297,6 @@ enum xwayland_mode {
  * The configuration struct. The result of loading a config file.
  */
 struct sway_config {
-    list_t *modes;
     list_t *output_configs;
     list_t *input_configs;
     list_t *input_type_configs;
