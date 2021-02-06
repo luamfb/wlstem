@@ -108,56 +108,6 @@ enum wlr_edges find_resize_edge(struct sway_container *cont,
 }
 
 /**
- * Return the mouse binding which matches modifier, click location, release,
- * and pressed button state, otherwise return null.
- */
-static struct sway_binding* get_active_mouse_binding(
-        struct seatop_default_event *e, list_t *bindings, uint32_t modifiers,
-        bool release, bool on_titlebar, bool on_border, bool on_content,
-        bool on_workspace, const char *identifier) {
-    uint32_t click_region =
-            ((on_titlebar || on_workspace) ? BINDING_TITLEBAR : 0) |
-            ((on_border || on_workspace) ? BINDING_BORDER : 0) |
-            ((on_content || on_workspace) ? BINDING_CONTENTS : 0);
-
-    struct sway_binding *current = NULL;
-    for (int i = 0; i < bindings->length; ++i) {
-        struct sway_binding *binding = bindings->items[i];
-        if (modifiers ^ binding->modifiers ||
-                e->pressed_button_count != (size_t)binding->keys->length ||
-                release != (binding->flags & BINDING_RELEASE) ||
-                !(click_region & binding->flags) ||
-                (on_workspace &&
-                 (click_region & binding->flags) != click_region) ||
-                (strcmp(binding->input, identifier) != 0 &&
-                 strcmp(binding->input, "*") != 0)) {
-            continue;
-        }
-
-        bool match = true;
-        for (size_t j = 0; j < e->pressed_button_count; j++) {
-            uint32_t key = *(uint32_t *)binding->keys->items[j];
-            if (key != e->pressed_buttons[j]) {
-                match = false;
-                break;
-            }
-        }
-        if (!match) {
-            continue;
-        }
-
-        if (!current || strcmp(current->input, "*") == 0) {
-            current = binding;
-            if (strcmp(current->input, identifier) == 0) {
-                // If a binding is found for the exact input, quit searching
-                break;
-            }
-        }
-    }
-    return current;
-}
-
-/**
  * Remove a button (and duplicates) from the sorted list of currently pressed
  * buttons.
  */
@@ -259,43 +209,22 @@ static void handle_tablet_tool_tip(struct sway_seat *seat,
  * Functions used by handle_button  /
  *--------------------------------*/
 
-static bool trigger_pointer_button_binding(struct sway_seat *seat,
+static void add_or_remove_button_to_state(struct sway_seat *seat,
         struct wlr_input_device *device, uint32_t button,
-        enum wlr_button_state state, uint32_t modifiers,
-        bool on_titlebar, bool on_border, bool on_contents, bool on_workspace) {
+        enum wlr_button_state state) {
     // We can reach this for non-pointer devices if we're currently emulating
     // pointer input for one. Emulated input should not trigger bindings. The
     // device can be NULL if this is synthetic (e.g. swaymsg-generated) input.
     if (device && device->type != WLR_INPUT_DEVICE_POINTER) {
-        return false;
+        return;
     }
 
     struct seatop_default_event *e = seat->seatop_data;
-
-    char *device_identifier = device ? input_device_get_identifier(device)
-        : strdup("*");
-    struct sway_binding *binding = NULL;
     if (state == WLR_BUTTON_PRESSED) {
         state_add_button(e, button);
-        binding = get_active_mouse_binding(e,
-            config->current_mode->mouse_bindings, modifiers, false,
-            on_titlebar, on_border, on_contents, on_workspace,
-            device_identifier);
     } else {
-        binding = get_active_mouse_binding(e,
-            config->current_mode->mouse_bindings, modifiers, true,
-            on_titlebar, on_border, on_contents, on_workspace,
-            device_identifier);
         state_erase_button(e, button);
     }
-
-    free(device_identifier);
-    if (binding) {
-        seat_execute_command(seat, binding);
-        return true;
-    }
-
-    return false;
 }
 
 static void handle_button(struct sway_seat *seat, uint32_t time_msec,
@@ -315,19 +244,8 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
     enum wlr_edges edge = cont ? find_edge(cont, surface, cursor) : WLR_EDGE_NONE;
     enum wlr_edges resize_edge = cont && edge ?
         find_resize_edge(cont, surface, cursor) : WLR_EDGE_NONE;
-    bool on_border = edge != WLR_EDGE_NONE;
-    bool on_contents = cont && !on_border && surface;
-    bool on_workspace = node && node->type == N_WORKSPACE;
-    bool on_titlebar = cont && !on_border && !surface;
 
-    struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat->wlr_seat);
-    uint32_t modifiers = keyboard ? wlr_keyboard_get_modifiers(keyboard) : 0;
-
-    // Handle mouse bindings
-    if (trigger_pointer_button_binding(seat, device, button, state, modifiers,
-            on_titlebar, on_border, on_contents, on_workspace)) {
-        return;
-    }
+    add_or_remove_button_to_state(seat, device, button, state);
 
     // Handle clicking an empty workspace
     if (node && node->type == N_WORKSPACE) {
@@ -556,31 +474,12 @@ static void handle_pointer_axis(struct sway_seat *seat,
     bool on_titlebar = cont && !on_border && !surface;
     bool on_titlebar_border = cont && on_border &&
         cursor->cursor->y < cont->content_y;
-    bool on_contents = cont && !on_border && surface;
-    bool on_workspace = node && node->type == N_WORKSPACE;
     float scroll_factor =
         (ic == NULL || ic->scroll_factor == FLT_MIN) ? 1.0f : ic->scroll_factor;
 
     bool handled = false;
-
-    // Gather information needed for mouse bindings
-    struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat->wlr_seat);
-    uint32_t modifiers = keyboard ? wlr_keyboard_get_modifiers(keyboard) : 0;
-    struct wlr_input_device *device =
-        input_device ? input_device->wlr_device : NULL;
-    char *dev_id = device ? input_device_get_identifier(device) : strdup("*");
     uint32_t button = wl_axis_to_button(event);
-
-    // Handle mouse bindings - x11 mouse buttons 4-7 - press event
-    struct sway_binding *binding = NULL;
     state_add_button(e, button);
-    binding = get_active_mouse_binding(e, config->current_mode->mouse_bindings,
-            modifiers, false, on_titlebar, on_border, on_contents, on_workspace,
-            dev_id);
-    if (binding) {
-        seat_execute_command(seat, binding);
-        handled = true;
-    }
 
     // Scrolling on a tabbed or stacked title bar (handled as press event)
     if (!handled && (on_titlebar || on_titlebar_border)) {
@@ -609,16 +508,7 @@ static void handle_pointer_axis(struct sway_seat *seat,
         }
     }
 
-    // Handle mouse bindings - x11 mouse buttons 4-7 - release event
-    binding = get_active_mouse_binding(e, config->current_mode->mouse_bindings,
-            modifiers, true, on_titlebar, on_border, on_contents, on_workspace,
-            dev_id);
     state_erase_button(e, button);
-    if (binding) {
-        seat_execute_command(seat, binding);
-        handled = true;
-    }
-    free(dev_id);
 
     if (!handled) {
         wlr_seat_pointer_notify_axis(cursor->seat->wlr_seat, event->time_msec,

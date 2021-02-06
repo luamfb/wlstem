@@ -18,6 +18,4 @@ void sway_switch_configure(struct sway_switch *sway_switch);
 
 void sway_switch_destroy(struct sway_switch *sway_switch);
 
-void sway_switch_retrigger_bindings_for_all(void);
-
 #endif
