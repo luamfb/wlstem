@@ -463,7 +463,7 @@ static void render_titlebar(struct sway_output *output,
     // Marks
     int ob_marks_x = 0; // output-buffer-local
     int ob_marks_width = 0; // output-buffer-local
-    if (config->show_marks && marks_texture) {
+    if (marks_texture) {
         struct wlr_box texture_box;
         wlr_texture_get_size(marks_texture,
             &texture_box.width, &texture_box.height);

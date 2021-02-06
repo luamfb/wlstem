@@ -1558,9 +1558,6 @@ static void update_marks_texture(struct sway_container *con,
 }
 
 void container_update_marks_textures(struct sway_container *con) {
-    if (!config->show_marks) {
-        return;
-    }
     update_marks_texture(con, &con->marks_focused,
             &config->border_colors.focused);
     update_marks_texture(con, &con->marks_focused_inactive,

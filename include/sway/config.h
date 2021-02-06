@@ -362,7 +362,6 @@ struct sway_config {
     enum mouse_warping_mode mouse_warping;
     enum focus_wrapping_mode focus_wrapping;
     bool active;
-    bool show_marks;
     enum alignment title_align;
 
     enum sway_container_border border;

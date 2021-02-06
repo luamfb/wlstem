@@ -197,7 +197,6 @@ static void config_defaults(struct sway_config *config) {
     config->mouse_warping = WARP_OUTPUT;
     config->focus_wrapping = WRAP_YES;
     config->active = false;
-    config->show_marks = true;
     config->title_align = ALIGN_LEFT;
 
     // borders
