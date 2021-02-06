@@ -170,9 +170,6 @@ static void config_defaults(struct sway_config *config) {
     if (!(config->current_mode->switch_bindings = create_list())) goto cleanup;
     list_add(config->modes, config->current_mode);
 
-    config->dragging_key = BTN_LEFT;
-    config->resizing_key = BTN_RIGHT;
-
     config->default_layout = L_NONE;
     config->default_orientation = L_NONE;
     if (!(config->font = strdup("monospace 10"))) goto cleanup;
