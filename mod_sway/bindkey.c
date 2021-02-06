@@ -44,14 +44,6 @@ static bool binding_key_compare(struct sway_binding *binding_a,
         return false;
     }
 
-    uint32_t conflict_generating_flags = BINDING_RELEASE | BINDING_BORDER
-            | BINDING_CONTENTS | BINDING_TITLEBAR | BINDING_LOCKED
-            | BINDING_INHIBITED;
-    if ((binding_a->flags & conflict_generating_flags) !=
-            (binding_b->flags & conflict_generating_flags)) {
-        return false;
-    }
-
     if (binding_a->group != binding_b->group) {
         return false;
     }
@@ -157,7 +149,6 @@ static bool cmd_bindsym_or_bindcode(
     binding->keys = create_list();
     binding->group = XKB_LAYOUT_INVALID;
     binding->modifiers = modifiers;
-    binding->flags = 0;
     binding->type = BINDING_KEYSYM;
 
     bool warn = true;
@@ -272,10 +263,6 @@ static struct keycode_matches get_keycode_for_keysym(xkb_keysym_t keysym) {
 }
 
 bool translate_binding(struct sway_binding *binding) {
-    if ((binding->flags & BINDING_CODE) == 0) {
-        return true;
-    }
-
     switch (binding->type) {
     // a bindsym to translate
     case BINDING_KEYSYM:

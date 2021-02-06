@@ -20,18 +20,6 @@ enum binding_input_type {
     BINDING_KEYSYM,
 };
 
-enum binding_flags {
-    BINDING_RELEASE = 1 << 0,
-    BINDING_LOCKED = 1 << 1, // keyboard only
-    BINDING_BORDER = 1 << 2, // mouse only; trigger on container border
-    BINDING_CONTENTS = 1 << 3, // mouse only; trigger on container contents
-    BINDING_TITLEBAR = 1 << 4, // mouse only; trigger on container titlebar
-    BINDING_CODE = 1 << 5, // keyboard only; convert keysyms into keycodes
-    BINDING_RELOAD = 1 << 6, // switch only; (re)trigger binding on reload
-    BINDING_INHIBITED = 1 << 7, // keyboard only: ignore shortcut inhibitor
-    BINDING_NOREPEAT = 1 << 8, // keyboard only; do not trigger when repeating a held key
-};
-
 typedef bool(*binding_callback_type)(void);
 
 /**
@@ -41,7 +29,6 @@ struct sway_binding {
     enum binding_input_type type;
     int order;
     char *input;
-    uint32_t flags;
     list_t *keys; // sorted in ascending order
     list_t *syms; // sorted in ascending order; NULL if BINDING_CODE is not set
     uint32_t modifiers;
