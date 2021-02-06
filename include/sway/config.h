@@ -339,8 +339,6 @@ struct sway_config {
     list_t *input_type_configs;
     list_t *seat_configs;
     struct sway_mode *current_mode;
-    enum sway_container_layout default_orientation;
-    enum sway_container_layout default_layout;
     char *font;
     size_t font_height;
     size_t font_baseline;

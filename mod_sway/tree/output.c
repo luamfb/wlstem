@@ -130,12 +130,10 @@ void output_enable(struct sway_output *output) {
         free(ws_name);
     }
 
-    if (ws && config->default_orientation == L_NONE) {
-        // Since the output transformation and resolution could have changed
-        // due to applying the output config, the previously set layout for the
-        // created workspace may not be correct for `default_orientation auto`
-        ws->layout = output_get_default_layout(output);
-    }
+    // Since the output transformation and resolution could have changed
+    // due to applying the output config, the previously set layout for the
+    // created workspace may not be correct for `default_orientation auto`
+    ws->layout = output_get_default_layout(output);
 
     input_manager_configure_xcursor();
 
@@ -386,9 +384,6 @@ void output_get_box(struct sway_output *output, struct wlr_box *box) {
 
 enum sway_container_layout output_get_default_layout(
         struct sway_output *output) {
-    if (config->default_orientation != L_NONE) {
-        return config->default_orientation;
-    }
     if (output->height > output->width) {
         return L_VERT;
     }
