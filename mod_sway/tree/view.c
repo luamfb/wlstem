@@ -207,28 +207,6 @@ bool view_ancestor_is_only_visible(struct sway_view *view) {
     return only_visible;
 }
 
-static bool view_is_only_visible(struct sway_view *view) {
-    struct sway_container *con = view->container;
-    while (con) {
-        enum sway_container_layout layout = container_parent_layout(con);
-        if (layout != L_TABBED && layout != L_STACKED) {
-            list_t *siblings = container_get_siblings(con);
-            if (siblings && siblings->length > 1) {
-                return false;
-            }
-        }
-
-        con = con->parent;
-    }
-
-    return true;
-}
-
-static bool gaps_to_edge(struct sway_view *view) {
-    struct side_gaps gaps = view->container->workspace->current_gaps;
-    return gaps.top > 0 || gaps.right > 0 || gaps.bottom > 0 || gaps.left > 0;
-}
-
 void view_autoconfigure(struct sway_view *view) {
     struct sway_container *con = view->container;
     struct sway_workspace *ws = con->workspace;
@@ -258,32 +236,6 @@ void view_autoconfigure(struct sway_view *view) {
     double y_offset = 0;
 
     if (!container_is_floating(con) && ws) {
-        if (config->hide_edge_borders == E_BOTH
-                || config->hide_edge_borders == E_VERTICAL) {
-            con->border_left = con->x != ws->x;
-            int right_x = con->x + con->width;
-            con->border_right = right_x != ws->x + ws->width;
-        }
-
-        if (config->hide_edge_borders == E_BOTH
-                || config->hide_edge_borders == E_HORIZONTAL) {
-            con->border_top = con->y != ws->y;
-            int bottom_y = con->y + con->height;
-            con->border_bottom = bottom_y != ws->y + ws->height;
-        }
-
-        bool smart = config->hide_edge_borders_smart == ESMART_ON ||
-            (config->hide_edge_borders_smart == ESMART_NO_GAPS &&
-            !gaps_to_edge(view));
-        if (smart) {
-            bool show_border = container_is_floating_or_child(con) ||
-                !view_is_only_visible(view);
-            con->border_left &= show_border;
-            con->border_right &= show_border;
-            con->border_top &= show_border;
-            con->border_bottom &= show_border;
-        }
-
         // In a tabbed or stacked container, the container's y is the top of the
         // title area. We have to offset the surface y by the height of the title,
         // bar, and disable any top border because we'll always have the title bar.

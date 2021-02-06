@@ -298,19 +298,6 @@ struct border_colors {
     float child_border[4];
 };
 
-enum edge_border_types {
-    E_NONE, /**< Don't hide edge borders */
-    E_VERTICAL, /**< hide vertical edge borders */
-    E_HORIZONTAL, /**< hide horizontal edge borders */
-    E_BOTH, /**< hide vertical and horizontal edge borders */
-};
-
-enum edge_border_smart_types {
-    ESMART_OFF,
-    ESMART_ON, /**< hide edges if precisely one window is present in workspace */
-    ESMART_NO_GAPS, /**< hide edges if one window and gaps to edge is zero */
-};
-
 enum sway_popup_during_fullscreen {
     POPUP_SMART,
     POPUP_IGNORE,
@@ -400,8 +387,6 @@ struct sway_config {
     enum sway_container_border floating_border;
     int border_thickness;
     int floating_border_thickness;
-    enum edge_border_types hide_edge_borders;
-    enum edge_border_smart_types hide_edge_borders_smart;
 
     // border colors
     struct {
