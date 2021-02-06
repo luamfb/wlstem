@@ -170,8 +170,6 @@ static void config_defaults(struct sway_config *config) {
     if (!(config->current_mode->switch_bindings = create_list())) goto cleanup;
     list_add(config->modes, config->current_mode);
 
-    config->floating_mod = 0;
-    config->floating_mod_inverse = false;
     config->dragging_key = BTN_LEFT;
     config->resizing_key = BTN_RIGHT;
 

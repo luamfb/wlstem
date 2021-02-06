@@ -312,7 +312,6 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
     struct sway_container *cont = node && node->type == N_CONTAINER ?
         node->sway_container : NULL;
     bool is_floating = cont && container_is_floating(cont);
-    bool is_floating_or_child = cont && container_is_floating_or_child(cont);
     enum wlr_edges edge = cont ? find_edge(cont, surface, cursor) : WLR_EDGE_NONE;
     enum wlr_edges resize_edge = cont && edge ?
         find_resize_edge(cont, surface, cursor) : WLR_EDGE_NONE;
@@ -365,36 +364,6 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
         seat_set_focus_container(seat, cont_to_focus);
         seatop_begin_resize_tiling(seat, cont, edge);
         return;
-    }
-
-    // Handle tiling resize via mod
-    bool mod_pressed = modifiers & config->floating_mod;
-    if (cont && !is_floating_or_child && mod_pressed &&
-            state == WLR_BUTTON_PRESSED) {
-        uint32_t btn_resize = config->floating_mod_inverse ?
-            BTN_LEFT : BTN_RIGHT;
-        if (button == btn_resize) {
-            edge = 0;
-            edge |= cursor->cursor->x > cont->x + cont->width / 2 ?
-                WLR_EDGE_RIGHT : WLR_EDGE_LEFT;
-            edge |= cursor->cursor->y > cont->y + cont->height / 2 ?
-                WLR_EDGE_BOTTOM : WLR_EDGE_TOP;
-
-            const char *image = NULL;
-            if (edge == (WLR_EDGE_LEFT | WLR_EDGE_TOP)) {
-                image = "nw-resize";
-            } else if (edge == (WLR_EDGE_TOP | WLR_EDGE_RIGHT)) {
-                image = "ne-resize";
-            } else if (edge == (WLR_EDGE_RIGHT | WLR_EDGE_BOTTOM)) {
-                image = "se-resize";
-            } else if (edge == (WLR_EDGE_BOTTOM | WLR_EDGE_LEFT)) {
-                image = "sw-resize";
-            }
-            cursor_set_image(seat->cursor, image, NULL);
-            seat_set_focus_container(seat, cont);
-            seatop_begin_resize_tiling(seat, cont, edge);
-            return;
-        }
     }
 
     // Handle mousedown on a container surface
