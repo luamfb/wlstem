@@ -242,12 +242,6 @@ void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,
 void seatop_begin_move_floating(struct sway_seat *seat,
         struct sway_container *con);
 
-void seatop_begin_move_tiling_threshold(struct sway_seat *seat,
-        struct sway_container *con);
-
-void seatop_begin_move_tiling(struct sway_seat *seat,
-        struct sway_container *con);
-
 void seatop_begin_resize_floating(struct sway_seat *seat,
         struct sway_container *con, enum wlr_edges edge);
 

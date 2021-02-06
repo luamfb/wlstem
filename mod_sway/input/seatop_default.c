@@ -247,13 +247,6 @@ static void handle_tablet_tool_tip(struct sway_seat *seat,
             return;
         }
 
-        // Handle moving a tiling container
-        if (config->tiling_drag && mod_pressed && !is_floating_or_child &&
-                cont->fullscreen_mode == FULLSCREEN_NONE) {
-            seatop_begin_move_tiling(seat, cont);
-            return;
-        }
-
         // Handle tapping on a container surface
         seat_set_focus_container(seat, cont);
         seatop_begin_down(seat, node->sway_container, time_msec, sx, sy);
@@ -453,26 +446,6 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
             seatop_begin_resize_floating(seat, floater, edge);
             return;
         }
-    }
-
-    // Handle moving a tiling container
-    if (config->tiling_drag && (mod_pressed || on_titlebar) &&
-            state == WLR_BUTTON_PRESSED && !is_floating_or_child &&
-            cont && cont->fullscreen_mode == FULLSCREEN_NONE) {
-        struct sway_container *focus = seat_get_focused_container(seat);
-        bool focused = focus == cont || container_has_ancestor(focus, cont);
-        if (on_titlebar && !focused) {
-            node = seat_get_focus_inactive(seat, &cont->node);
-            seat_set_focus(seat, node);
-        }
-
-        // If moving a container by it's title bar, use a threshold for the drag
-        if (!mod_pressed && config->tiling_drag_threshold > 0) {
-            seatop_begin_move_tiling_threshold(seat, cont);
-        } else {
-            seatop_begin_move_tiling(seat, cont);
-        }
-        return;
     }
 
     // Handle mousedown on a container surface
