@@ -365,9 +365,6 @@ struct sway_config {
     bool show_marks;
     enum alignment title_align;
 
-    bool tiling_drag;
-    int tiling_drag_threshold;
-
     enum sway_container_border border;
     enum sway_container_border floating_border;
     int border_thickness;

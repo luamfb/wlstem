@@ -199,8 +199,6 @@ static void config_defaults(struct sway_config *config) {
     config->active = false;
     config->show_marks = true;
     config->title_align = ALIGN_LEFT;
-    config->tiling_drag = true;
-    config->tiling_drag_threshold = 9;
 
     // borders
     config->border = B_NORMAL;
