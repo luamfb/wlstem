@@ -170,8 +170,6 @@ static void config_defaults(struct sway_config *config) {
     if (!(config->current_mode->switch_bindings = create_list())) goto cleanup;
     list_add(config->modes, config->current_mode);
 
-    config->default_layout = L_NONE;
-    config->default_orientation = L_NONE;
     if (!(config->font = strdup("monospace 10"))) goto cleanup;
     config->font_height = 17; // height of monospace 10
     config->urgent_timeout = 500;

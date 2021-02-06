@@ -682,9 +682,6 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     if (con->workspace) {
         container_detach(con);
     }
-    if (config->default_layout != L_NONE) {
-        con = container_split(con, config->default_layout);
-    }
     list_add(workspace->tiling, con);
     con->workspace = workspace;
     container_for_each_child(con, set_workspace, NULL);
@@ -723,9 +720,6 @@ struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
         struct sway_container *con, int index) {
     if (con->workspace) {
         container_detach(con);
-    }
-    if (config->default_layout != L_NONE) {
-        con = container_split(con, config->default_layout);
     }
     workspace_insert_tiling_direct(workspace, con, index);
     return con;
