@@ -570,34 +570,9 @@ static void handle_request_minimize(struct wl_listener *listener, void *data) {
 }
 
 static void handle_request_move(struct wl_listener *listener, void *data) {
-    struct sway_xwayland_view *xwayland_view =
-        wl_container_of(listener, xwayland_view, request_move);
-    struct sway_view *view = &xwayland_view->view;
-    struct wlr_xwayland_surface *xsurface = view->wlr_xwayland_surface;
-    if (!xsurface->mapped) {
-        return;
-    }
-    if (!container_is_floating(view->container)) {
-        return;
-    }
-    struct sway_seat *seat = input_manager_current_seat();
-    seatop_begin_move_floating(seat, view->container);
 }
 
 static void handle_request_resize(struct wl_listener *listener, void *data) {
-    struct sway_xwayland_view *xwayland_view =
-        wl_container_of(listener, xwayland_view, request_resize);
-    struct sway_view *view = &xwayland_view->view;
-    struct wlr_xwayland_surface *xsurface = view->wlr_xwayland_surface;
-    if (!xsurface->mapped) {
-        return;
-    }
-    if (!container_is_floating(view->container)) {
-        return;
-    }
-    struct wlr_xwayland_resize_event *e = data;
-    struct sway_seat *seat = input_manager_current_seat();
-    seatop_begin_resize_floating(seat, view->container, e->edges);
 }
 
 static void handle_request_activate(struct wl_listener *listener, void *data) {
