@@ -393,7 +393,6 @@ struct sway_config {
     bool tiling_drag;
     int tiling_drag_threshold;
 
-    bool smart_gaps;
     int gaps_inner;
     struct side_gaps gaps_outer;
 
