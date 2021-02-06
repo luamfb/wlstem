@@ -54,9 +54,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
     ws->tiling = create_list();
     ws->output_priority = create_list();
 
-    ws->gaps_outer = config->gaps_outer;
-    ws->gaps_inner = config->gaps_inner;
-
     // If not already added, add the output to the lowest priority
     workspace_output_add_priority(ws, output);
 
@@ -732,39 +729,6 @@ struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
     }
     workspace_insert_tiling_direct(workspace, con, index);
     return con;
-}
-
-void workspace_add_gaps(struct sway_workspace *ws) {
-    ws->current_gaps = ws->gaps_outer;
-    // Add inner gaps and make sure we don't turn out negative
-    ws->current_gaps.top = fmax(0, ws->current_gaps.top + ws->gaps_inner);
-    ws->current_gaps.right = fmax(0, ws->current_gaps.right + ws->gaps_inner);
-    ws->current_gaps.bottom = fmax(0, ws->current_gaps.bottom + ws->gaps_inner);
-    ws->current_gaps.left = fmax(0, ws->current_gaps.left + ws->gaps_inner);
-
-    // Now that we have the total gaps calculated we may need to clamp them in
-    // case they've made the available area too small
-    if (ws->width - ws->current_gaps.left - ws->current_gaps.right < MIN_SANE_W
-            && ws->current_gaps.left + ws->current_gaps.right > 0) {
-        int total_gap = fmax(0, ws->width - MIN_SANE_W);
-        double left_gap_frac = ((double)ws->current_gaps.left /
-            ((double)ws->current_gaps.left + (double)ws->current_gaps.right));
-        ws->current_gaps.left = left_gap_frac * total_gap;
-        ws->current_gaps.right = total_gap - ws->current_gaps.left;
-    }
-    if (ws->height - ws->current_gaps.top - ws->current_gaps.bottom < MIN_SANE_H
-            && ws->current_gaps.top + ws->current_gaps.bottom > 0) {
-        int total_gap = fmax(0, ws->height - MIN_SANE_H);
-        double top_gap_frac = ((double) ws->current_gaps.top /
-            ((double)ws->current_gaps.top + (double)ws->current_gaps.bottom));
-        ws->current_gaps.top = top_gap_frac * total_gap;
-        ws->current_gaps.bottom = total_gap - ws->current_gaps.top;
-    }
-
-    ws->x += ws->current_gaps.left;
-    ws->y += ws->current_gaps.top;
-    ws->width -= ws->current_gaps.left + ws->current_gaps.right;
-    ws->height -= ws->current_gaps.top + ws->current_gaps.bottom;
 }
 
 struct sway_container *workspace_split(struct sway_workspace *workspace,

@@ -202,12 +202,6 @@ static void config_defaults(struct sway_config *config) {
     config->tiling_drag = true;
     config->tiling_drag_threshold = 9;
 
-    config->gaps_inner = 0;
-    config->gaps_outer.top = 0;
-    config->gaps_outer.right = 0;
-    config->gaps_outer.bottom = 0;
-    config->gaps_outer.left = 0;
-
     // borders
     config->border = B_NORMAL;
     config->floating_border = B_NORMAL;

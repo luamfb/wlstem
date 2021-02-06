@@ -32,10 +32,6 @@ struct sway_workspace {
     enum sway_container_layout layout;
     enum sway_container_layout prev_split_layout;
 
-    struct side_gaps current_gaps;
-    int gaps_inner;
-    struct side_gaps gaps_outer;
-
     struct sway_output *output; // NULL if no outputs are connected
     list_t *floating;           // struct sway_container
     list_t *tiling;             // struct sway_container
@@ -124,10 +120,6 @@ void workspace_insert_tiling_direct(struct sway_workspace *workspace,
 
 struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
         struct sway_container *con, int index);
-
-void workspace_remove_gaps(struct sway_workspace *ws);
-
-void workspace_add_gaps(struct sway_workspace *ws);
 
 struct sway_container *workspace_split(struct sway_workspace *workspace,
         enum sway_container_layout layout);

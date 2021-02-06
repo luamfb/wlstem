@@ -52,26 +52,7 @@ static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
         child->width_fraction /= total_width_fraction;
     }
 
-    // Calculate gap size
-    double inner_gap = 0;
-    struct sway_container *child = children->items[0];
-    struct sway_workspace *ws = child->workspace;
-    if (ws) {
-        inner_gap = ws->gaps_inner;
-    }
-    // Descendants of tabbed/stacked containers don't have gaps
-    struct sway_container *temp = child;
-    while (temp) {
-        enum sway_container_layout layout = container_parent_layout(temp);
-        if (layout == L_TABBED || layout == L_STACKED) {
-            inner_gap = 0;
-        }
-        temp = temp->parent;
-    }
-    double total_gap = fmin(inner_gap * (children->length - 1),
-        fmax(0, parent->width - MIN_SANE_W * children->length));
-    double child_total_width = parent->width - total_gap;
-    inner_gap = floor(total_gap / (children->length - 1));
+    double child_total_width = parent->width;
 
     // Resize windows
     sway_log(SWAY_DEBUG, "Arranging %p horizontally", parent);
@@ -83,7 +64,7 @@ static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
         child->y = parent->y;
         child->width = round(child->width_fraction * child_total_width);
         child->height = parent->height;
-        child_x += child->width + inner_gap;
+        child_x += child->width;
 
         // Make last child use remaining width of parent
         if (i == children->length - 1) {
@@ -131,26 +112,7 @@ static void apply_vert_layout(list_t *children, struct wlr_box *parent) {
         child->height_fraction /= total_height_fraction;
     }
 
-    // Calculate gap size
-    double inner_gap = 0;
-    struct sway_container *child = children->items[0];
-    struct sway_workspace *ws = child->workspace;
-    if (ws) {
-        inner_gap = ws->gaps_inner;
-    }
-    // Descendants of tabbed/stacked containers don't have gaps
-    struct sway_container *temp = child;
-    while (temp) {
-        enum sway_container_layout layout = container_parent_layout(temp);
-        if (layout == L_TABBED || layout == L_STACKED) {
-            inner_gap = 0;
-        }
-        temp = temp->parent;
-    }
-    double total_gap = fmin(inner_gap * (children->length - 1),
-        fmax(0, parent->height - MIN_SANE_H * children->length));
-    double child_total_height = parent->height - total_gap;
-    inner_gap = floor(total_gap / (children->length - 1));
+    double child_total_height = parent->height;
 
     // Resize windows
     sway_log(SWAY_DEBUG, "Arranging %p vertically", parent);
@@ -162,7 +124,7 @@ static void apply_vert_layout(list_t *children, struct wlr_box *parent) {
         child->y = child_y;
         child->width = parent->width;
         child->height = round(child->height_fraction * child_total_height);
-        child_y += child->height + inner_gap;
+        child_y += child->height;
 
         // Make last child use remaining height of parent
         if (i == children->length - 1) {
@@ -258,8 +220,8 @@ void arrange_workspace(struct sway_workspace *workspace) {
             area->width, area->height, area->x, area->y);
 
     bool first_arrange = workspace->width == 0 && workspace->height == 0;
-    double prev_x = workspace->x - workspace->current_gaps.left;
-    double prev_y = workspace->y - workspace->current_gaps.top;
+    double prev_x = workspace->x;
+    double prev_y = workspace->y;
     workspace->width = area->width;
     workspace->height = area->height;
     workspace->x = output->lx + area->x;
@@ -282,7 +244,6 @@ void arrange_workspace(struct sway_workspace *workspace) {
         }
     }
 
-    workspace_add_gaps(workspace);
     node_set_dirty(&workspace->node);
     sway_log(SWAY_DEBUG, "Arranging workspace '%s' at %f, %f", workspace->name,
             workspace->x, workspace->y);
