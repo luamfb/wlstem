@@ -29,13 +29,6 @@ void free_sway_binding(struct sway_binding *binding) {
     free(binding);
 }
 
-void free_switch_binding(struct sway_switch_binding *binding) {
-    if (!binding) {
-        return;
-    }
-    free(binding);
-}
-
 /**
  * Returns true if the bindings have the same key and modifier combinations.
  * Note that keyboard layout is not considered, so the bindings might actually
@@ -167,14 +160,7 @@ static bool cmd_bindsym_or_bindcode(
     binding->flags = 0;
     binding->type = BINDING_KEYSYM;
 
-    bool exclude_titlebar = false;
     bool warn = true;
-
-    if (binding->flags & (BINDING_BORDER | BINDING_CONTENTS | BINDING_TITLEBAR)
-            || exclude_titlebar) {
-        binding->type = binding->type == BINDING_KEYCODE ?
-            BINDING_MOUSECODE : BINDING_MOUSESYM;
-    }
 
     uint32_t *_key = calloc(1, sizeof(uint32_t));
     if (!_key) {
@@ -184,15 +170,6 @@ static bool cmd_bindsym_or_bindcode(
     }
     *_key = key;
     list_add(binding->keys, _key);
-
-    // refine region of interest for mouse binding once we are certain
-    // that this is one
-    if (exclude_titlebar) {
-        binding->flags &= ~BINDING_TITLEBAR;
-    } else if (binding->type == BINDING_MOUSECODE
-            || binding->type == BINDING_MOUSESYM) {
-        binding->flags |= BINDING_TITLEBAR;
-    }
 
     // sort ascending
     list_qsort(binding->keys, key_qsort_cmp);
@@ -208,8 +185,6 @@ static bool cmd_bindsym_or_bindcode(
         mode_bindings = config->current_mode->keycode_bindings;
     } else if (binding->type == BINDING_KEYSYM) {
         mode_bindings = config->current_mode->keysym_bindings;
-    } else {
-        mode_bindings = config->current_mode->mouse_bindings;
     }
 
     if (unbind) {

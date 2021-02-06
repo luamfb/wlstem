@@ -20,48 +20,6 @@ struct sway_switch *sway_switch_create(struct sway_seat *seat,
     return switch_device;
 }
 
-static void execute_binding(struct sway_switch *sway_switch) {
-    struct sway_seat* seat = sway_switch->seat_device->sway_seat;
-    bool input_inhibited = seat->exclusive_client != NULL;
-
-    list_t *bindings = config->current_mode->switch_bindings;
-    struct sway_switch_binding *matched_binding = NULL;
-    for (int i = 0; i < bindings->length; ++i) {
-        struct sway_switch_binding *binding = bindings->items[i];
-        if (binding->type != sway_switch->type) {
-            continue;
-        }
-        if (binding->state != WLR_SWITCH_STATE_TOGGLE &&
-                binding->state != sway_switch->state) {
-            continue;
-        }
-        bool binding_locked = binding->flags & BINDING_LOCKED;
-        if (!binding_locked && input_inhibited) {
-            continue;
-        }
-
-        matched_binding = binding;
-
-        if (binding_locked == input_inhibited) {
-            break;
-        }
-    }
-
-    if (matched_binding) {
-        struct sway_binding *dummy_binding =
-            calloc(1, sizeof(struct sway_binding));
-        dummy_binding->type = BINDING_SWITCH;
-        dummy_binding->flags = matched_binding->flags;
-        dummy_binding->callback = matched_binding->callback;
-
-        seat_execute_command(seat, dummy_binding);
-        free(dummy_binding);
-    }
-
-    transaction_commit_dirty();
-
-}
-
 static void handle_switch_toggle(struct wl_listener *listener, void *data) {
     struct sway_switch *sway_switch =
             wl_container_of(listener, sway_switch, switch_toggle);
@@ -78,7 +36,6 @@ static void handle_switch_toggle(struct wl_listener *listener, void *data) {
 
     sway_switch->type = event->switch_type;
     sway_switch->state = event->switch_state;
-    execute_binding(sway_switch);
 }
 
 void sway_switch_configure(struct sway_switch *sway_switch) {
@@ -97,18 +54,4 @@ void sway_switch_destroy(struct sway_switch *sway_switch) {
     }
     wl_list_remove(&sway_switch->switch_toggle.link);
     free(sway_switch);
-}
-
-void sway_switch_retrigger_bindings_for_all(void) {
-    struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
-        struct sway_seat_device *seat_device;
-        wl_list_for_each(seat_device, &seat->devices, link) {
-            struct sway_input_device *input_device = seat_device->input_device;
-            if (input_device->wlr_device->type != WLR_INPUT_DEVICE_SWITCH) {
-                continue;
-            }
-            execute_binding(seat_device->switch_device);
-        };
-    }
 }

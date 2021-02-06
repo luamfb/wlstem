@@ -18,9 +18,6 @@
 enum binding_input_type {
     BINDING_KEYCODE,
     BINDING_KEYSYM,
-    BINDING_MOUSECODE,
-    BINDING_MOUSESYM,
-    BINDING_SWITCH
 };
 
 enum binding_flags {
@@ -60,24 +57,6 @@ bool cmd_bindsym(
         binding_callback_type callback);
 
 /**
- * A mouse binding and an associated command.
- */
-struct sway_mouse_binding {
-    uint32_t button;
-    binding_callback_type callback;
-};
-
-/**
- * A laptop switch binding and an associated command.
- */
-struct sway_switch_binding {
-    enum wlr_switch_type type;
-    enum wlr_switch_state state;
-    uint32_t flags;
-    binding_callback_type callback;
-};
-
-/**
  * Focus on window activation.
  */
 enum sway_fowa {
@@ -94,8 +73,6 @@ struct sway_mode {
     char *name;
     list_t *keysym_bindings;
     list_t *keycode_bindings;
-    list_t *mouse_bindings;
-    list_t *switch_bindings;
     bool pango;
 };
 
@@ -451,8 +428,6 @@ void free_output_config(struct output_config *oc);
 int workspace_output_cmp_workspace(const void *a, const void *b);
 
 void free_sway_binding(struct sway_binding *sb);
-
-void free_switch_binding(struct sway_switch_binding *binding);
 
 void seat_execute_command(struct sway_seat *seat, struct sway_binding *binding);
 
