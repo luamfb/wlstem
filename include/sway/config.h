@@ -270,24 +270,12 @@ struct output_config {
 };
 
 /**
- * Stores size of gaps for each side
- */
-struct side_gaps {
-    int top;
-    int right;
-    int bottom;
-    int left;
-};
-
-/**
  * Stores configuration for a workspace, regardless of whether the workspace
  * exists.
  */
 struct workspace_config {
     char *workspace;
     list_t *outputs;
-    int gaps_inner;
-    struct side_gaps gaps_outer;
 };
 
 struct border_colors {
@@ -379,9 +367,6 @@ struct sway_config {
 
     bool tiling_drag;
     int tiling_drag_threshold;
-
-    int gaps_inner;
-    struct side_gaps gaps_outer;
 
     enum sway_container_border border;
     enum sway_container_border floating_border;
