@@ -27,7 +27,7 @@ struct input_config *current_input_config = NULL;
 struct seat_config *current_seat_config = NULL;
 
 struct sway_seat *input_manager_current_seat(void) {
-    struct sway_seat *seat = config->handler_context.seat;
+    struct sway_seat *seat = config->current_seat;
     if (!seat) {
         seat = input_manager_get_default_seat();
     }

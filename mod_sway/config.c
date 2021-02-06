@@ -96,7 +96,7 @@ void free_config(struct sway_config *config) {
         return;
     }
 
-    memset(&config->handler_context, 0, sizeof(config->handler_context));
+    config->current_seat = NULL;
 
     if (config->modes) {
         for (int i = 0; i < config->modes->length; ++i) {
