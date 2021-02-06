@@ -416,8 +416,6 @@ struct sway_config {
     } border_colors;
 
     // floating view
-    int32_t floating_maximum_width;
-    int32_t floating_maximum_height;
     int32_t floating_minimum_width;
     int32_t floating_minimum_height;
 
