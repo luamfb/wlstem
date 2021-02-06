@@ -636,22 +636,8 @@ void floating_calculate_constraints(int *min_width, int *max_width,
 
     struct wlr_box *box = wlr_output_layout_get_box(root->output_layout, NULL);
 
-    if (config->floating_maximum_width == -1) { // no maximum
-        *max_width = INT_MAX;
-    } else if (config->floating_maximum_width == 0) { // automatic
-        *max_width = box->width;
-    } else {
-        *max_width = config->floating_maximum_width;
-    }
-
-    if (config->floating_maximum_height == -1) { // no maximum
-        *max_height = INT_MAX;
-    } else if (config->floating_maximum_height == 0) { // automatic
-        *max_height = box->height;
-    } else {
-        *max_height = config->floating_maximum_height;
-    }
-
+    *max_width = box->width;
+    *max_height = box->height;
 }
 
 static void floating_natural_resize(struct sway_container *con) {

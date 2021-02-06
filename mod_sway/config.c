@@ -189,8 +189,6 @@ static void config_defaults(struct sway_config *config) {
     config->titlebar_v_padding = 4;
 
     // floating view
-    config->floating_maximum_width = 0;
-    config->floating_maximum_height = 0;
     config->floating_minimum_width = 75;
     config->floating_minimum_height = 50;
 
