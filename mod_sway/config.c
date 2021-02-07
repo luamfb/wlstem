@@ -150,8 +150,6 @@ static void config_defaults(struct sway_config *config) {
     config->title_align = ALIGN_LEFT;
 
     // borders
-    config->border = B_NORMAL;
-    config->floating_border = B_NORMAL;
     config->border_thickness = 2;
     config->floating_border_thickness = 2;
 

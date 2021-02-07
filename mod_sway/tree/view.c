@@ -620,11 +620,11 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     }
 
     if (view->impl->wants_floating && view->impl->wants_floating(view)) {
-        view->container->border = config->floating_border;
+        view->container->border = B_NORMAL;
         view->container->border_thickness = config->floating_border_thickness;
         container_set_floating(view->container, true);
     } else {
-        view->container->border = config->border;
+        view->container->border = B_NORMAL;
         view->container->border_thickness = config->border_thickness;
         view_set_tiled(view, true);
     }
