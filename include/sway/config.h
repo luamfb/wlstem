@@ -313,8 +313,6 @@ struct sway_config {
     bool active;
     enum alignment title_align;
 
-    enum sway_container_border border;
-    enum sway_container_border floating_border;
     int border_thickness;
     int floating_border_thickness;
 
