@@ -268,13 +268,6 @@ enum focus_follows_mouse_mode {
     FOLLOWS_ALWAYS,
 };
 
-enum focus_wrapping_mode {
-    WRAP_NO,
-    WRAP_YES,
-    WRAP_FORCE,
-    WRAP_WORKSPACE,
-};
-
 enum mouse_warping_mode {
     WARP_NO,
     WARP_OUTPUT,
@@ -317,7 +310,6 @@ struct sway_config {
     // Flags
     enum focus_follows_mouse_mode focus_follows_mouse;
     enum mouse_warping_mode mouse_warping;
-    enum focus_wrapping_mode focus_wrapping;
     bool active;
     enum alignment title_align;
 
