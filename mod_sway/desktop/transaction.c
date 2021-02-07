@@ -134,7 +134,6 @@ static void copy_container_state(struct sway_container *container,
     state->fullscreen_mode = container->fullscreen_mode;
     state->parent = container->parent;
     state->workspace = container->workspace;
-    state->border = container->border;
     state->border_thickness = container->border_thickness;
     state->border_top = container->border_top;
     state->border_left = container->border_left;

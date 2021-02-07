@@ -18,13 +18,6 @@ enum sway_container_layout {
     L_TABBED,
 };
 
-enum sway_container_border {
-    B_NONE,
-    B_PIXEL,
-    B_NORMAL,
-    B_CSD,
-};
-
 enum sway_fullscreen_mode {
     FULLSCREEN_NONE,
     FULLSCREEN_WORKSPACE,
@@ -53,7 +46,6 @@ struct sway_container_state {
     struct sway_container *focused_inactive_child;
     bool focused;
 
-    enum sway_container_border border;
     int border_thickness;
     bool border_top;
     bool border_bottom;
@@ -110,12 +102,6 @@ struct sway_container {
     double surface_x, surface_y;
 
     enum sway_fullscreen_mode fullscreen_mode;
-
-    enum sway_container_border border;
-
-    // Used when the view changes to CSD unexpectedly. This will be a non-B_CSD
-    // border which we use to restore when the view returns to SSD.
-    enum sway_container_border saved_border;
 
     int border_thickness;
     bool border_top;

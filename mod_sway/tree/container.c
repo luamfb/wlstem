@@ -688,7 +688,6 @@ void container_floating_resize_and_center(struct sway_container *con) {
             con->content_y = ws->y + (ws->height - con->content_height) / 2;
         }
 
-        // If the view's border is B_NONE then these properties are ignored.
         con->border_top = con->border_bottom = true;
         con->border_left = con->border_right = true;
 
@@ -757,9 +756,6 @@ void container_set_floating(struct sway_container *container, bool enable) {
         workspace_add_floating(workspace, container);
         if (container->view) {
             view_set_tiled(container->view, false);
-            if (container->view->using_csd) {
-                container->border = B_CSD;
-            }
         }
         container_floating_set_default_size(container);
         container_floating_resize_and_center(container);
@@ -786,9 +782,6 @@ void container_set_floating(struct sway_container *container, bool enable) {
         }
         if (container->view) {
             view_set_tiled(container->view, true);
-            if (container->view->using_csd) {
-                container->border = container->saved_border;
-            }
         }
         container->width_fraction = 0;
         container->height_fraction = 0;
@@ -806,12 +799,6 @@ void container_set_geometry_from_content(struct sway_container *con) {
     }
     size_t border_width = 0;
     size_t top = 0;
-
-    if (con->border != B_CSD) {
-        border_width = con->border_thickness * (con->border != B_NONE);
-        top = con->border == B_NORMAL ?
-            container_titlebar_height() : border_width;
-    }
 
     con->x = con->content_x - border_width;
     con->y = con->content_y - top;
@@ -1390,9 +1377,6 @@ struct sway_container *container_split(struct sway_container *child,
 
     if (container_is_floating(child) && child->view) {
         view_set_tiled(child->view, true);
-        if (child->view->using_csd) {
-            child->border = child->saved_border;
-        }
     }
 
     struct sway_container *cont = container_create(NULL);
