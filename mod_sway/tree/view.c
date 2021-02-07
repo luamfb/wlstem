@@ -252,41 +252,19 @@ void view_autoconfigure(struct sway_view *view) {
     }
 
     double x, y, width, height;
-    switch (con->border) {
-    default:
-    case B_CSD:
-    case B_NONE:
-        x = con->x;
+    // Height is: 1px border + 3px pad + title height + 3px pad + 1px border
+    x = con->x + con->border_thickness * con->border_left;
+    width = con->width
+        - con->border_thickness * con->border_left
+        - con->border_thickness * con->border_right;
+    if (y_offset) {
         y = con->y + y_offset;
-        width = con->width;
-        height = con->height - y_offset;
-        break;
-    case B_PIXEL:
-        x = con->x + con->border_thickness * con->border_left;
-        y = con->y + con->border_thickness * con->border_top + y_offset;
-        width = con->width
-            - con->border_thickness * con->border_left
-            - con->border_thickness * con->border_right;
         height = con->height - y_offset
-            - con->border_thickness * con->border_top
             - con->border_thickness * con->border_bottom;
-        break;
-    case B_NORMAL:
-        // Height is: 1px border + 3px pad + title height + 3px pad + 1px border
-        x = con->x + con->border_thickness * con->border_left;
-        width = con->width
-            - con->border_thickness * con->border_left
-            - con->border_thickness * con->border_right;
-        if (y_offset) {
-            y = con->y + y_offset;
-            height = con->height - y_offset
-                - con->border_thickness * con->border_bottom;
-        } else {
-            y = con->y + container_titlebar_height();
-            height = con->height - container_titlebar_height()
-                - con->border_thickness * con->border_bottom;
-        }
-        break;
+    } else {
+        y = con->y + container_titlebar_height();
+        height = con->height - container_titlebar_height()
+            - con->border_thickness * con->border_bottom;
     }
 
     con->content_x = x;
@@ -345,15 +323,6 @@ void view_set_csd_from_server(struct sway_view *view, bool enabled) {
 
 void view_update_csd_from_client(struct sway_view *view, bool enabled) {
     sway_log(SWAY_DEBUG, "View %p updated CSD to %i", view, enabled);
-    struct sway_container *con = view->container;
-    if (enabled && con && con->border != B_CSD) {
-        con->saved_border = con->border;
-        if (container_is_floating(con)) {
-            con->border = B_CSD;
-        }
-    } else if (!enabled && con && con->border == B_CSD) {
-        con->border = con->saved_border;
-    }
     view->using_csd = enabled;
 }
 
@@ -620,11 +589,9 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     }
 
     if (view->impl->wants_floating && view->impl->wants_floating(view)) {
-        view->container->border = B_NORMAL;
         view->container->border_thickness = config->floating_border_thickness;
         container_set_floating(view->container, true);
     } else {
-        view->container->border = B_NORMAL;
         view->container->border_thickness = config->border_thickness;
         view_set_tiled(view, true);
     }

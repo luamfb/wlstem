@@ -336,10 +336,6 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
         render_view_toplevels(view, output, damage, view->container->alpha);
     }
 
-    if (con->current.border == B_NONE || con->current.border == B_CSD) {
-        return;
-    }
-
     struct wlr_box box;
     float output_scale = output->wlr_output->scale;
     float color[4];
@@ -567,31 +563,6 @@ static void render_titlebar(struct sway_output *output,
     render_rect(output, output_damage, &box, color);
 }
 
-/**
- * Render the top border line for a view using "border pixel".
- */
-static void render_top_border(struct sway_output *output,
-        pixman_region32_t *output_damage, struct sway_container *con,
-        struct border_colors *colors) {
-    struct sway_container_state *state = &con->current;
-    if (!state->border_top) {
-        return;
-    }
-    struct wlr_box box;
-    float color[4];
-    float output_scale = output->wlr_output->scale;
-
-    // Child border - top edge
-    memcpy(&color, colors->child_border, sizeof(float) * 4);
-    premultiply_alpha(color, con->alpha);
-    box.x = state->x;
-    box.y = state->y;
-    box.width = state->width;
-    box.height = state->border_thickness;
-    scale_box(&box, output_scale);
-    render_rect(output, output_damage, &box, color);
-}
-
 struct parent_data {
     enum sway_container_layout layout;
     struct wlr_box box;
@@ -634,13 +605,9 @@ static void render_containers_linear(struct sway_output *output,
                 title_texture = child->title_unfocused;
             }
 
-            if (state->border == B_NORMAL) {
-                render_titlebar(output, damage, child, state->x,
-                        state->y, state->width, colors,
-                        title_texture);
-            } else if (state->border == B_PIXEL) {
-                render_top_border(output, damage, child, colors);
-            }
+            render_titlebar(output, damage, child, state->x,
+                    state->y, state->width, colors,
+                    title_texture);
             render_view(output, damage, child, colors);
         } else {
             render_container(output, damage, child,
@@ -832,13 +799,9 @@ static void render_floating_container(struct sway_output *soutput,
             title_texture = con->title_unfocused;
         }
 
-        if (con->current.border == B_NORMAL) {
-            render_titlebar(soutput, damage, con, con->current.x,
-                    con->current.y, con->current.width, colors,
-                    title_texture);
-        } else if (con->current.border == B_PIXEL) {
-            render_top_border(soutput, damage, con, colors);
-        }
+        render_titlebar(soutput, damage, con, con->current.x,
+                con->current.y, con->current.width, colors,
+                title_texture);
         render_view(soutput, damage, con, colors);
     } else {
         render_container(soutput, damage, con, con->current.focused);
