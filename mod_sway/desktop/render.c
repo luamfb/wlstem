@@ -372,11 +372,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
     }
 
     if (state->border_bottom) {
-        if (!container_is_floating(con) && siblings->length == 1 && layout == L_VERT) {
-            memcpy(&color, colors->indicator, sizeof(float) * 4);
-        } else {
-            memcpy(&color, colors->child_border, sizeof(float) * 4);
-        }
+        memcpy(&color, colors->child_border, sizeof(float) * 4);
         premultiply_alpha(color, con->alpha);
         box.x = state->x;
         box.y = state->content_y + state->content_height;
@@ -575,7 +571,7 @@ static void render_container(struct sway_output *output,
     pixman_region32_t *damage, struct sway_container *con, bool parent_focused);
 
 /**
- * Render a container's children using a L_HORIZ or L_VERT layout.
+ * Render a container's children using a L_HORIZ layout.
  *
  * Wrap child views in borders and leave child containers borderless because
  * they'll apply their own borders to their children.
@@ -616,133 +612,12 @@ static void render_containers_linear(struct sway_output *output,
     }
 }
 
-/**
- * Render a container's children using the L_TABBED layout.
- */
-static void render_containers_tabbed(struct sway_output *output,
-        pixman_region32_t *damage, struct parent_data *parent) {
-    if (!parent->children->length) {
-        return;
-    }
-    struct sway_container *current = parent->active_child;
-    struct border_colors *current_colors = &config->border_colors.unfocused;
-    int tab_width = parent->box.width / parent->children->length;
-
-    // Render tabs
-    for (int i = 0; i < parent->children->length; ++i) {
-        struct sway_container *child = parent->children->items[i];
-        struct sway_view *view = child->view;
-        struct sway_container_state *cstate = &child->current;
-        struct border_colors *colors;
-        struct wlr_texture *title_texture;
-        bool urgent = view ?
-            view_is_urgent(view) : container_has_urgent_child(child);
-
-        if (urgent) {
-            colors = &config->border_colors.urgent;
-            title_texture = child->title_urgent;
-        } else if (cstate->focused || parent->focused) {
-            colors = &config->border_colors.focused;
-            title_texture = child->title_focused;
-        } else if (child == parent->active_child) {
-            colors = &config->border_colors.focused_inactive;
-            title_texture = child->title_focused_inactive;
-        } else {
-            colors = &config->border_colors.unfocused;
-            title_texture = child->title_unfocused;
-        }
-
-        int x = cstate->x + tab_width * i;
-
-        // Make last tab use the remaining width of the parent
-        if (i == parent->children->length - 1) {
-            tab_width = parent->box.width - tab_width * i;
-        }
-
-        render_titlebar(output, damage, child, x, parent->box.y, tab_width,
-                colors, title_texture);
-
-        if (child == current) {
-            current_colors = colors;
-        }
-    }
-
-    // Render surface and left/right/bottom borders
-    if (current->view) {
-        render_view(output, damage, current, current_colors);
-    } else {
-        render_container(output, damage, current,
-                parent->focused || current->current.focused);
-    }
-}
-
-/**
- * Render a container's children using the L_STACKED layout.
- */
-static void render_containers_stacked(struct sway_output *output,
-        pixman_region32_t *damage, struct parent_data *parent) {
-    if (!parent->children->length) {
-        return;
-    }
-    struct sway_container *current = parent->active_child;
-    struct border_colors *current_colors = &config->border_colors.unfocused;
-    size_t titlebar_height = container_titlebar_height();
-
-    // Render titles
-    for (int i = 0; i < parent->children->length; ++i) {
-        struct sway_container *child = parent->children->items[i];
-        struct sway_view *view = child->view;
-        struct sway_container_state *cstate = &child->current;
-        struct border_colors *colors;
-        struct wlr_texture *title_texture;
-        bool urgent = view ?
-            view_is_urgent(view) : container_has_urgent_child(child);
-
-        if (urgent) {
-            colors = &config->border_colors.urgent;
-            title_texture = child->title_urgent;
-        } else if (cstate->focused || parent->focused) {
-            colors = &config->border_colors.focused;
-            title_texture = child->title_focused;
-        } else if (child == parent->active_child) {
-            colors = &config->border_colors.focused_inactive;
-            title_texture = child->title_focused_inactive;
-        } else {
-            colors = &config->border_colors.unfocused;
-            title_texture = child->title_unfocused;
-        }
-
-        int y = parent->box.y + titlebar_height * i;
-        render_titlebar(output, damage, child, parent->box.x, y,
-                parent->box.width, colors, title_texture);
-
-        if (child == current) {
-            current_colors = colors;
-        }
-    }
-
-    // Render surface and left/right/bottom borders
-    if (current->view) {
-        render_view(output, damage, current, current_colors);
-    } else {
-        render_container(output, damage, current,
-                parent->focused || current->current.focused);
-    }
-}
-
 static void render_containers(struct sway_output *output,
         pixman_region32_t *damage, struct parent_data *parent) {
     switch (parent->layout) {
     case L_NONE:
     case L_HORIZ:
-    case L_VERT:
         render_containers_linear(output, damage, parent);
-        break;
-    case L_STACKED:
-        render_containers_stacked(output, damage, parent);
-        break;
-    case L_TABBED:
-        render_containers_tabbed(output, damage, parent);
         break;
     }
 }

@@ -34,7 +34,6 @@ static bool edge_is_external(struct sway_container *cont, enum wlr_edges edge) {
     switch (edge) {
     case WLR_EDGE_TOP:
     case WLR_EDGE_BOTTOM:
-        layout = L_VERT;
         break;
     case WLR_EDGE_LEFT:
     case WLR_EDGE_RIGHT:
@@ -273,11 +272,6 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
         // focus to the tab which already had inactive focus -- otherwise, we'd
         // change the active tab when the user probably just wanted to resize.
         struct sway_container *cont_to_focus = cont;
-        enum sway_container_layout layout = container_parent_layout(cont);
-        if (layout == L_TABBED || layout == L_STACKED) {
-            cont_to_focus = seat_get_focus_inactive_view(seat, &cont->parent->node);
-        }
-
         seat_set_focus_container(seat, cont_to_focus);
         seatop_begin_resize_tiling(seat, cont, edge);
         return;
@@ -461,52 +455,12 @@ static void handle_pointer_axis(struct sway_seat *seat,
     struct sway_cursor *cursor = seat->cursor;
     struct seatop_default_event *e = seat->seatop_data;
 
-    // Determine what's under the cursor
-    struct wlr_surface *surface = NULL;
-    double sx, sy;
-    struct sway_node *node = node_at_coords(seat,
-            cursor->cursor->x, cursor->cursor->y, &surface, &sx, &sy);
-    struct sway_container *cont = node && node->type == N_CONTAINER ?
-        node->sway_container : NULL;
-    enum wlr_edges edge = cont ? find_edge(cont, surface, cursor) : WLR_EDGE_NONE;
-    bool on_border = edge != WLR_EDGE_NONE;
-    bool on_titlebar = cont && !on_border && !surface;
-    bool on_titlebar_border = cont && on_border &&
-        cursor->cursor->y < cont->content_y;
     float scroll_factor =
         (ic == NULL || ic->scroll_factor == FLT_MIN) ? 1.0f : ic->scroll_factor;
 
     bool handled = false;
     uint32_t button = wl_axis_to_button(event);
     state_add_button(e, button);
-
-    // Scrolling on a tabbed or stacked title bar (handled as press event)
-    if (!handled && (on_titlebar || on_titlebar_border)) {
-        enum sway_container_layout layout = container_parent_layout(cont);
-        if (layout == L_TABBED || layout == L_STACKED) {
-            struct sway_node *tabcontainer = node_get_parent(node);
-            struct sway_node *active =
-                seat_get_active_tiling_child(seat, tabcontainer);
-            list_t *siblings = container_get_siblings(cont);
-            int desired = list_find(siblings, active->sway_container) +
-                round(scroll_factor * event->delta_discrete);
-            if (desired < 0) {
-                desired = 0;
-            } else if (desired >= siblings->length) {
-                desired = siblings->length - 1;
-            }
-
-            struct sway_container *new_sibling_con = siblings->items[desired];
-            struct sway_node *new_sibling = &new_sibling_con->node;
-            struct sway_node *new_focus =
-                seat_get_focus_inactive(seat, new_sibling);
-            // Use the focused child of the tabbed/stacked container, not the
-            // container the user scrolled on.
-            seat_set_focus(seat, new_focus);
-            handled = true;
-        }
-    }
-
     state_erase_button(e, button);
 
     if (!handled) {
