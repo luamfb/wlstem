@@ -88,17 +88,16 @@ struct sway_output *node_get_output(struct sway_node *node) {
     return NULL;
 }
 
-enum sway_container_layout node_get_layout(struct sway_node *node) {
+bool node_is_container_or_ws(struct sway_node *node) {
     switch (node->type) {
     case N_CONTAINER:
-        return node->sway_container->layout;
     case N_WORKSPACE:
-        return node->sway_workspace->layout;
+        return true;
     case N_OUTPUT:
     case N_ROOT:
-        return L_NONE;
+        return false;
     }
-    return L_NONE;
+    return false;
 }
 
 struct sway_node *node_get_parent(struct sway_node *node) {

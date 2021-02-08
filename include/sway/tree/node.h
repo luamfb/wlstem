@@ -66,7 +66,7 @@ void node_get_box(struct sway_node *node, struct wlr_box *box);
 
 struct sway_output *node_get_output(struct sway_node *node);
 
-enum sway_container_layout node_get_layout(struct sway_node *node);
+bool node_is_container_or_ws(struct sway_node *node);
 
 struct sway_node *node_get_parent(struct sway_node *node);
 
