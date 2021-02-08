@@ -36,8 +36,7 @@ struct seatop_resize_tiling_event {
 
 static struct sway_container *container_find_resize_parent(struct sway_container *con,
 		uint32_t axis) {
-	enum sway_container_layout parallel_layout =
-		is_horizontal(axis) ? L_HORIZ : L_VERT;
+	enum sway_container_layout parallel_layout = L_HORIZ;
 	bool allow_first = axis != WLR_EDGE_TOP && axis != WLR_EDGE_LEFT;
 	bool allow_last = axis != WLR_EDGE_RIGHT && axis != WLR_EDGE_BOTTOM;
 

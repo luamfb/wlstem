@@ -190,72 +190,7 @@ static struct sway_container *surface_at_view(struct sway_container *con, double
 }
 
 /**
- * container_at for a container with layout L_TABBED.
- */
-static struct sway_container *container_at_tabbed(struct sway_node *parent,
-        double lx, double ly,
-        struct wlr_surface **surface, double *sx, double *sy) {
-    struct wlr_box box;
-    node_get_box(parent, &box);
-    if (lx < box.x || lx > box.x + box.width ||
-            ly < box.y || ly > box.y + box.height) {
-        return NULL;
-    }
-    struct sway_seat *seat = input_manager_current_seat();
-    list_t *children = node_get_children(parent);
-    if (!children->length) {
-        return NULL;
-    }
-
-    // Tab titles
-    int title_height = container_titlebar_height();
-    if (ly < box.y + title_height) {
-        int tab_width = box.width / children->length;
-        int child_index = (lx - box.x) / tab_width;
-        if (child_index >= children->length) {
-            child_index = children->length - 1;
-        }
-        struct sway_container *child = children->items[child_index];
-        return child;
-    }
-
-    // Surfaces
-    struct sway_node *current = seat_get_active_tiling_child(seat, parent);
-    return current ? tiling_container_at(current, lx, ly, surface, sx, sy) : NULL;
-}
-
-/**
- * container_at for a container with layout L_STACKED.
- */
-static struct sway_container *container_at_stacked(struct sway_node *parent,
-        double lx, double ly,
-        struct wlr_surface **surface, double *sx, double *sy) {
-    struct wlr_box box;
-    node_get_box(parent, &box);
-    if (lx < box.x || lx > box.x + box.width ||
-            ly < box.y || ly > box.y + box.height) {
-        return NULL;
-    }
-    struct sway_seat *seat = input_manager_current_seat();
-    list_t *children = node_get_children(parent);
-
-    // Title bars
-    int title_height = container_titlebar_height();
-    if (title_height > 0) {
-        int child_index = (ly - box.y) / title_height;
-        if (child_index < children->length) {
-            struct sway_container *child = children->items[child_index];
-            return child;
-        }
-    }
-
-    // Surfaces
-    struct sway_node *current = seat_get_active_tiling_child(seat, parent);
-    return current ? tiling_container_at(current, lx, ly, surface, sx, sy) : NULL;
-}
-
-/**
- * container_at for a container with layout L_HORIZ or L_VERT.
+ * container_at for a container with layout L_HORIZ.
  */
 static struct sway_container *container_at_linear(struct sway_node *parent,
         double lx, double ly,
@@ -333,12 +268,7 @@ struct sway_container *tiling_container_at(struct sway_node *parent,
     }
     switch (node_get_layout(parent)) {
     case L_HORIZ:
-    case L_VERT:
         return container_at_linear(parent, lx, ly, surface, sx, sy);
-    case L_TABBED:
-        return container_at_tabbed(parent, lx, ly, surface, sx, sy);
-    case L_STACKED:
-        return container_at_stacked(parent, lx, ly, surface, sx, sy);
     case L_NONE:
         return NULL;
     }
@@ -539,17 +469,8 @@ size_t container_build_representation(enum sway_container_layout layout,
         list_t *children, char *buffer) {
     size_t len = 2;
     switch (layout) {
-    case L_VERT:
-        lenient_strcat(buffer, "V[");
-        break;
     case L_HORIZ:
         lenient_strcat(buffer, "H[");
-        break;
-    case L_TABBED:
-        lenient_strcat(buffer, "T[");
-        break;
-    case L_STACKED:
-        lenient_strcat(buffer, "S[");
         break;
     case L_NONE:
         lenient_strcat(buffer, "D[");
@@ -1359,7 +1280,7 @@ struct sway_container *container_split(struct sway_container *child,
             if (container_is_floating(child)) {
                 current = L_NONE;
             }
-            if (current == L_HORIZ || current == L_VERT) {
+            if (current == L_HORIZ) {
                 if (child->parent) {
                     child->parent->layout = layout;
                     container_update_representation(child->parent);
@@ -1439,12 +1360,8 @@ bool container_is_sticky_or_child(struct sway_container *con) {
 static bool is_parallel(enum sway_container_layout first,
         enum sway_container_layout second) {
     switch (first) {
-    case L_TABBED:
     case L_HORIZ:
-        return second == L_TABBED || second == L_HORIZ;
-    case L_STACKED:
-    case L_VERT:
-        return second == L_STACKED || second == L_VERT;
+        return second == L_HORIZ;
     default:
         return false;
     }
@@ -1453,8 +1370,8 @@ static bool is_parallel(enum sway_container_layout first,
 static bool container_is_squashable(struct sway_container *con,
         struct sway_container *child) {
     enum sway_container_layout gp_layout = container_parent_layout(con);
-    return (con->layout == L_HORIZ || con->layout == L_VERT) &&
-        (child->layout == L_HORIZ || child->layout == L_VERT) &&
+    return (con->layout == L_HORIZ) &&
+        (child->layout == L_HORIZ) &&
         !is_parallel(con->layout, child->layout) &&
         is_parallel(gp_layout, child->layout);
 }

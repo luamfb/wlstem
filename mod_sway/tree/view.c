@@ -190,21 +190,7 @@ bool view_inhibit_idle(struct sway_view *view) {
 }
 
 bool view_ancestor_is_only_visible(struct sway_view *view) {
-    bool only_visible = true;
-    struct sway_container *con = view->container;
-    while (con) {
-        enum sway_container_layout layout = container_parent_layout(con);
-        if (layout != L_TABBED && layout != L_STACKED) {
-            list_t *siblings = container_get_siblings(con);
-            if (siblings && siblings->length > 1) {
-                only_visible = false;
-            }
-        } else {
-            only_visible = true;
-        }
-        con = con->parent;
-    }
-    return only_visible;
+    return true;
 }
 
 void view_autoconfigure(struct sway_view *view) {
@@ -234,22 +220,6 @@ void view_autoconfigure(struct sway_view *view) {
     con->border_top = con->border_bottom = true;
     con->border_left = con->border_right = true;
     double y_offset = 0;
-
-    if (!container_is_floating(con) && ws) {
-        // In a tabbed or stacked container, the container's y is the top of the
-        // title area. We have to offset the surface y by the height of the title,
-        // bar, and disable any top border because we'll always have the title bar.
-        list_t *siblings = container_get_siblings(con);
-
-        enum sway_container_layout layout = container_parent_layout(con);
-        if (layout == L_TABBED) {
-            y_offset = container_titlebar_height();
-            con->border_top = false;
-        } else if (layout == L_STACKED) {
-            y_offset = container_titlebar_height() * siblings->length;
-            con->border_top = false;
-        }
-    }
 
     double x, y, width, height;
     // Height is: 1px border + 3px pad + title height + 3px pad + 1px border
@@ -1082,21 +1052,6 @@ bool view_is_visible(struct sway_view *view) {
     if (!container_is_sticky_or_child(view->container) && workspace &&
             !workspace_is_visible(workspace)) {
         return false;
-    }
-    // Check view isn't in a tabbed or stacked container on an inactive tab
-    struct sway_seat *seat = input_manager_current_seat();
-    struct sway_container *con = view->container;
-    while (con) {
-        enum sway_container_layout layout = container_parent_layout(con);
-        if ((layout == L_TABBED || layout == L_STACKED)
-                && !container_is_floating(con)) {
-            struct sway_node *parent = con->parent ?
-                &con->parent->node : &con->workspace->node;
-            if (seat_get_active_tiling_child(seat, parent) != &con->node) {
-                return false;
-            }
-        }
-        con = con->parent;
     }
     // Check view isn't hidden by another fullscreen view
     struct sway_container *fs = root->fullscreen_global ?

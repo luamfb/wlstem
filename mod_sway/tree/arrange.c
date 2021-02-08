@@ -73,95 +73,6 @@ static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
     }
 }
 
-static void apply_vert_layout(list_t *children, struct wlr_box *parent) {
-    if (!children->length) {
-        return;
-    }
-
-    // Count the number of new windows we are resizing, and how much space
-    // is currently occupied
-    int new_children = 0;
-    double current_height_fraction = 0;
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        current_height_fraction += child->height_fraction;
-        if (child->height_fraction <= 0) {
-            new_children += 1;
-        }
-    }
-
-    // Calculate each height fraction
-    double total_height_fraction = 0;
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        if (child->height_fraction <= 0) {
-            if (current_height_fraction <= 0) {
-                child->height_fraction = 1.0;
-            } else if (children->length > new_children) {
-                child->height_fraction = current_height_fraction /
-                    (children->length - new_children);
-            } else {
-                child->height_fraction = current_height_fraction;
-            }
-        }
-        total_height_fraction += child->height_fraction;
-    }
-    // Normalize height fractions so the sum is 1.0
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        child->height_fraction /= total_height_fraction;
-    }
-
-    double child_total_height = parent->height;
-
-    // Resize windows
-    sway_log(SWAY_DEBUG, "Arranging %p vertically", parent);
-    double child_y = parent->y;
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        child->child_total_height = child_total_height;
-        child->x = parent->x;
-        child->y = child_y;
-        child->width = parent->width;
-        child->height = round(child->height_fraction * child_total_height);
-        child_y += child->height;
-
-        // Make last child use remaining height of parent
-        if (i == children->length - 1) {
-            child->height = parent->y + parent->height - child->y;
-        }
-    }
-}
-
-static void apply_tabbed_layout(list_t *children, struct wlr_box *parent) {
-    if (!children->length) {
-        return;
-    }
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        int parent_offset = child->view ? 0 : container_titlebar_height();
-        child->x = parent->x;
-        child->y = parent->y + parent_offset;
-        child->width = parent->width;
-        child->height = parent->height - parent_offset;
-    }
-}
-
-static void apply_stacked_layout(list_t *children, struct wlr_box *parent) {
-    if (!children->length) {
-        return;
-    }
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        int parent_offset = child->view ?  0 :
-            container_titlebar_height() * children->length;
-        child->x = parent->x;
-        child->y = parent->y + parent_offset;
-        child->width = parent->width;
-        child->height = parent->height - parent_offset;
-    }
-}
-
 static void arrange_floating(list_t *floating) {
     for (int i = 0; i < floating->length; ++i) {
         struct sway_container *floater = floating->items[i];
@@ -174,17 +85,6 @@ static void arrange_children(list_t *children,
     // Calculate x, y, width and height of children
     switch (layout) {
     case L_HORIZ:
-        apply_horiz_layout(children, parent);
-        break;
-    case L_VERT:
-        apply_vert_layout(children, parent);
-        break;
-    case L_TABBED:
-        apply_tabbed_layout(children, parent);
-        break;
-    case L_STACKED:
-        apply_stacked_layout(children, parent);
-        break;
     case L_NONE:
         apply_horiz_layout(children, parent);
         break;
