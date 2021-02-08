@@ -266,11 +266,8 @@ struct sway_container *tiling_container_at(struct sway_node *parent,
     if (!node_get_children(parent)) {
         return NULL;
     }
-    switch (node_get_layout(parent)) {
-    case L_HORIZ:
+    if (node_is_container_or_ws(parent)) {
         return container_at_linear(parent, lx, ly, surface, sx, sy);
-    case L_NONE:
-        return NULL;
     }
     return NULL;
 }
