@@ -376,8 +376,3 @@ void output_get_box(struct sway_output *output, struct wlr_box *box) {
     box->width = output->width;
     box->height = output->height;
 }
-
-enum sway_container_layout output_get_default_layout(
-        struct sway_output *output) {
-    return L_HORIZ;
-}
