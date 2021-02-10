@@ -80,8 +80,7 @@ static void arrange_floating(list_t *floating) {
     }
 }
 
-static void arrange_children(list_t *children,
-        enum sway_container_layout layout, struct wlr_box *parent) {
+static void arrange_children(list_t *children, struct wlr_box *parent) {
 
     apply_horiz_layout(children, parent);
 
@@ -100,7 +99,7 @@ void arrange_container(struct sway_container *container) {
     }
     struct wlr_box box;
     container_get_box(container, &box);
-    arrange_children(container->children, container->layout, &box);
+    arrange_children(container->children, &box);
     node_set_dirty(&container->node);
 }
 
@@ -152,7 +151,7 @@ void arrange_workspace(struct sway_workspace *workspace) {
     } else {
         struct wlr_box box;
         workspace_get_box(workspace, &box);
-        arrange_children(workspace->tiling, workspace->layout, &box);
+        arrange_children(workspace->tiling, &box);
         arrange_floating(workspace->floating);
     }
 }
