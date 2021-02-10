@@ -459,8 +459,7 @@ void container_calculate_title_height(struct sway_container *container) {
  * An example tree representation is: V[Terminal, Firefox]
  * If buffer is not NULL, also populate the buffer with the representation.
  */
-size_t container_build_representation(enum sway_container_layout layout,
-        list_t *children, char *buffer) {
+size_t container_build_representation(list_t *children, char *buffer) {
     size_t len = 2;
     lenient_strcat(buffer, "X[");
     for (int i = 0; i < children->length; ++i) {
@@ -493,16 +492,14 @@ size_t container_build_representation(enum sway_container_layout layout,
 
 void container_update_representation(struct sway_container *con) {
     if (!con->view) {
-        size_t len = container_build_representation(con->layout,
-                con->children, NULL);
+        size_t len = container_build_representation(con->children, NULL);
         free(con->formatted_title);
         con->formatted_title = calloc(len + 1, sizeof(char));
         if (!sway_assert(con->formatted_title,
                     "Unable to allocate title string")) {
             return;
         }
-        container_build_representation(con->layout, con->children,
-                con->formatted_title);
+        container_build_representation(con->children, con->formatted_title);
         container_calculate_title_height(con);
         container_update_title_textures(con);
     }

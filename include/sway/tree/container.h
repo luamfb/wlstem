@@ -182,8 +182,7 @@ void container_update_title_textures(struct sway_container *container);
  */
 void container_calculate_title_height(struct sway_container *container);
 
-size_t container_build_representation(enum sway_container_layout layout,
-        list_t *children, char *buffer);
+size_t container_build_representation(list_t *children, char *buffer);
 
 void container_update_representation(struct sway_container *container);
 
