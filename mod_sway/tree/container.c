@@ -189,9 +189,6 @@ static struct sway_container *surface_at_view(struct sway_container *con, double
     return NULL;
 }
 
-/**
- * container_at for a container with layout L_HORIZ.
- */
 static struct sway_container *container_at_linear(struct sway_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
