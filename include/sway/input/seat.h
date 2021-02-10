@@ -239,9 +239,6 @@ void seatop_begin_default(struct sway_seat *seat);
 void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,
         uint32_t time_msec, int sx, int sy);
 
-void seatop_begin_resize_tiling(struct sway_seat *seat,
-        struct sway_container *con, enum wlr_edges edge);
-
 struct sway_container *seat_get_focus_inactive_floating(struct sway_seat *seat,
         struct sway_workspace *workspace);
 
