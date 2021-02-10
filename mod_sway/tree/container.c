@@ -465,14 +465,7 @@ void container_calculate_title_height(struct sway_container *container) {
 size_t container_build_representation(enum sway_container_layout layout,
         list_t *children, char *buffer) {
     size_t len = 2;
-    switch (layout) {
-    case L_HORIZ:
-        lenient_strcat(buffer, "H[");
-        break;
-    case L_NONE:
-        lenient_strcat(buffer, "D[");
-        break;
-    }
+    lenient_strcat(buffer, "X[");
     for (int i = 0; i < children->length; ++i) {
         if (i != 0) {
             ++len;

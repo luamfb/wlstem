@@ -614,12 +614,7 @@ static void render_containers_linear(struct sway_output *output,
 
 static void render_containers(struct sway_output *output,
         pixman_region32_t *damage, struct parent_data *parent) {
-    switch (parent->layout) {
-    case L_NONE:
-    case L_HORIZ:
-        render_containers_linear(output, damage, parent);
-        break;
-    }
+    render_containers_linear(output, damage, parent);
 }
 
 static void render_container(struct sway_output *output,
