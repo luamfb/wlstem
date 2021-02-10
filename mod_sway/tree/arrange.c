@@ -82,13 +82,8 @@ static void arrange_floating(list_t *floating) {
 
 static void arrange_children(list_t *children,
         enum sway_container_layout layout, struct wlr_box *parent) {
-    // Calculate x, y, width and height of children
-    switch (layout) {
-    case L_HORIZ:
-    case L_NONE:
-        apply_horiz_layout(children, parent);
-        break;
-    }
+
+    apply_horiz_layout(children, parent);
 
     // Recurse into child containers
     for (int i = 0; i < children->length; ++i) {
