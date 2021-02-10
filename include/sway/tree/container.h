@@ -280,8 +280,6 @@ struct sway_output *container_get_effective_output(struct sway_container *con);
 
 void container_discover_outputs(struct sway_container *con);
 
-enum sway_container_layout container_parent_layout(struct sway_container *con);
-
 list_t *container_get_siblings(struct sway_container *container);
 
 int container_sibling_index(struct sway_container *child);

@@ -1079,16 +1079,6 @@ void container_discover_outputs(struct sway_container *con) {
     }
 }
 
-enum sway_container_layout container_parent_layout(struct sway_container *con) {
-    if (con->parent) {
-        return con->parent->layout;
-    }
-    if (con->workspace) {
-        return con->workspace->layout;
-    }
-    return L_NONE;
-}
-
 list_t *container_get_siblings(struct sway_container *container) {
     if (container->parent) {
         return container->parent->children;
@@ -1257,7 +1247,6 @@ struct sway_container *container_split(struct sway_container *child,
                     child->parent->layout = layout;
                     container_update_representation(child->parent);
                 } else {
-                    child->workspace->layout = layout;
                     workspace_update_representation(child->workspace);
                 }
                 return child;

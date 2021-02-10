@@ -48,8 +48,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
     }
     node_init(&ws->node, N_WORKSPACE, ws);
     ws->name = name ? strdup(name) : NULL;
-    ws->prev_split_layout = L_NONE;
-    ws->layout = output_get_default_layout(output);
     ws->floating = create_list();
     ws->tiling = create_list();
     ws->output_priority = create_list();
@@ -639,7 +637,6 @@ static void workspace_attach_tiling(struct sway_workspace *ws,
 struct sway_container *workspace_wrap_children(struct sway_workspace *ws) {
     struct sway_container *fs = ws->fullscreen;
     struct sway_container *middle = container_create(NULL);
-    middle->layout = ws->layout;
     while (ws->tiling->length) {
         struct sway_container *child = ws->tiling->items[0];
         container_detach(child);
@@ -657,7 +654,6 @@ void workspace_unwrap_children(struct sway_workspace *ws,
         return;
     }
 
-    ws->layout = wrap->layout;
     while (wrap->children->length) {
         struct sway_container *child = wrap->children->items[0];
         container_detach(child);
@@ -725,18 +721,12 @@ struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
     return con;
 }
 
-struct sway_container *workspace_split(struct sway_workspace *workspace,
-        enum sway_container_layout layout) {
+struct sway_container *workspace_split(struct sway_workspace *workspace) {
     if (workspace->tiling->length == 0) {
-        workspace->prev_split_layout = workspace->layout;
-        workspace->layout = layout;
         return NULL;
     }
 
-    enum sway_container_layout old_layout = workspace->layout;
     struct sway_container *middle = workspace_wrap_children(workspace);
-    workspace->layout = layout;
-    middle->layout = old_layout;
 
     struct sway_seat *seat;
     wl_list_for_each(seat, &server.input->seats, link) {

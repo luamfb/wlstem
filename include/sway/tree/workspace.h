@@ -11,7 +11,6 @@ struct sway_workspace_state {
     struct sway_container *fullscreen;
     double x, y;
     int width, height;
-    enum sway_container_layout layout;
     struct sway_output *output;
     list_t *floating;
     list_t *tiling;
@@ -29,8 +28,6 @@ struct sway_workspace {
 
     double x, y;
     int width, height;
-    enum sway_container_layout layout;
-    enum sway_container_layout prev_split_layout;
 
     struct sway_output *output; // NULL if no outputs are connected
     list_t *floating;           // struct sway_container
@@ -121,8 +118,7 @@ void workspace_insert_tiling_direct(struct sway_workspace *workspace,
 struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
         struct sway_container *con, int index);
 
-struct sway_container *workspace_split(struct sway_workspace *workspace,
-        enum sway_container_layout layout);
+struct sway_container *workspace_split(struct sway_workspace *workspace);
 
 void workspace_update_representation(struct sway_workspace *ws);
 
