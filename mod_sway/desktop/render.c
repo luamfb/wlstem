@@ -635,7 +635,6 @@ static void render_container(struct sway_output *output,
 static void render_workspace(struct sway_output *output,
         pixman_region32_t *damage, struct sway_workspace *ws, bool focused) {
     struct parent_data data = {
-        .layout = ws->current.layout,
         .box = {
             .x = ws->current.x,
             .y = ws->current.y,

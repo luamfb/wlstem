@@ -130,11 +130,6 @@ void output_enable(struct sway_output *output) {
         free(ws_name);
     }
 
-    // Since the output transformation and resolution could have changed
-    // due to applying the output config, the previously set layout for the
-    // created workspace may not be correct for `default_orientation auto`
-    ws->layout = output_get_default_layout(output);
-
     input_manager_configure_xcursor();
 
     wl_signal_emit(&root->events.new_node, &output->node);
