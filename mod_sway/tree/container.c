@@ -1255,11 +1255,7 @@ struct sway_container *container_split(struct sway_container *child,
     if (child->parent || child->workspace) {
         list_t *siblings = container_get_siblings(child);
         if (siblings->length == 1) {
-            enum sway_container_layout current = container_parent_layout(child);
-            if (container_is_floating(child)) {
-                current = L_NONE;
-            }
-            if (current == L_HORIZ) {
+            if (!container_is_floating(child)) {
                 if (child->parent) {
                     child->parent->layout = layout;
                     container_update_representation(child->parent);
