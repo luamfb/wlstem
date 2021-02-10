@@ -197,10 +197,6 @@ void view_autoconfigure(struct sway_view *view) {
     struct sway_container *con = view->container;
     struct sway_workspace *ws = con->workspace;
 
-    if (container_is_scratchpad_hidden(con) &&
-            con->fullscreen_mode != FULLSCREEN_GLOBAL) {
-        return;
-    }
     struct sway_output *output = ws ? ws->output : NULL;
 
     if (con->fullscreen_mode == FULLSCREEN_WORKSPACE) {
@@ -255,7 +251,7 @@ void view_set_activated(struct sway_view *view, bool activated) {
 
 void view_request_activate(struct sway_view *view) {
     struct sway_workspace *ws = view->container->workspace;
-    if (!ws) { // hidden scratchpad container
+    if (!ws) {
         return;
     }
     struct sway_seat *seat = input_manager_current_seat();
@@ -436,9 +432,6 @@ static void handle_foreign_activate_request(
     struct sway_seat *seat;
     wl_list_for_each(seat, &server.input->seats, link) {
         if (seat->wlr_seat == event->seat) {
-            if (container_is_scratchpad_hidden_or_child(view->container)) {
-                root_scratchpad_show(view->container);
-            }
             seat_set_focus_container(seat, view->container);
             seat_consider_warp_to_focus(seat);
             container_raise_floating(view->container);
@@ -453,13 +446,7 @@ static void handle_foreign_fullscreen_request(
             listener, view, foreign_fullscreen_request);
     struct wlr_foreign_toplevel_handle_v1_fullscreen_event *event = data;
 
-    // Match fullscreen command behavior for scratchpad hidden views
     struct sway_container *container = view->container;
-    if (!container->workspace) {
-        while (container->parent) {
-            container = container->parent;
-        }
-    }
 
     container_set_fullscreen(container,
         event->fullscreen ? FULLSCREEN_WORKSPACE : FULLSCREEN_NONE);
@@ -1080,10 +1067,6 @@ void view_set_urgent(struct sway_view *view, bool enable) {
         }
     }
     container_damage_whole(view->container);
-
-    if (!container_is_scratchpad_hidden(view->container)) {
-        workspace_detect_urgent(view->container->workspace);
-    }
 }
 
 bool view_is_urgent(struct sway_view *view) {

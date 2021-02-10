@@ -28,7 +28,6 @@ struct sway_root {
     double width, height;
 
     list_t *outputs; // struct sway_output
-    list_t *scratchpad; // struct sway_container
 
     // For when there's no connected outputs
     struct sway_output *noop_output;
@@ -43,30 +42,6 @@ struct sway_root {
 struct sway_root *root_create(void);
 
 void root_destroy(struct sway_root *root);
-
-/**
- * Move a container to the scratchpad.
- * If a workspace is passed, the container is assumed to have been in
- * the scratchpad before and is shown on the workspace.
- * The ws parameter can safely be NULL.
- */
-void root_scratchpad_add_container(struct sway_container *con,
-   struct sway_workspace *ws);
-
-/**
- * Remove a container from the scratchpad.
- */
-void root_scratchpad_remove_container(struct sway_container *con);
-
-/**
- * Show a single scratchpad container.
- */
-void root_scratchpad_show(struct sway_container *con);
-
-/**
- * Hide a single scratchpad container.
- */
-void root_scratchpad_hide(struct sway_container *con);
 
 struct sway_workspace *root_workspace_for_pid(pid_t pid);
 
