@@ -10,11 +10,6 @@
 struct sway_view;
 struct sway_seat;
 
-enum sway_container_layout {
-    L_NONE,
-    L_HORIZ,
-};
-
 enum sway_fullscreen_mode {
     FULLSCREEN_NONE,
     FULLSCREEN_WORKSPACE,
@@ -30,7 +25,6 @@ enum wlr_direction;
 
 struct sway_container_state {
     // Container properties
-    enum sway_container_layout layout;
     double x, y;
     double width, height;
 
@@ -63,9 +57,6 @@ struct sway_container {
 
     char *title;           // The view's title (unformatted)
     char *formatted_title; // The title displayed in the title bar
-
-    enum sway_container_layout layout;
-    enum sway_container_layout prev_split_layout;
 
     // Whether stickiness has been enabled on this container. Use
     // `container_is_sticky_[or_child]` rather than accessing this field
@@ -305,8 +296,7 @@ void container_detach(struct sway_container *child);
 void container_replace(struct sway_container *container,
         struct sway_container *replacement);
 
-struct sway_container *container_split(struct sway_container *child,
-        enum sway_container_layout layout);
+struct sway_container *container_split(struct sway_container *child);
 
 bool container_is_transient_for(struct sway_container *child,
         struct sway_container *ancestor);
