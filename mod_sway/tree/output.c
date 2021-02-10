@@ -138,22 +138,6 @@ void output_enable(struct sway_output *output) {
     arrange_root();
 }
 
-static void evacuate_sticky(struct sway_workspace *old_ws,
-        struct sway_output *new_output) {
-    struct sway_workspace *new_ws = output_get_active_workspace(new_output);
-    if (!sway_assert(new_ws, "New output does not have a workspace")) {
-        return;
-    }
-    while(old_ws->floating->length) {
-        struct sway_container *sticky = old_ws->floating->items[0];
-        container_detach(sticky);
-        workspace_add_floating(new_ws, sticky);
-        container_handle_fullscreen_reparent(sticky);
-        container_floating_move_to_center(sticky);
-    }
-    workspace_detect_urgent(new_ws);
-}
-
 static void output_evacuate(struct sway_output *output) {
     if (!output->workspaces->length) {
         return;
@@ -184,17 +168,8 @@ static void output_evacuate(struct sway_output *output) {
             output_get_active_workspace(new_output);
 
         if (workspace_is_empty(workspace)) {
-            // If the new output has an active workspace (the noop output may
-            // not have one), move all sticky containers to it
-            if (new_output_ws &&
-                    workspace_num_sticky_containers(workspace) > 0) {
-                evacuate_sticky(workspace, new_output);
-            }
-
-            if (workspace_num_sticky_containers(workspace) == 0) {
-                workspace_begin_destroy(workspace);
-                continue;
-            }
+            workspace_begin_destroy(workspace);
+            continue;
         }
 
         workspace_output_add_priority(workspace, new_output);
