@@ -29,7 +29,6 @@ struct sway_container *container_create(struct sway_view *view) {
         return NULL;
     }
     node_init(&c->node, N_CONTAINER, c);
-    c->layout = L_NONE;
     c->view = view;
     c->alpha = 1.0f;
 
@@ -1235,8 +1234,7 @@ void container_replace(struct sway_container *container,
     }
 }
 
-struct sway_container *container_split(struct sway_container *child,
-        enum sway_container_layout layout) {
+struct sway_container *container_split(struct sway_container *child) {
     // i3 doesn't split singleton H/V containers
     // https://github.com/i3/i3/blob/3cd1c45eba6de073bc4300eebb4e1cc1a0c4479a/src/tree.c#L354
     if (child->parent || child->workspace) {
@@ -1244,7 +1242,6 @@ struct sway_container *container_split(struct sway_container *child,
         if (siblings->length == 1) {
             if (!container_is_floating(child)) {
                 if (child->parent) {
-                    child->parent->layout = layout;
                     container_update_representation(child->parent);
                 } else {
                     workspace_update_representation(child->workspace);
@@ -1268,7 +1265,6 @@ struct sway_container *container_split(struct sway_container *child,
     cont->height_fraction = child->height_fraction;
     cont->x = child->x;
     cont->y = child->y;
-    cont->layout = layout;
 
     container_replace(child, cont);
     container_add_child(cont, child);

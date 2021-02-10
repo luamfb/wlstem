@@ -125,7 +125,6 @@ static void copy_container_state(struct sway_container *container,
         struct sway_transaction_instruction *instruction) {
     struct sway_container_state *state = &instruction->container_state;
 
-    state->layout = container->layout;
     state->x = container->x;
     state->y = container->y;
     state->width = container->width;

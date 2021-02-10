@@ -558,7 +558,6 @@ static void render_titlebar(struct sway_output *output,
 }
 
 struct parent_data {
-    enum sway_container_layout layout;
     struct wlr_box box;
     list_t *children;
     bool focused;
@@ -618,7 +617,6 @@ static void render_containers(struct sway_output *output,
 static void render_container(struct sway_output *output,
         pixman_region32_t *damage, struct sway_container *con, bool focused) {
     struct parent_data data = {
-        .layout = con->current.layout,
         .box = {
             .x = con->current.x,
             .y = con->current.y,
