@@ -1143,20 +1143,6 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
 
     set_workspace(seat, new_workspace);
 
-    // Move sticky containers to new workspace
-    if (new_workspace && new_output_last_ws
-            && new_workspace != new_output_last_ws) {
-        for (int i = 0; i < new_output_last_ws->floating->length; ++i) {
-            struct sway_container *floater =
-                new_output_last_ws->floating->items[i];
-            if (container_is_sticky(floater)) {
-                container_detach(floater);
-                workspace_add_floating(new_workspace, floater);
-                --i;
-            }
-        }
-    }
-
     // Close any popups on the old focus
     if (last_focus && node_is_view(last_focus)) {
         view_close_popups(last_focus->sway_container->view);

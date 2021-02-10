@@ -1049,8 +1049,7 @@ bool view_is_visible(struct sway_view *view) {
         }
     }
 
-    if (!container_is_sticky_or_child(view->container) && workspace &&
-            !workspace_is_visible(workspace)) {
+    if (workspace && !workspace_is_visible(workspace)) {
         return false;
     }
     // Check view isn't hidden by another fullscreen view
