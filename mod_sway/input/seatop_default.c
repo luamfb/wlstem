@@ -238,10 +238,6 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
 
     struct sway_container *cont = node && node->type == N_CONTAINER ?
         node->sway_container : NULL;
-    bool is_floating = cont && container_is_floating(cont);
-    enum wlr_edges edge = cont ? find_edge(cont, surface, cursor) : WLR_EDGE_NONE;
-    enum wlr_edges resize_edge = cont && edge ?
-        find_resize_edge(cont, surface, cursor) : WLR_EDGE_NONE;
 
     add_or_remove_button_to_state(seat, device, button, state);
 
@@ -262,18 +258,6 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
             seat_set_focus_layer(seat, layer);
         }
         seat_pointer_notify_button(seat, time_msec, button, state);
-        return;
-    }
-
-    // Handle tiling resize via border
-    if (cont && resize_edge && button == BTN_LEFT &&
-            state == WLR_BUTTON_PRESSED && !is_floating) {
-        // If a resize is triggered on a tabbed or stacked container, change
-        // focus to the tab which already had inactive focus -- otherwise, we'd
-        // change the active tab when the user probably just wanted to resize.
-        struct sway_container *cont_to_focus = cont;
-        seat_set_focus_container(seat, cont_to_focus);
-        seatop_begin_resize_tiling(seat, cont, edge);
         return;
     }
 
