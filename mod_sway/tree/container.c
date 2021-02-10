@@ -1095,14 +1095,6 @@ enum sway_container_layout container_parent_layout(struct sway_container *con) {
     return L_NONE;
 }
 
-enum sway_container_layout container_current_parent_layout(
-        struct sway_container *con) {
-    if (con->current.parent) {
-        return con->current.parent->current.layout;
-    }
-    return con->current.workspace->current.layout;
-}
-
 list_t *container_get_siblings(struct sway_container *container) {
     if (container->parent) {
         return container->parent->children;
