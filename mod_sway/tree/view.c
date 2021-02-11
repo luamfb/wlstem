@@ -375,14 +375,6 @@ static void view_populate_pid(struct sway_view *view) {
 static struct sway_workspace *select_workspace(struct sway_view *view) {
     struct sway_seat *seat = input_manager_current_seat();
 
-    struct sway_workspace *ws = NULL;
-
-    // Check if there's a PID mapping
-    ws = root_workspace_for_pid(view->pid);
-    if (ws) {
-        return ws;
-    }
-
     // Use the focused workspace
     struct sway_node *node = seat_get_focus_inactive(seat, &root->node);
     if (node && node->type == N_WORKSPACE) {
