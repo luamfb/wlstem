@@ -276,38 +276,6 @@ static void set_fullscreen(struct sway_view *view, bool fullscreen) {
     wlr_xwayland_surface_set_fullscreen(surface, fullscreen);
 }
 
-static bool wants_floating(struct sway_view *view) {
-    if (xwayland_view_from_view(view) == NULL) {
-        return false;
-    }
-    struct wlr_xwayland_surface *surface = view->wlr_xwayland_surface;
-    struct sway_xwayland *xwayland = &server.xwayland;
-
-    if (surface->modal) {
-        return true;
-    }
-
-    for (size_t i = 0; i < surface->window_type_len; ++i) {
-        xcb_atom_t type = surface->window_type[i];
-        if (type == xwayland->atoms[NET_WM_WINDOW_TYPE_DIALOG] ||
-                type == xwayland->atoms[NET_WM_WINDOW_TYPE_UTILITY] ||
-                type == xwayland->atoms[NET_WM_WINDOW_TYPE_TOOLBAR] ||
-                type == xwayland->atoms[NET_WM_WINDOW_TYPE_SPLASH]) {
-            return true;
-        }
-    }
-
-    struct wlr_xwayland_surface_size_hints *size_hints = surface->size_hints;
-    if (size_hints != NULL &&
-            size_hints->min_width > 0 && size_hints->min_height > 0 &&
-            (size_hints->max_width == size_hints->min_width ||
-            size_hints->max_height == size_hints->min_height)) {
-        return true;
-    }
-
-    return false;
-}
-
 static void handle_set_decorations(struct wl_listener *listener, void *data) {
     struct sway_xwayland_view *xwayland_view =
         wl_container_of(listener, xwayland_view, set_decorations);
@@ -375,7 +343,6 @@ static const struct sway_view_impl view_impl = {
     .set_activated = set_activated,
     .set_tiled = set_tiled,
     .set_fullscreen = set_fullscreen,
-    .wants_floating = wants_floating,
     .is_transient_for = is_transient_for,
     .close = _close,
     .destroy = destroy,
@@ -476,9 +443,6 @@ static void handle_map(struct wl_listener *listener, void *data) {
         wl_container_of(listener, xwayland_view, map);
     struct wlr_xwayland_surface *xsurface = data;
     struct sway_view *view = &xwayland_view->view;
-
-    view->natural_width = xsurface->width;
-    view->natural_height = xsurface->height;
 
     // Wire up the commit listener here, because xwayland map/unmap can change
     // the underlying wlr_surface
