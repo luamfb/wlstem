@@ -236,9 +236,6 @@ void seatop_begin_default(struct sway_seat *seat);
 void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,
         uint32_t time_msec, int sx, int sy);
 
-struct sway_container *seat_get_focus_inactive_floating(struct sway_seat *seat,
-        struct sway_workspace *workspace);
-
 void seat_pointer_notify_button(struct sway_seat *seat, uint32_t time_msec,
         uint32_t button, enum wlr_button_state state);
 
