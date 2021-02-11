@@ -44,7 +44,6 @@ struct sway_view_impl {
     void (*set_tiled)(struct sway_view *view, bool tiled);
     void (*set_fullscreen)(struct sway_view *view, bool fullscreen);
     void (*set_resizing)(struct sway_view *view, bool resizing);
-    bool (*wants_floating)(struct sway_view *view);
     void (*for_each_surface)(struct sway_view *view,
         wlr_surface_iterator_func_t iterator, void *user_data);
     void (*for_each_popup_surface)(struct sway_view *view,
@@ -74,10 +73,6 @@ struct sway_view {
     struct sway_xdg_decoration *xdg_decoration;
 
     pid_t pid;
-
-    // The size the view would want to be if it weren't tiled.
-    // Used when changing a view from tiled to floating.
-    int natural_width, natural_height;
 
     char *title_format;
 
@@ -250,9 +245,7 @@ bool view_inhibit_idle(struct sway_view *view);
 
 /**
  * Whether or not this view's most distant ancestor (possibly itself) is the
- * only visible node in its tree. If the view is tiling, there may be floating
- * views. If the view is floating, there may be tiling views or views in a
- * different floating container.
+ * only visible node in its tree.
  */
 bool view_ancestor_is_only_visible(struct sway_view *view);
 

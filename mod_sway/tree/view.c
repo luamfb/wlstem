@@ -536,12 +536,8 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
         view_update_csd_from_client(view, decoration);
     }
 
-    if (view->impl->wants_floating && view->impl->wants_floating(view)) {
-        view->container->border_thickness = config->floating_border_thickness;
-    } else {
-        view->container->border_thickness = config->border_thickness;
-        view_set_tiled(view, true);
-    }
+    view->container->border_thickness = config->border_thickness;
+    view_set_tiled(view, true);
 
     if (config->popup_during_fullscreen == POPUP_LEAVE &&
             container->workspace &&

@@ -193,15 +193,6 @@ static void set_resizing(struct sway_view *view, bool resizing) {
     wlr_xdg_toplevel_set_resizing(surface, resizing);
 }
 
-static bool wants_floating(struct sway_view *view) {
-    struct wlr_xdg_toplevel *toplevel = view->wlr_xdg_surface->toplevel;
-    struct wlr_xdg_toplevel_state *state = &toplevel->current;
-    return (state->min_width != 0 && state->min_height != 0
-        && (state->min_width == state->max_width
-        || state->min_height == state->max_height))
-        || toplevel->parent;
-}
-
 static void for_each_surface(struct sway_view *view,
         wlr_surface_iterator_func_t iterator, void *user_data) {
     if (xdg_shell_view_from_view(view) == NULL) {
@@ -270,7 +261,6 @@ static const struct sway_view_impl view_impl = {
     .set_tiled = set_tiled,
     .set_fullscreen = set_fullscreen,
     .set_resizing = set_resizing,
-    .wants_floating = wants_floating,
     .for_each_surface = for_each_surface,
     .for_each_popup_surface = for_each_popup_surface,
     .is_transient_for = is_transient_for,
@@ -397,13 +387,6 @@ static void handle_map(struct wl_listener *listener, void *data) {
         wl_container_of(listener, xdg_shell_view, map);
     struct sway_view *view = &xdg_shell_view->view;
     struct wlr_xdg_surface *xdg_surface = view->wlr_xdg_surface;
-
-    view->natural_width = view->wlr_xdg_surface->geometry.width;
-    view->natural_height = view->wlr_xdg_surface->geometry.height;
-    if (!view->natural_width && !view->natural_height) {
-        view->natural_width = view->wlr_xdg_surface->surface->current.width;
-        view->natural_height = view->wlr_xdg_surface->surface->current.height;
-    }
 
     bool csd = false;
 
