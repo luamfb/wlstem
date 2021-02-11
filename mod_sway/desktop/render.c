@@ -646,19 +646,6 @@ static void render_workspace(struct sway_output *output,
     render_containers(output, damage, &data);
 }
 
-static void render_floating(struct sway_output *soutput,
-        pixman_region32_t *damage) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
-        for (int j = 0; j < output->current.workspaces->length; ++j) {
-            struct sway_workspace *ws = output->current.workspaces->items[j];
-            if (!workspace_is_visible(ws)) {
-                continue;
-            }
-        }
-    }
-}
-
 static void render_seatops(struct sway_output *output,
         pixman_region32_t *damage) {
     struct sway_seat *seat;
@@ -748,7 +735,6 @@ void output_render(struct sway_output *output, struct timespec *when,
             &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
 
         render_workspace(output, damage, workspace, workspace->current.focused);
-        render_floating(output, damage);
 #if HAVE_XWAYLAND
         render_unmanaged(output, damage, &root->xwayland_unmanaged);
 #endif
