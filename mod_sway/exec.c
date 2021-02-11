@@ -59,7 +59,6 @@ bool wls_try_exec(char *cmd) {
     waitpid(pid, NULL, 0);
     if (child > 0) {
         sway_log(SWAY_DEBUG, "Child process created with pid %d", child);
-        root_record_workspace_pid(child);
     } else {
         sway_log(SWAY_ERROR, "Second fork() failed!");
         return false;
