@@ -105,6 +105,4 @@ void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,
 
     seat->seatop_impl = &seatop_impl;
     seat->seatop_data = e;
-
-    container_raise_floating(con);
 }

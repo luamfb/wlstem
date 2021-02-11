@@ -172,51 +172,12 @@ void container_update_representation(struct sway_container *container);
  */
 size_t container_titlebar_height(void);
 
-void floating_calculate_constraints(int *min_width, int *max_width,
-        int *min_height, int *max_height);
-
-void container_floating_resize_and_center(struct sway_container *con);
-
-void container_floating_set_default_size(struct sway_container *con);
-
 void container_set_resizing(struct sway_container *con, bool resizing);
-
-void container_set_floating(struct sway_container *container, bool enable);
-
-void container_set_geometry_from_content(struct sway_container *con);
-
-/**
- * Determine if the given container is itself floating.
- * This will return false for any descendants of a floating container.
- */
-bool container_is_floating(struct sway_container *container);
 
 /**
  * Get a container's box in layout coordinates.
  */
 void container_get_box(struct sway_container *container, struct wlr_box *box);
-
-/**
- * Move a floating container by the specified amount.
- */
-void container_floating_translate(struct sway_container *con,
-        double x_amount, double y_amount);
-
-/**
- * Choose an output for the floating container's new position.
- */
-struct sway_output *container_floating_find_output(struct sway_container *con);
-
-/**
- * Move a floating container to a new layout-local position.
- */
-void container_floating_move_to(struct sway_container *con,
-        double lx, double ly);
-
-/**
- * Move a floating container to the center of the workspace.
- */
-void container_floating_move_to_center(struct sway_container *con);
 
 bool container_has_urgent_child(struct sway_container *container);
 
@@ -240,18 +201,6 @@ void container_fullscreen_disable(struct sway_container *con);
  */
 struct sway_container *container_toplevel_ancestor(
         struct sway_container *container);
-
-/**
- * Return true if the container is floating, or a child of a floating split
- * container.
- */
-bool container_is_floating_or_child(struct sway_container *container);
-
-/**
- * Return true if the container is fullscreen, or a child of a fullscreen split
- * container.
- */
-bool container_is_fullscreen_or_child(struct sway_container *container);
 
 /**
  * Return the output which will be used for scale purposes.
@@ -290,7 +239,5 @@ struct sway_container *container_split(struct sway_container *child);
 
 bool container_is_transient_for(struct sway_container *child,
         struct sway_container *ancestor);
-
-void container_raise_floating(struct sway_container *con);
 
 #endif

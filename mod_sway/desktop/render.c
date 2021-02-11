@@ -355,7 +355,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
     list_t *siblings = container_get_current_siblings(con);
 
     if (state->border_right) {
-        if (!container_is_floating(con) && siblings->length == 1) {
+        if (siblings->length == 1) {
             memcpy(&color, colors->indicator, sizeof(float) * 4);
         } else {
             memcpy(&color, colors->child_border, sizeof(float) * 4);

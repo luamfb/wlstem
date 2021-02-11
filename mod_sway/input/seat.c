@@ -1079,8 +1079,7 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         node->sway_container : NULL;
 
     // Deny setting focus to a view which is hidden by a fullscreen container
-    if (new_workspace && new_workspace->fullscreen && container &&
-            !container_is_fullscreen_or_child(container)) {
+    if (new_workspace && new_workspace->fullscreen && container) {
         // Unless it's a transient container
         if (!container_is_transient_for(container, new_workspace->fullscreen)) {
             return;
@@ -1289,7 +1288,6 @@ struct sway_container *seat_get_focus_inactive_tiling(struct sway_seat *seat,
     wl_list_for_each(current, &seat->focus_stack, link) {
         struct sway_node *node = current->node;
         if (node->type == N_CONTAINER &&
-                !container_is_floating_or_child(node->sway_container) &&
                 node->sway_container->workspace == workspace) {
             return node->sway_container;
         }
@@ -1301,15 +1299,6 @@ struct sway_container *seat_get_focus_inactive_floating(struct sway_seat *seat,
         struct sway_workspace *workspace) {
     if (!workspace->floating->length) {
         return NULL;
-    }
-    struct sway_seat_node *current;
-    wl_list_for_each(current, &seat->focus_stack, link) {
-        struct sway_node *node = current->node;
-        if (node->type == N_CONTAINER &&
-                container_is_floating_or_child(node->sway_container) &&
-                node->sway_container->workspace == workspace) {
-            return node->sway_container;
-        }
     }
     return NULL;
 }

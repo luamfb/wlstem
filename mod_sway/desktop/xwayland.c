@@ -521,23 +521,10 @@ static void handle_request_configure(struct wl_listener *listener, void *data) {
             ev->width, ev->height);
         return;
     }
-    if (container_is_floating(view->container)) {
-        // Respect minimum and maximum sizes
-        view->natural_width = ev->width;
-        view->natural_height = ev->height;
-        container_floating_resize_and_center(view->container);
-
-        configure(view, view->container->content_x,
-                view->container->content_y,
-                view->container->content_width,
-                view->container->content_height);
-        node_set_dirty(&view->container->node);
-    } else {
-        configure(view, view->container->current.content_x,
-                view->container->current.content_y,
-                view->container->current.content_width,
-                view->container->current.content_height);
-    }
+    configure(view, view->container->current.content_x,
+            view->container->current.content_y,
+            view->container->current.content_width,
+            view->container->current.content_height);
 }
 
 static void handle_request_fullscreen(struct wl_listener *listener, void *data) {
