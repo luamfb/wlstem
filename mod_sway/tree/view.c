@@ -414,8 +414,7 @@ static bool should_focus(struct sway_view *view) {
 
     // If the view is the only one in the focused workspace, it'll get focus
     if (!view->container->parent && !prev_con) {
-        size_t num_children = view->container->workspace->tiling->length +
-            view->container->workspace->floating->length;
+        size_t num_children = view->container->workspace->tiling->length;
         if (num_children == 1) {
             return true;
         }

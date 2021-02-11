@@ -646,33 +646,6 @@ static void render_workspace(struct sway_output *output,
     render_containers(output, damage, &data);
 }
 
-static void render_floating_container(struct sway_output *soutput,
-        pixman_region32_t *damage, struct sway_container *con) {
-    if (con->view) {
-        struct sway_view *view = con->view;
-        struct border_colors *colors;
-        struct wlr_texture *title_texture;
-
-        if (view_is_urgent(view)) {
-            colors = &config->border_colors.urgent;
-            title_texture = con->title_urgent;
-        } else if (con->current.focused) {
-            colors = &config->border_colors.focused;
-            title_texture = con->title_focused;
-        } else {
-            colors = &config->border_colors.unfocused;
-            title_texture = con->title_unfocused;
-        }
-
-        render_titlebar(soutput, damage, con, con->current.x,
-                con->current.y, con->current.width, colors,
-                title_texture);
-        render_view(soutput, damage, con, colors);
-    } else {
-        render_container(soutput, damage, con, con->current.focused);
-    }
-}
-
 static void render_floating(struct sway_output *soutput,
         pixman_region32_t *damage) {
     for (int i = 0; i < root->outputs->length; ++i) {
@@ -681,13 +654,6 @@ static void render_floating(struct sway_output *soutput,
             struct sway_workspace *ws = output->current.workspaces->items[j];
             if (!workspace_is_visible(ws)) {
                 continue;
-            }
-            for (int k = 0; k < ws->current.floating->length; ++k) {
-                struct sway_container *floater = ws->current.floating->items[k];
-                if (floater->fullscreen_mode != FULLSCREEN_NONE) {
-                    continue;
-                }
-                render_floating_container(soutput, damage, floater);
             }
         }
     }
@@ -763,13 +729,6 @@ void output_render(struct sway_output *output, struct timespec *when,
                     fullscreen_con->current.focused);
         }
 
-        for (int i = 0; i < workspace->current.floating->length; ++i) {
-            struct sway_container *floater =
-                workspace->current.floating->items[i];
-            if (container_is_transient_for(floater, fullscreen_con)) {
-                render_floating_container(output, damage, floater);
-            }
-        }
 #if HAVE_XWAYLAND
         render_unmanaged(output, damage, &root->xwayland_unmanaged);
 #endif

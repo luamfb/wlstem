@@ -103,9 +103,7 @@ static void copy_workspace_state(struct sway_workspace *ws,
     state->height = ws->height;
 
     state->output = ws->output;
-    state->floating = create_list();
     state->tiling = create_list();
-    list_cat(state->floating, ws->floating);
     list_cat(state->tiling, ws->tiling);
 
     struct sway_seat *seat = input_manager_current_seat();
@@ -196,7 +194,6 @@ static void apply_output_state(struct sway_output *output,
 static void apply_workspace_state(struct sway_workspace *ws,
         struct sway_workspace_state *state) {
     output_damage_whole(ws->current.output);
-    list_free(ws->current.floating);
     list_free(ws->current.tiling);
     memcpy(&ws->current, state, sizeof(struct sway_workspace_state));
     output_damage_whole(ws->current.output);
