@@ -396,8 +396,6 @@ void reset_outputs(void);
 
 void free_output_config(struct output_config *oc);
 
-int workspace_output_cmp_workspace(const void *a, const void *b);
-
 void free_sway_binding(struct sway_binding *sb);
 
 void seat_execute_command(struct sway_seat *seat, struct sway_binding *binding);
