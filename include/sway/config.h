@@ -233,15 +233,6 @@ struct output_config {
     enum config_dpms dpms_state;
 };
 
-/**
- * Stores configuration for a workspace, regardless of whether the workspace
- * exists.
- */
-struct workspace_config {
-    char *workspace;
-    list_t *outputs;
-};
-
 struct border_colors {
     float border[4];
     float background[4];
@@ -399,8 +390,6 @@ void free_output_config(struct output_config *oc);
 void free_sway_binding(struct sway_binding *sb);
 
 void seat_execute_command(struct sway_seat *seat, struct sway_binding *binding);
-
-void free_workspace_config(struct workspace_config *wsc);
 
 /**
  * Updates the value of config->font_height based on the max title height
