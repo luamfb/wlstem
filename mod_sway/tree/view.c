@@ -434,7 +434,6 @@ static void handle_foreign_activate_request(
         if (seat->wlr_seat == event->seat) {
             seat_set_focus_container(seat, view->container);
             seat_consider_warp_to_focus(seat);
-            container_raise_floating(view->container);
             break;
         }
     }
@@ -522,13 +521,6 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     wl_signal_add(&view->foreign_toplevel->events.destroy,
             &view->foreign_destroy);
 
-    // If we're about to launch the view into the floating container, then
-    // launch it as a tiled view in the root of the workspace instead.
-    if (target_sibling && container_is_floating(target_sibling)) {
-        target_sibling = NULL;
-        ws = seat_get_last_known_workspace(seat);
-    }
-
     struct sway_container *container = view->container;
     if (target_sibling) {
         container_add_sibling(target_sibling, container, 1);
@@ -547,7 +539,6 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
 
     if (view->impl->wants_floating && view->impl->wants_floating(view)) {
         view->container->border_thickness = config->floating_border_thickness;
-        container_set_floating(view->container, true);
     } else {
         view->container->border_thickness = config->border_thickness;
         view_set_tiled(view, true);
@@ -644,16 +635,10 @@ void view_unmap(struct sway_view *view) {
 void view_update_size(struct sway_view *view, int width, int height) {
     struct sway_container *con = view->container;
 
-    if (container_is_floating(con)) {
-        con->content_width = width;
-        con->content_height = height;
-        container_set_geometry_from_content(con);
-    } else {
-        con->surface_x = con->content_x + (con->content_width - width) / 2;
-        con->surface_y = con->content_y + (con->content_height - height) / 2;
-        con->surface_x = fmax(con->surface_x, con->content_x);
-        con->surface_y = fmax(con->surface_y, con->content_y);
-    }
+    con->surface_x = con->content_x + (con->content_width - width) / 2;
+    con->surface_y = con->content_y + (con->content_height - height) / 2;
+    con->surface_x = fmax(con->surface_x, con->content_x);
+    con->surface_y = fmax(con->surface_y, con->content_y);
 }
 
 static const struct sway_view_child_impl subsurface_impl;
@@ -1042,8 +1027,7 @@ bool view_is_visible(struct sway_view *view) {
     // Check view isn't hidden by another fullscreen view
     struct sway_container *fs = root->fullscreen_global ?
         root->fullscreen_global : workspace->fullscreen;
-    if (fs && !container_is_fullscreen_or_child(view->container) &&
-            !container_is_transient_for(view->container, fs)) {
+    if (fs && !container_is_transient_for(view->container, fs)) {
         return false;
     }
     return true;

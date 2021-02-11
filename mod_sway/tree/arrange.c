@@ -113,30 +113,10 @@ void arrange_workspace(struct sway_workspace *workspace) {
     sway_log(SWAY_DEBUG, "Usable area for ws: %dx%d@%d,%d",
             area->width, area->height, area->x, area->y);
 
-    bool first_arrange = workspace->width == 0 && workspace->height == 0;
-    double prev_x = workspace->x;
-    double prev_y = workspace->y;
     workspace->width = area->width;
     workspace->height = area->height;
     workspace->x = output->lx + area->x;
     workspace->y = output->ly + area->y;
-
-    // Adjust any floating containers
-    double diff_x = workspace->x - prev_x;
-    double diff_y = workspace->y - prev_y;
-    if (!first_arrange && (diff_x != 0 || diff_y != 0)) {
-        for (int i = 0; i < workspace->floating->length; ++i) {
-            struct sway_container *floater = workspace->floating->items[i];
-            container_floating_translate(floater, diff_x, diff_y);
-            double center_x = floater->x + floater->width / 2;
-            double center_y = floater->y + floater->height / 2;
-            struct wlr_box workspace_box;
-            workspace_get_box(workspace, &workspace_box);
-            if (!wlr_box_contains_point(&workspace_box, center_x, center_y)) {
-                container_floating_move_to_center(floater);
-            }
-        }
-    }
 
     node_set_dirty(&workspace->node);
     sway_log(SWAY_DEBUG, "Arranging workspace '%s' at %f, %f", workspace->name,
