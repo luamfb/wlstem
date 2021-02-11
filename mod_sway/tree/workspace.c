@@ -113,28 +113,11 @@ void workspace_consider_destroy(struct sway_workspace *ws) {
 
 static bool workspace_valid_on_output(const char *output_name,
         const char *ws_name) {
-    struct workspace_config *wsc = NULL;
-    char identifier[128];
     struct sway_output *output = output_by_name_or_id(output_name);
     if (!output) {
         return false;
     }
-    output_name = output->wlr_output->name;
-    output_get_identifier(identifier, sizeof(identifier), output);
-
-    if (!wsc) {
-        return true;
-    }
-
-    for (int i = 0; i < wsc->outputs->length; i++) {
-        if (strcmp(wsc->outputs->items[i], "*") == 0 ||
-                strcmp(wsc->outputs->items[i], output_name) == 0 ||
-                strcmp(wsc->outputs->items[i], identifier) == 0) {
-            return true;
-        }
-    }
-
-    return false;
+    return true;
 }
 
 static void workspace_name_from_binding(const struct sway_binding * binding,
