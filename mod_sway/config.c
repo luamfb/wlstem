@@ -139,10 +139,6 @@ static void config_defaults(struct sway_config *config) {
     config->titlebar_h_padding = 5;
     config->titlebar_v_padding = 4;
 
-    // floating view
-    config->floating_minimum_width = 75;
-    config->floating_minimum_height = 50;
-
     // Flags
     config->focus_follows_mouse = FOLLOWS_YES;
     config->mouse_warping = WARP_OUTPUT;
@@ -151,7 +147,6 @@ static void config_defaults(struct sway_config *config) {
 
     // borders
     config->border_thickness = 2;
-    config->floating_border_thickness = 2;
 
     // border colors
     color_to_rgba(config->border_colors.focused.border, 0x4C7899FF);

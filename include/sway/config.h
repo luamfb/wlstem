@@ -314,7 +314,6 @@ struct sway_config {
     enum alignment title_align;
 
     int border_thickness;
-    int floating_border_thickness;
 
     // border colors
     struct {
@@ -325,10 +324,6 @@ struct sway_config {
         struct border_colors placeholder;
         float background[4];
     } border_colors;
-
-    // floating view
-    int32_t floating_minimum_width;
-    int32_t floating_minimum_height;
 
     // The keysym to keycode translation
     struct xkb_state *keysym_translation_state;
