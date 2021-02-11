@@ -1297,9 +1297,6 @@ struct sway_container *seat_get_focus_inactive_tiling(struct sway_seat *seat,
 
 struct sway_container *seat_get_focus_inactive_floating(struct sway_seat *seat,
         struct sway_workspace *workspace) {
-    if (!workspace->floating->length) {
-        return NULL;
-    }
     return NULL;
 }
 

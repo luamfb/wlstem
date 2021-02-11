@@ -48,7 +48,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
     }
     node_init(&ws->node, N_WORKSPACE, ws);
     ws->name = name ? strdup(name) : NULL;
-    ws->floating = create_list();
     ws->tiling = create_list();
     ws->output_priority = create_list();
 
@@ -76,9 +75,7 @@ void workspace_destroy(struct sway_workspace *workspace) {
     free(workspace->name);
     free(workspace->representation);
     list_free_items_and_destroy(workspace->output_priority);
-    list_free(workspace->floating);
     list_free(workspace->tiling);
-    list_free(workspace->current.floating);
     list_free(workspace->current.tiling);
     free(workspace);
 }
@@ -95,7 +92,7 @@ void workspace_begin_destroy(struct sway_workspace *workspace) {
 }
 
 void workspace_consider_destroy(struct sway_workspace *ws) {
-    if (ws->tiling->length || ws->floating->length) {
+    if (ws->tiling->length) {
         return;
     }
 
@@ -488,9 +485,6 @@ bool workspace_is_empty(struct sway_workspace *ws) {
     if (ws->tiling->length) {
         return false;
     }
-    if (ws->floating->length) {
-        return false;
-    }
     return true;
 }
 
@@ -581,12 +575,6 @@ void workspace_for_each_container(struct sway_workspace *ws,
         f(container, data);
         container_for_each_child(container, f, data);
     }
-    // Floating
-    for (int i = 0; i < ws->floating->length; ++i) {
-        struct sway_container *container = ws->floating->items[i];
-        f(container, data);
-        container_for_each_child(container, f, data);
-    }
 }
 
 struct sway_container *workspace_find_container(struct sway_workspace *ws,
@@ -595,16 +583,6 @@ struct sway_container *workspace_find_container(struct sway_workspace *ws,
     // Tiling
     for (int i = 0; i < ws->tiling->length; ++i) {
         struct sway_container *child = ws->tiling->items[i];
-        if (test(child, data)) {
-            return child;
-        }
-        if ((result = container_find_child(child, test, data))) {
-            return result;
-        }
-    }
-    // Floating
-    for (int i = 0; i < ws->floating->length; ++i) {
-        struct sway_container *child = ws->floating->items[i];
         if (test(child, data)) {
             return child;
         }
@@ -682,19 +660,6 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);
     return con;
-}
-
-void workspace_add_floating(struct sway_workspace *workspace,
-        struct sway_container *con) {
-    if (con->workspace) {
-        container_detach(con);
-    }
-    list_add(workspace->floating, con);
-    con->workspace = workspace;
-    container_for_each_child(con, set_workspace, NULL);
-    container_handle_fullscreen_reparent(con);
-    node_set_dirty(&workspace->node);
-    node_set_dirty(&con->node);
 }
 
 void workspace_insert_tiling_direct(struct sway_workspace *workspace,

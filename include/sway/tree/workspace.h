@@ -12,7 +12,6 @@ struct sway_workspace_state {
     double x, y;
     int width, height;
     struct sway_output *output;
-    list_t *floating;
     list_t *tiling;
 
     struct sway_container *focused_inactive_child;
@@ -30,7 +29,6 @@ struct sway_workspace {
     int width, height;
 
     struct sway_output *output; // NULL if no outputs are connected
-    list_t *floating;           // struct sway_container
     list_t *tiling;             // struct sway_container
     list_t *output_priority;
     bool urgent;
@@ -103,9 +101,6 @@ void workspace_unwrap_children(struct sway_workspace *ws,
 void workspace_detach(struct sway_workspace *workspace);
 
 struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
-        struct sway_container *con);
-
-void workspace_add_floating(struct sway_workspace *workspace,
         struct sway_container *con);
 
 /**
