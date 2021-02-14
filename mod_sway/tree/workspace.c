@@ -535,20 +535,6 @@ struct sway_output *workspace_output_get_highest_available(
     return NULL;
 }
 
-static bool find_urgent_iterator(struct sway_container *con, void *data) {
-    return con->view && view_is_urgent(con->view);
-}
-
-void workspace_detect_urgent(struct sway_workspace *workspace) {
-    bool new_urgent = (bool)workspace_find_container(workspace,
-            find_urgent_iterator, NULL);
-
-    if (workspace->urgent != new_urgent) {
-        workspace->urgent = new_urgent;
-        output_damage_whole(workspace->output);
-    }
-}
-
 void workspace_for_each_container(struct sway_workspace *ws,
         void (*f)(struct sway_container *con, void *data), void *data) {
     // Tiling
