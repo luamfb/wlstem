@@ -13,7 +13,6 @@ struct sway_seat;
 enum sway_fullscreen_mode {
     FULLSCREEN_NONE,
     FULLSCREEN_WORKSPACE,
-    FULLSCREEN_GLOBAL,
 };
 
 struct sway_root;

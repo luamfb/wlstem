@@ -150,18 +150,9 @@ void arrange_root(void) {
     root->width = layout_box->width;
     root->height = layout_box->height;
 
-    if (root->fullscreen_global) {
-        struct sway_container *fs = root->fullscreen_global;
-        fs->x = root->x;
-        fs->y = root->y;
-        fs->width = root->width;
-        fs->height = root->height;
-        arrange_container(fs);
-    } else {
-        for (int i = 0; i < root->outputs->length; ++i) {
-            struct sway_output *output = root->outputs->items[i];
-            arrange_output(output);
-        }
+    for (int i = 0; i < root->outputs->length; ++i) {
+        struct sway_output *output = root->outputs->items[i];
+        arrange_output(output);
     }
 }
 
