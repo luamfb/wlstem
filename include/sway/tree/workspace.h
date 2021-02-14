@@ -30,7 +30,6 @@ struct sway_workspace {
     struct sway_output *output; // NULL if no outputs are connected
     list_t *tiling;             // struct sway_container
     list_t *output_priority;
-    bool urgent;
 
     struct sway_workspace_state current;
 };

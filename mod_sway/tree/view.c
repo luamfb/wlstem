@@ -586,7 +586,6 @@ void view_unmap(struct sway_view *view) {
 
     if (ws && !ws->node.destroying) {
         arrange_workspace(ws);
-        workspace_detect_urgent(ws);
     }
 
     struct sway_seat *seat;
