@@ -670,10 +670,7 @@ void output_render(struct sway_output *output, struct timespec *when,
         return;
     }
 
-    struct sway_container *fullscreen_con = root->fullscreen_global;
-    if (!fullscreen_con) {
-        fullscreen_con = workspace->current.fullscreen;
-    }
+    struct sway_container *fullscreen_con = workspace->current.fullscreen;
 
     wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
 

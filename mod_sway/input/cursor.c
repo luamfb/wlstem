@@ -110,16 +110,6 @@ struct sway_node *node_at_coords(
     double ox = lx, oy = ly;
     wlr_output_layout_output_coords(root->output_layout, wlr_output, &ox, &oy);
 
-    if (root->fullscreen_global) {
-        // Try fullscreen container
-        struct sway_container *con = tiling_container_at(
-                &root->fullscreen_global->node, lx, ly, surface, sx, sy);
-        if (con) {
-            return &con->node;
-        }
-        return NULL;
-    }
-
     // find the focused workspace on the output for this seat
     struct sway_workspace *ws = output_get_active_workspace(output);
     if (!ws) {

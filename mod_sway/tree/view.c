@@ -205,12 +205,6 @@ void view_autoconfigure(struct sway_view *view) {
         con->content_width = output->width;
         con->content_height = output->height;
         return;
-    } else if (con->fullscreen_mode == FULLSCREEN_GLOBAL) {
-        con->content_x = root->x;
-        con->content_y = root->y;
-        con->content_width = root->width;
-        con->content_height = root->height;
-        return;
     }
 
     con->border_top = con->border_bottom = true;
@@ -394,10 +388,6 @@ static bool should_focus(struct sway_view *view) {
     struct sway_container *prev_con = seat_get_focused_container(seat);
     struct sway_workspace *prev_ws = seat_get_focused_workspace(seat);
     struct sway_workspace *map_ws = view->container->workspace;
-
-    if (view->container->fullscreen_mode == FULLSCREEN_GLOBAL) {
-        return true;
-    }
 
     // Views can only take focus if they are mapped into the active workspace
     if (prev_ws != map_ws) {
@@ -594,10 +584,7 @@ void view_unmap(struct sway_view *view) {
         workspace_consider_destroy(ws);
     }
 
-    if (root->fullscreen_global) {
-        // Container may have been a child of the root fullscreen container
-        arrange_root();
-    } else if (ws && !ws->node.destroying) {
+    if (ws && !ws->node.destroying) {
         arrange_workspace(ws);
         workspace_detect_urgent(ws);
     }
@@ -994,26 +981,15 @@ bool view_is_visible(struct sway_view *view) {
         return false;
     }
     struct sway_workspace *workspace = view->container->workspace;
-    if (!workspace && view->container->fullscreen_mode != FULLSCREEN_GLOBAL) {
-        bool fs_global_descendant = false;
-        struct sway_container *parent = view->container->parent;
-        while (parent) {
-            if (parent->fullscreen_mode == FULLSCREEN_GLOBAL) {
-                fs_global_descendant = true;
-            }
-            parent = parent->parent;
-        }
-        if (!fs_global_descendant) {
-            return false;
-        }
+    if (!workspace) {
+        return false;
     }
 
     if (workspace && !workspace_is_visible(workspace)) {
         return false;
     }
     // Check view isn't hidden by another fullscreen view
-    struct sway_container *fs = root->fullscreen_global ?
-        root->fullscreen_global : workspace->fullscreen;
+    struct sway_container *fs = workspace->fullscreen;
     if (fs && !container_is_transient_for(view->container, fs)) {
         return false;
     }

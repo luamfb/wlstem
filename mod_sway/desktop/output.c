@@ -356,13 +356,11 @@ static void output_for_each_surface(struct sway_output *output,
     };
 
     struct sway_workspace *workspace = output_get_active_workspace(output);
-    struct sway_container *fullscreen_con = root->fullscreen_global;
-    if (!fullscreen_con) {
-        if (!workspace) {
-            return;
-        }
-        fullscreen_con = workspace->current.fullscreen;
+    if (!workspace) {
+        return;
     }
+
+    struct sway_container *fullscreen_con = workspace->current.fullscreen;
     if (fullscreen_con) {
         for_each_surface_container_iterator(fullscreen_con, &data);
         container_for_each_child(fullscreen_con,
@@ -554,10 +552,7 @@ static int output_repaint_timer_handler(void *data) {
         return 0;
     }
 
-    struct sway_container *fullscreen_con = root->fullscreen_global;
-    if (!fullscreen_con) {
-        fullscreen_con = workspace->current.fullscreen;
-    }
+    struct sway_container *fullscreen_con = workspace->current.fullscreen;
 
     if (fullscreen_con && fullscreen_con->view) {
         // Try to scan-out the fullscreen view
