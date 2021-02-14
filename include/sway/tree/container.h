@@ -10,11 +10,6 @@
 struct sway_view;
 struct sway_seat;
 
-enum sway_fullscreen_mode {
-    FULLSCREEN_NONE,
-    FULLSCREEN_WORKSPACE,
-};
-
 struct sway_root;
 struct sway_output;
 struct sway_workspace;
@@ -26,8 +21,6 @@ struct sway_container_state {
     // Container properties
     double x, y;
     double width, height;
-
-    enum sway_fullscreen_mode fullscreen_mode;
 
     struct sway_workspace *workspace;
     struct sway_container *parent;
@@ -82,8 +75,6 @@ struct sway_container {
     // refuses to resize to the content dimensions then it can be smaller.
     // These are in layout coordinates.
     double surface_x, surface_y;
-
-    enum sway_fullscreen_mode fullscreen_mode;
 
     int border_thickness;
     bool border_top;
@@ -186,14 +177,6 @@ bool container_has_urgent_child(struct sway_container *container);
  */
 void container_end_mouse_operation(struct sway_container *container);
 
-void container_set_fullscreen(struct sway_container *con,
-        enum sway_fullscreen_mode mode);
-
-/**
- * Convenience function.
- */
-void container_fullscreen_disable(struct sway_container *con);
-
 /**
  * Walk up the container tree branch starting at the given container, and return
  * its earliest ancestor.
@@ -214,8 +197,6 @@ list_t *container_get_siblings(struct sway_container *container);
 int container_sibling_index(struct sway_container *child);
 
 list_t *container_get_current_siblings(struct sway_container *container);
-
-void container_handle_fullscreen_reparent(struct sway_container *con);
 
 void container_add_child(struct sway_container *parent,
         struct sway_container *child);

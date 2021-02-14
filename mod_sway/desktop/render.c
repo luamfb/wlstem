@@ -670,8 +670,6 @@ void output_render(struct sway_output *output, struct timespec *when,
         return;
     }
 
-    struct sway_container *fullscreen_con = workspace->current.fullscreen;
-
     wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
 
     if (!pixman_region32_not_empty(damage)) {
@@ -691,60 +689,33 @@ void output_render(struct sway_output *output, struct timespec *when,
         goto render_overlay;
     }
 
-    if (fullscreen_con) {
-        float clear_color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float clear_color[] = {0.25f, 0.25f, 0.25f, 1.0f};
 
-        int nrects;
-        pixman_box32_t *rects = pixman_region32_rectangles(damage, &nrects);
-        for (int i = 0; i < nrects; ++i) {
-            scissor_output(wlr_output, &rects[i]);
-            wlr_renderer_clear(renderer, clear_color);
-        }
-
-        if (fullscreen_con->view) {
-            if (!wl_list_empty(&fullscreen_con->view->saved_buffers)) {
-                render_saved_view(fullscreen_con->view, output, damage, 1.0f);
-            } else if (fullscreen_con->view->surface) {
-                render_view_toplevels(fullscreen_con->view,
-                        output, damage, 1.0f);
-            }
-        } else {
-            render_container(output, damage, fullscreen_con,
-                    fullscreen_con->current.focused);
-        }
-
-#if HAVE_XWAYLAND
-        render_unmanaged(output, damage, &root->xwayland_unmanaged);
-#endif
-    } else {
-        float clear_color[] = {0.25f, 0.25f, 0.25f, 1.0f};
-
-        int nrects;
-        pixman_box32_t *rects = pixman_region32_rectangles(damage, &nrects);
-        for (int i = 0; i < nrects; ++i) {
-            scissor_output(wlr_output, &rects[i]);
-            wlr_renderer_clear(renderer, clear_color);
-        }
-
-        render_layer_toplevel(output, damage,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND]);
-        render_layer_toplevel(output, damage,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
-
-        render_workspace(output, damage, workspace, workspace->current.focused);
-#if HAVE_XWAYLAND
-        render_unmanaged(output, damage, &root->xwayland_unmanaged);
-#endif
-        render_layer_toplevel(output, damage,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP]);
-
-        render_layer_popups(output, damage,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND]);
-        render_layer_popups(output, damage,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
-        render_layer_popups(output, damage,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP]);
+    int nrects;
+    pixman_box32_t *rects = pixman_region32_rectangles(damage, &nrects);
+    for (int i = 0; i < nrects; ++i) {
+        scissor_output(wlr_output, &rects[i]);
+        wlr_renderer_clear(renderer, clear_color);
     }
+
+    render_layer_toplevel(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND]);
+    render_layer_toplevel(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
+
+    render_workspace(output, damage, workspace, workspace->current.focused);
+#if HAVE_XWAYLAND
+    render_unmanaged(output, damage, &root->xwayland_unmanaged);
+#endif
+    render_layer_toplevel(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP]);
+
+    render_layer_popups(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND]);
+    render_layer_popups(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
+    render_layer_popups(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP]);
 
     render_seatops(output, damage);
 

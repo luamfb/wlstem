@@ -360,35 +360,23 @@ static void output_for_each_surface(struct sway_output *output,
         return;
     }
 
-    struct sway_container *fullscreen_con = workspace->current.fullscreen;
-    if (fullscreen_con) {
-        for_each_surface_container_iterator(fullscreen_con, &data);
-        container_for_each_child(fullscreen_con,
-            for_each_surface_container_iterator, &data);
+    output_layer_for_each_surface(output,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND],
+        iterator, user_data);
+    output_layer_for_each_surface(output,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM],
+        iterator, user_data);
+
+    workspace_for_each_container(workspace,
+        for_each_surface_container_iterator, &data);
 
 #if HAVE_XWAYLAND
-        output_unmanaged_for_each_surface(output, &root->xwayland_unmanaged,
-            iterator, user_data);
+    output_unmanaged_for_each_surface(output, &root->xwayland_unmanaged,
+        iterator, user_data);
 #endif
-    } else {
-        output_layer_for_each_surface(output,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND],
-            iterator, user_data);
-        output_layer_for_each_surface(output,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM],
-            iterator, user_data);
-
-        workspace_for_each_container(workspace,
-            for_each_surface_container_iterator, &data);
-
-#if HAVE_XWAYLAND
-        output_unmanaged_for_each_surface(output, &root->xwayland_unmanaged,
-            iterator, user_data);
-#endif
-        output_layer_for_each_surface(output,
-            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP],
-            iterator, user_data);
-    }
+    output_layer_for_each_surface(output,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP],
+        iterator, user_data);
 
 overlay:
     output_layer_for_each_surface(output,
@@ -476,69 +464,6 @@ static void send_frame_done(struct sway_output *output, struct send_frame_done_d
     output_for_each_surface(output, send_frame_done_iterator, data);
 }
 
-static void count_surface_iterator(struct sway_output *output, struct sway_view *view,
-        struct wlr_surface *surface, struct wlr_box *_box, float rotation,
-        void *data) {
-    size_t *n = data;
-    (*n)++;
-}
-
-static bool scan_out_fullscreen_view(struct sway_output *output,
-        struct sway_view *view) {
-    struct wlr_output *wlr_output = output->wlr_output;
-    struct sway_workspace *workspace = output->current.active_workspace;
-    if (!sway_assert(workspace, "Expected an active workspace")) {
-        return false;
-    }
-
-    if (!wl_list_empty(&view->saved_buffers)) {
-        return false;
-    }
-
-#if HAVE_XWAYLAND
-    if (!wl_list_empty(&root->xwayland_unmanaged)) {
-        return false;
-    }
-#endif
-
-    if (!wl_list_empty(&output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY])) {
-        return false;
-    }
-    if (!wl_list_empty(&root->drag_icons)) {
-        return false;
-    }
-
-    struct wlr_surface *surface = view->surface;
-    if (surface == NULL) {
-        return false;
-    }
-    size_t n_surfaces = 0;
-    output_view_for_each_surface(output, view,
-        count_surface_iterator, &n_surfaces);
-    if (n_surfaces != 1) {
-        return false;
-    }
-
-    if (surface->buffer == NULL) {
-        return false;
-    }
-
-    if ((float)surface->current.scale != wlr_output->scale ||
-            surface->current.transform != wlr_output->transform) {
-        return false;
-    }
-
-    wlr_output_attach_buffer(wlr_output, &surface->buffer->base);
-    if (!wlr_output_test(wlr_output)) {
-        return false;
-    }
-
-    wlr_presentation_surface_sampled_on_output(server.presentation, surface,
-        wlr_output);
-
-    return wlr_output_commit(wlr_output);
-}
-
 static int output_repaint_timer_handler(void *data) {
     struct sway_output *output = data;
     if (output->wlr_output == NULL) {
@@ -550,29 +475,6 @@ static int output_repaint_timer_handler(void *data) {
     struct sway_workspace *workspace = output->current.active_workspace;
     if (workspace == NULL) {
         return 0;
-    }
-
-    struct sway_container *fullscreen_con = workspace->current.fullscreen;
-
-    if (fullscreen_con && fullscreen_con->view) {
-        // Try to scan-out the fullscreen view
-        static bool last_scanned_out = false;
-        bool scanned_out =
-            scan_out_fullscreen_view(output, fullscreen_con->view);
-
-        if (scanned_out && !last_scanned_out) {
-            sway_log(SWAY_DEBUG, "Scanning out fullscreen view on %s",
-                output->wlr_output->name);
-        }
-        if (last_scanned_out && !scanned_out) {
-            sway_log(SWAY_DEBUG, "Stopping fullscreen view scan out on %s",
-                output->wlr_output->name);
-        }
-        last_scanned_out = scanned_out;
-
-        if (scanned_out) {
-            return 0;
-        }
     }
 
     bool needs_frame;

@@ -76,12 +76,6 @@ void container_destroy(struct sway_container *con) {
 }
 
 void container_begin_destroy(struct sway_container *con) {
-    // The workspace must have the fullscreen pointer cleared so that the
-    // seat code can find an appropriate new focus.
-    if (con->fullscreen_mode == FULLSCREEN_WORKSPACE && con->workspace) {
-        con->workspace->fullscreen = NULL;
-    }
-
     wl_signal_emit(&con->node.events.destroy, &con->node);
 
     container_end_mouse_operation(con);
@@ -512,93 +506,6 @@ void container_end_mouse_operation(struct sway_container *container) {
     }
 }
 
-static void set_fullscreen_iterator(struct sway_container *con, void *data) {
-    if (!con->view) {
-        return;
-    }
-    if (con->view->impl->set_fullscreen) {
-        bool *enable = data;
-        con->view->impl->set_fullscreen(con->view, *enable);
-        if (con->view->foreign_toplevel) {
-            wlr_foreign_toplevel_handle_v1_set_fullscreen(
-                con->view->foreign_toplevel, *enable);
-        }
-    }
-}
-
-static void container_fullscreen_workspace(struct sway_container *con) {
-    if (!sway_assert(con->fullscreen_mode == FULLSCREEN_NONE,
-                "Expected a non-fullscreen container")) {
-        return;
-    }
-    bool enable = true;
-    set_fullscreen_iterator(con, &enable);
-    container_for_each_child(con, set_fullscreen_iterator, &enable);
-    con->fullscreen_mode = FULLSCREEN_WORKSPACE;
-
-    con->saved_x = con->x;
-    con->saved_y = con->y;
-    con->saved_width = con->width;
-    con->saved_height = con->height;
-
-    if (con->workspace) {
-        con->workspace->fullscreen = con;
-        struct sway_seat *seat;
-        struct sway_workspace *focus_ws;
-        wl_list_for_each(seat, &server.input->seats, link) {
-            focus_ws = seat_get_focused_workspace(seat);
-            if (focus_ws == con->workspace) {
-                seat_set_focus_container(seat, con);
-            } else {
-                struct sway_node *focus =
-                    seat_get_focus_inactive(seat, &root->node);
-                seat_set_raw_focus(seat, &con->node);
-                seat_set_raw_focus(seat, focus);
-            }
-        }
-    }
-
-    container_end_mouse_operation(con);
-}
-
-void container_fullscreen_disable(struct sway_container *con) {
-    if (!sway_assert(con->fullscreen_mode != FULLSCREEN_NONE,
-                "Expected a fullscreen container")) {
-        return;
-    }
-    bool enable = false;
-    set_fullscreen_iterator(con, &enable);
-    container_for_each_child(con, set_fullscreen_iterator, &enable);
-
-    if (con->fullscreen_mode == FULLSCREEN_WORKSPACE) {
-        if (con->workspace) {
-            con->workspace->fullscreen = NULL;
-        }
-    }
-
-    con->fullscreen_mode = FULLSCREEN_NONE;
-    container_end_mouse_operation(con);
-}
-
-void container_set_fullscreen(struct sway_container *con,
-        enum sway_fullscreen_mode mode) {
-    if (con->fullscreen_mode == mode) {
-        return;
-    }
-
-    switch (mode) {
-    case FULLSCREEN_NONE:
-        container_fullscreen_disable(con);
-        break;
-    case FULLSCREEN_WORKSPACE:
-        if (con->workspace && con->workspace->fullscreen) {
-            container_fullscreen_disable(con->workspace->fullscreen);
-        }
-        container_fullscreen_workspace(con);
-        break;
-    }
-}
-
 struct sway_container *container_toplevel_ancestor(
         struct sway_container *container) {
     while (container->parent) {
@@ -691,19 +598,6 @@ list_t *container_get_current_siblings(struct sway_container *container) {
     return container->current.workspace->current.tiling;
 }
 
-void container_handle_fullscreen_reparent(struct sway_container *con) {
-    if (con->fullscreen_mode != FULLSCREEN_WORKSPACE || !con->workspace ||
-            con->workspace->fullscreen == con) {
-        return;
-    }
-    if (con->workspace->fullscreen) {
-        container_fullscreen_disable(con->workspace->fullscreen);
-    }
-    con->workspace->fullscreen = con;
-
-    arrange_workspace(con->workspace);
-}
-
 static void set_workspace(struct sway_container *container, void *data) {
     container->workspace = container->parent->workspace;
 }
@@ -717,7 +611,6 @@ void container_insert_child(struct sway_container *parent,
     child->parent = parent;
     child->workspace = parent->workspace;
     container_for_each_child(child, set_workspace, NULL);
-    container_handle_fullscreen_reparent(child);
     container_update_representation(parent);
 }
 
@@ -732,7 +625,6 @@ void container_add_sibling(struct sway_container *fixed,
     active->parent = fixed->parent;
     active->workspace = fixed->workspace;
     container_for_each_child(active, set_workspace, NULL);
-    container_handle_fullscreen_reparent(active);
     container_update_representation(active);
 }
 
@@ -745,21 +637,12 @@ void container_add_child(struct sway_container *parent,
     child->parent = parent;
     child->workspace = parent->workspace;
     container_for_each_child(child, set_workspace, NULL);
-    bool fullscreen = child->fullscreen_mode != FULLSCREEN_NONE ||
-        parent->fullscreen_mode != FULLSCREEN_NONE;
-    set_fullscreen_iterator(child, &fullscreen);
-    container_for_each_child(child, set_fullscreen_iterator, &fullscreen);
-    container_handle_fullscreen_reparent(child);
     container_update_representation(parent);
     node_set_dirty(&child->node);
     node_set_dirty(&parent->node);
 }
 
 void container_detach(struct sway_container *child) {
-    if (child->fullscreen_mode == FULLSCREEN_WORKSPACE) {
-        child->workspace->fullscreen = NULL;
-    }
-
     struct sway_container *old_parent = child->parent;
     struct sway_workspace *old_workspace = child->workspace;
     list_t *siblings = container_get_siblings(child);
@@ -784,10 +667,6 @@ void container_detach(struct sway_container *child) {
 
 void container_replace(struct sway_container *container,
         struct sway_container *replacement) {
-    enum sway_fullscreen_mode fullscreen = container->fullscreen_mode;
-    if (fullscreen != FULLSCREEN_NONE) {
-        container_fullscreen_disable(container);
-    }
     if (container->parent || container->workspace) {
         float width_fraction = container->width_fraction;
         float height_fraction = container->height_fraction;
@@ -795,14 +674,6 @@ void container_replace(struct sway_container *container,
         container_detach(container);
         replacement->width_fraction = width_fraction;
         replacement->height_fraction = height_fraction;
-    }
-    switch (fullscreen) {
-    case FULLSCREEN_WORKSPACE:
-        container_fullscreen_workspace(replacement);
-        break;
-    case FULLSCREEN_NONE:
-        // noop
-        break;
     }
 }
 

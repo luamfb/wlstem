@@ -121,15 +121,6 @@ struct sway_node *node_at_coords(
                 ox, oy, sx, sy))) {
         return NULL;
     }
-    if (ws->fullscreen) {
-        // Try fullscreen container
-        struct sway_container *con =
-            tiling_container_at(&ws->fullscreen->node, lx, ly, surface, sx, sy);
-        if (con) {
-            return &con->node;
-        }
-        return NULL;
-    }
     if ((*surface = layer_surface_popup_at(output,
                 &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP],
                 ox, oy, sx, sy))) {

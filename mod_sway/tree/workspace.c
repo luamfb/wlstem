@@ -570,13 +570,11 @@ static void workspace_attach_tiling(struct sway_workspace *ws,
     list_add(ws->tiling, con);
     con->workspace = ws;
     container_for_each_child(con, set_workspace, NULL);
-    container_handle_fullscreen_reparent(con);
     node_set_dirty(&ws->node);
     node_set_dirty(&con->node);
 }
 
 struct sway_container *workspace_wrap_children(struct sway_workspace *ws) {
-    struct sway_container *fs = ws->fullscreen;
     struct sway_container *middle = container_create(NULL);
     while (ws->tiling->length) {
         struct sway_container *child = ws->tiling->items[0];
@@ -584,7 +582,6 @@ struct sway_container *workspace_wrap_children(struct sway_workspace *ws) {
         container_add_child(middle, child);
     }
     workspace_attach_tiling(ws, middle);
-    ws->fullscreen = fs;
     return middle;
 }
 
@@ -622,7 +619,6 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     list_add(workspace->tiling, con);
     con->workspace = workspace;
     container_for_each_child(con, set_workspace, NULL);
-    container_handle_fullscreen_reparent(con);
     node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);
     return con;
@@ -633,7 +629,6 @@ void workspace_insert_tiling_direct(struct sway_workspace *workspace,
     list_insert(workspace->tiling, index, con);
     con->workspace = workspace;
     container_for_each_child(con, set_workspace, NULL);
-    container_handle_fullscreen_reparent(con);
     node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);
 }

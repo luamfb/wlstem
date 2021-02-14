@@ -8,7 +8,6 @@
 struct sway_view;
 
 struct sway_workspace_state {
-    struct sway_container *fullscreen;
     double x, y;
     int width, height;
     struct sway_output *output;
@@ -20,7 +19,6 @@ struct sway_workspace_state {
 
 struct sway_workspace {
     struct sway_node node;
-    struct sway_container *fullscreen;
 
     char *name;
 
