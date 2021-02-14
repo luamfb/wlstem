@@ -96,7 +96,6 @@ static void copy_workspace_state(struct sway_workspace *ws,
         struct sway_transaction_instruction *instruction) {
     struct sway_workspace_state *state = &instruction->workspace_state;
 
-    state->fullscreen = ws->fullscreen;
     state->x = ws->x;
     state->y = ws->y;
     state->width = ws->width;
@@ -127,7 +126,6 @@ static void copy_container_state(struct sway_container *container,
     state->y = container->y;
     state->width = container->width;
     state->height = container->height;
-    state->fullscreen_mode = container->fullscreen_mode;
     state->parent = container->parent;
     state->workspace = container->workspace;
     state->border_thickness = container->border_thickness;

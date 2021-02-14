@@ -492,17 +492,6 @@ static void handle_request_configure(struct wl_listener *listener, void *data) {
 }
 
 static void handle_request_fullscreen(struct wl_listener *listener, void *data) {
-    struct sway_xwayland_view *xwayland_view =
-        wl_container_of(listener, xwayland_view, request_fullscreen);
-    struct sway_view *view = &xwayland_view->view;
-    struct wlr_xwayland_surface *xsurface = view->wlr_xwayland_surface;
-    if (!xsurface->mapped) {
-        return;
-    }
-    container_set_fullscreen(view->container, xsurface->fullscreen);
-
-    arrange_root();
-    transaction_commit_dirty();
 }
 
 static void handle_request_minimize(struct wl_listener *listener, void *data) {

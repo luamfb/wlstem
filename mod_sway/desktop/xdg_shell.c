@@ -319,35 +319,6 @@ static void handle_new_popup(struct wl_listener *listener, void *data) {
 }
 
 static void handle_request_fullscreen(struct wl_listener *listener, void *data) {
-    struct sway_xdg_shell_view *xdg_shell_view =
-        wl_container_of(listener, xdg_shell_view, request_fullscreen);
-    struct wlr_xdg_toplevel_set_fullscreen_event *e = data;
-    struct wlr_xdg_surface *xdg_surface =
-        xdg_shell_view->view.wlr_xdg_surface;
-    struct sway_view *view = &xdg_shell_view->view;
-
-    if (!sway_assert(xdg_surface->role == WLR_XDG_SURFACE_ROLE_TOPLEVEL,
-                "xdg_shell requested fullscreen of surface with role %i",
-                xdg_surface->role)) {
-        return;
-    }
-    if (!xdg_surface->mapped) {
-        return;
-    }
-
-    struct sway_container *container = view->container;
-    if (e->fullscreen && e->output && e->output->data) {
-        struct sway_output *output = e->output->data;
-        struct sway_workspace *ws = output_get_active_workspace(output);
-        if (ws) {
-            container = workspace_add_tiling(ws, container);
-        }
-    }
-
-    container_set_fullscreen(container, e->fullscreen);
-
-    arrange_root();
-    transaction_commit_dirty();
 }
 
 static void handle_request_maximize(struct wl_listener *listener, void *data) {

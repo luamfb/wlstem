@@ -114,18 +114,9 @@ void arrange_workspace(struct sway_workspace *workspace) {
     node_set_dirty(&workspace->node);
     sway_log(SWAY_DEBUG, "Arranging workspace '%s' at %f, %f", workspace->name,
             workspace->x, workspace->y);
-    if (workspace->fullscreen) {
-        struct sway_container *fs = workspace->fullscreen;
-        fs->x = output->lx;
-        fs->y = output->ly;
-        fs->width = output->width;
-        fs->height = output->height;
-        arrange_container(fs);
-    } else {
-        struct wlr_box box;
-        workspace_get_box(workspace, &box);
-        arrange_children(workspace->tiling, &box);
-    }
+    struct wlr_box box;
+    workspace_get_box(workspace, &box);
+    arrange_children(workspace->tiling, &box);
 }
 
 void arrange_output(struct sway_output *output) {

@@ -195,17 +195,6 @@ bool view_ancestor_is_only_visible(struct sway_view *view) {
 
 void view_autoconfigure(struct sway_view *view) {
     struct sway_container *con = view->container;
-    struct sway_workspace *ws = con->workspace;
-
-    struct sway_output *output = ws ? ws->output : NULL;
-
-    if (con->fullscreen_mode == FULLSCREEN_WORKSPACE) {
-        con->content_x = output->lx;
-        con->content_y = output->ly;
-        con->content_width = output->width;
-        con->content_height = output->height;
-        return;
-    }
 
     con->border_top = con->border_bottom = true;
     con->border_left = con->border_right = true;
@@ -420,25 +409,7 @@ static void handle_foreign_activate_request(
     }
 }
 
-static void handle_foreign_fullscreen_request(
-        struct wl_listener *listener, void *data) {
-    struct sway_view *view = wl_container_of(
-            listener, view, foreign_fullscreen_request);
-    struct wlr_foreign_toplevel_handle_v1_fullscreen_event *event = data;
-
-    struct sway_container *container = view->container;
-
-    container_set_fullscreen(container,
-        event->fullscreen ? FULLSCREEN_WORKSPACE : FULLSCREEN_NONE);
-    if (event->fullscreen) {
-        arrange_root();
-    } else {
-        if (container->parent) {
-            arrange_container(container->parent);
-        } else if (container->workspace) {
-            arrange_workspace(container->workspace);
-        }
-    }
+static void handle_foreign_fullscreen_request(struct wl_listener *listener, void *data) {
 }
 
 static void handle_foreign_close_request(
@@ -469,14 +440,7 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     view_populate_pid(view);
     view->container = container_create(view);
 
-    // If there is a request to be opened fullscreen on a specific output, try
-    // to honor that request. Otherwise, fallback to assigns, pid mappings,
-    // focused workspace, etc
     struct sway_workspace *ws = NULL;
-    if (fullscreen_output && fullscreen_output->data) {
-        struct sway_output *output = fullscreen_output->data;
-        ws = output_get_active_workspace(output);
-    }
     if (!ws) {
         ws = select_workspace(view);
     }
@@ -521,28 +485,14 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     view->container->border_thickness = config->border_thickness;
     view_set_tiled(view, true);
 
-    if (config->popup_during_fullscreen == POPUP_LEAVE &&
-            container->workspace &&
-            container->workspace->fullscreen &&
-            container->workspace->fullscreen->view) {
-        struct sway_container *fs = container->workspace->fullscreen;
-        if (view_is_transient_for(view, fs->view)) {
-            container_set_fullscreen(fs, false);
-        }
-    }
-
     view_update_title(view, false);
     container_update_representation(container);
 
-    if (fullscreen) {
-        container_set_fullscreen(view->container, true);
-        arrange_workspace(view->container->workspace);
-    } else {
-        if (container->parent) {
-            arrange_container(container->parent);
-        } else if (container->workspace) {
-            arrange_workspace(container->workspace);
-        }
+
+    if (container->parent) {
+        arrange_container(container->parent);
+    } else if (container->workspace) {
+        arrange_workspace(container->workspace);
     }
 
     if (should_focus(view)) {
@@ -985,11 +935,6 @@ bool view_is_visible(struct sway_view *view) {
     }
 
     if (workspace && !workspace_is_visible(workspace)) {
-        return false;
-    }
-    // Check view isn't hidden by another fullscreen view
-    struct sway_container *fs = workspace->fullscreen;
-    if (fs && !container_is_transient_for(view->container, fs)) {
         return false;
     }
     return true;
