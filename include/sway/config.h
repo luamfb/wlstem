@@ -241,12 +241,6 @@ struct border_colors {
     float child_border[4];
 };
 
-enum sway_popup_during_fullscreen {
-    POPUP_SMART,
-    POPUP_IGNORE,
-    POPUP_LEAVE,
-};
-
 enum command_context {
     CONTEXT_CONFIG = 1 << 0,
     CONTEXT_BINDING = 1 << 1,
@@ -295,7 +289,6 @@ struct sway_config {
     int titlebar_v_padding;
     size_t urgent_timeout;
     enum sway_fowa focus_on_window_activation;
-    enum sway_popup_during_fullscreen popup_during_fullscreen;
     enum xwayland_mode xwayland;
 
     // Flags

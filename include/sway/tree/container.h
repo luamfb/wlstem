@@ -217,7 +217,4 @@ void container_replace(struct sway_container *container,
 
 struct sway_container *container_split(struct sway_container *child);
 
-bool container_is_transient_for(struct sway_container *child,
-        struct sway_container *ancestor);
-
 #endif

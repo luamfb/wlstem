@@ -711,10 +711,3 @@ struct sway_container *container_split(struct sway_container *child) {
 
     return cont;
 }
-
-bool container_is_transient_for(struct sway_container *child,
-        struct sway_container *ancestor) {
-    return config->popup_during_fullscreen == POPUP_SMART &&
-        child->view && ancestor->view &&
-        view_is_transient_for(child->view, ancestor->view);
-}
