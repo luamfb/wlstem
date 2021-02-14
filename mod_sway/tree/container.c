@@ -461,8 +461,6 @@ void container_update_representation(struct sway_container *con) {
     }
     if (con->parent) {
         container_update_representation(con->parent);
-    } else if (con->workspace) {
-        workspace_update_representation(con->workspace);
     }
 }
 
@@ -779,7 +777,6 @@ void container_detach(struct sway_container *child) {
         container_update_representation(old_parent);
         node_set_dirty(&old_parent->node);
     } else if (old_workspace) {
-        workspace_update_representation(old_workspace);
         node_set_dirty(&old_workspace->node);
     }
     node_set_dirty(&child->node);
@@ -817,8 +814,6 @@ struct sway_container *container_split(struct sway_container *child) {
         if (siblings->length == 1) {
             if (child->parent) {
                 container_update_representation(child->parent);
-            } else {
-                workspace_update_representation(child->workspace);
             }
             return child;
         }

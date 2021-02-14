@@ -23,7 +23,6 @@ struct sway_workspace {
     struct sway_container *fullscreen;
 
     char *name;
-    char *representation;
 
     double x, y;
     int width, height;
@@ -112,8 +111,6 @@ struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
         struct sway_container *con, int index);
 
 struct sway_container *workspace_split(struct sway_workspace *workspace);
-
-void workspace_update_representation(struct sway_workspace *ws);
 
 void workspace_get_box(struct sway_workspace *workspace, struct wlr_box *box);
 

@@ -73,7 +73,6 @@ void workspace_destroy(struct sway_workspace *workspace) {
     }
 
     free(workspace->name);
-    free(workspace->representation);
     list_free_items_and_destroy(workspace->output_priority);
     list_free(workspace->tiling);
     list_free(workspace->current.tiling);
@@ -586,7 +585,6 @@ static void workspace_attach_tiling(struct sway_workspace *ws,
     con->workspace = ws;
     container_for_each_child(con, set_workspace, NULL);
     container_handle_fullscreen_reparent(con);
-    workspace_update_representation(ws);
     node_set_dirty(&ws->node);
     node_set_dirty(&con->node);
 }
@@ -639,7 +637,6 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     con->workspace = workspace;
     container_for_each_child(con, set_workspace, NULL);
     container_handle_fullscreen_reparent(con);
-    workspace_update_representation(workspace);
     node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);
     return con;
@@ -651,7 +648,6 @@ void workspace_insert_tiling_direct(struct sway_workspace *workspace,
     con->workspace = workspace;
     container_for_each_child(con, set_workspace, NULL);
     container_handle_fullscreen_reparent(con);
-    workspace_update_representation(workspace);
     node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);
 }
@@ -680,16 +676,6 @@ struct sway_container *workspace_split(struct sway_workspace *workspace) {
     }
 
     return middle;
-}
-
-void workspace_update_representation(struct sway_workspace *ws) {
-    size_t len = container_build_representation(ws->tiling, NULL);
-    free(ws->representation);
-    ws->representation = calloc(len + 1, sizeof(char));
-    if (!sway_assert(ws->representation, "Unable to allocate title string")) {
-        return;
-    }
-    container_build_representation(ws->tiling, ws->representation);
 }
 
 void workspace_get_box(struct sway_workspace *workspace, struct wlr_box *box) {
