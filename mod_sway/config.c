@@ -126,7 +126,6 @@ static void config_defaults(struct sway_config *config) {
     config->font_height = 17; // height of monospace 10
     config->urgent_timeout = 500;
     config->focus_on_window_activation = FOWA_URGENT;
-    config->popup_during_fullscreen = POPUP_SMART;
     config->xwayland = XWAYLAND_MODE_LAZY;
 
     config->titlebar_border_thickness = 1;
