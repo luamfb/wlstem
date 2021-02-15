@@ -302,7 +302,6 @@ struct sway_config {
     // border colors
     struct {
         struct border_colors focused;
-        struct border_colors focused_inactive;
         struct border_colors unfocused;
         struct border_colors urgent;
         struct border_colors placeholder;
