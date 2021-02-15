@@ -195,9 +195,6 @@ struct sway_container *seat_get_focused_container(struct sway_seat *seat);
 struct sway_node *seat_get_focus_inactive(struct sway_seat *seat,
         struct sway_node *node);
 
-struct sway_container *seat_get_focus_inactive_tiling(struct sway_seat *seat,
-        struct sway_workspace *workspace);
-
 /**
  * Descend into the focus stack to find the focus-inactive view. Useful for
  * container placement when they change position in the tree.
