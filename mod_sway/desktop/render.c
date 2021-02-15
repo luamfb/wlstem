@@ -561,7 +561,6 @@ struct parent_data {
     struct wlr_box box;
     list_t *children;
     bool focused;
-    struct sway_container *active_child;
 };
 
 static void render_container(struct sway_output *output,
@@ -590,9 +589,6 @@ static void render_containers_linear(struct sway_output *output,
             } else if (state->focused || parent->focused) {
                 colors = &config->border_colors.focused;
                 title_texture = child->title_focused;
-            } else if (child == parent->active_child) {
-                colors = &config->border_colors.focused_inactive;
-                title_texture = child->title_focused_inactive;
             } else {
                 colors = &config->border_colors.unfocused;
                 title_texture = child->title_unfocused;
@@ -625,7 +621,6 @@ static void render_container(struct sway_output *output,
         },
         .children = con->current.children,
         .focused = focused,
-        .active_child = con->current.focused_inactive_child,
     };
     render_containers(output, damage, &data);
 }
@@ -641,7 +636,6 @@ static void render_workspace(struct sway_output *output,
         },
         .children = ws->current.tiling,
         .focused = focused,
-        .active_child = ws->current.focused_inactive_child,
     };
     render_containers(output, damage, &data);
 }

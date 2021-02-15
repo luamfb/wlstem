@@ -13,7 +13,6 @@ struct sway_workspace_state {
     struct sway_output *output;
     list_t *tiling;
 
-    struct sway_container *focused_inactive_child;
     bool focused;
 };
 
