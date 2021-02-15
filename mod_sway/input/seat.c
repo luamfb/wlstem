@@ -1259,22 +1259,6 @@ struct sway_node *seat_get_focus_inactive(struct sway_seat *seat,
     return NULL;
 }
 
-struct sway_container *seat_get_focus_inactive_tiling(struct sway_seat *seat,
-        struct sway_workspace *workspace) {
-    if (!workspace->tiling->length) {
-        return NULL;
-    }
-    struct sway_seat_node *current;
-    wl_list_for_each(current, &seat->focus_stack, link) {
-        struct sway_node *node = current->node;
-        if (node->type == N_CONTAINER &&
-                node->sway_container->workspace == workspace) {
-            return node->sway_container;
-        }
-    }
-    return NULL;
-}
-
 struct sway_node *seat_get_active_tiling_child(struct sway_seat *seat,
         struct sway_node *parent) {
     if (node_is_view(parent)) {
