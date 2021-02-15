@@ -13,7 +13,6 @@ struct sway_server;
 struct sway_container;
 
 struct sway_output_state {
-    list_t *workspaces;
     struct sway_workspace *active_workspace;
 };
 

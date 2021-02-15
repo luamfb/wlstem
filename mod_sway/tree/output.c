@@ -74,7 +74,6 @@ struct sway_output *output_create(struct wlr_output *wlr_output) {
     wl_list_insert(&root->all_outputs, &output->link);
 
     output->workspaces = create_list();
-    output->current.workspaces = create_list();
 
     size_t len = sizeof(output->layers) / sizeof(output->layers[0]);
     for (size_t i = 0; i < len; ++i) {
@@ -178,7 +177,6 @@ void output_destroy(struct sway_output *output) {
         return;
     }
     list_free(output->workspaces);
-    list_free(output->current.workspaces);
     wl_event_source_remove(output->repaint_timer);
     free(output);
 }

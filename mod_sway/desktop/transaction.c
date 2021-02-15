@@ -86,8 +86,6 @@ static void transaction_destroy(struct sway_transaction *transaction) {
 static void copy_output_state(struct sway_output *output,
         struct sway_transaction_instruction *instruction) {
     struct sway_output_state *state = &instruction->output_state;
-    state->workspaces = create_list();
-    list_cat(state->workspaces, output->workspaces);
 
     state->active_workspace = output_get_active_workspace(output);
 }
@@ -169,7 +167,6 @@ static void transaction_add_node(struct sway_transaction *transaction,
 static void apply_output_state(struct sway_output *output,
         struct sway_output_state *state) {
     output_damage_whole(output);
-    list_free(output->current.workspaces);
     memcpy(&output->current, state, sizeof(struct sway_output_state));
     output_damage_whole(output);
 }
