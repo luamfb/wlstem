@@ -91,7 +91,6 @@ struct sway_container {
     float alpha;
 
     struct wlr_texture *title_focused;
-    struct wlr_texture *title_focused_inactive;
     struct wlr_texture *title_unfocused;
     struct wlr_texture *title_urgent;
     size_t title_height;

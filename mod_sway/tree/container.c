@@ -56,7 +56,6 @@ void container_destroy(struct sway_container *con) {
     free(con->title);
     free(con->formatted_title);
     wlr_texture_destroy(con->title_focused);
-    wlr_texture_destroy(con->title_focused_inactive);
     wlr_texture_destroy(con->title_unfocused);
     wlr_texture_destroy(con->title_urgent);
     list_free(con->children);
@@ -380,8 +379,6 @@ static void update_title_texture(struct sway_container *con,
 void container_update_title_textures(struct sway_container *container) {
     update_title_texture(container, &container->title_focused,
             &config->border_colors.focused);
-    update_title_texture(container, &container->title_focused_inactive,
-            &config->border_colors.focused_inactive);
     update_title_texture(container, &container->title_unfocused,
             &config->border_colors.unfocused);
     update_title_texture(container, &container->title_urgent,
