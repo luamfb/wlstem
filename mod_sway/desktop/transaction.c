@@ -107,15 +107,6 @@ static void copy_workspace_state(struct sway_workspace *ws,
 
     struct sway_seat *seat = input_manager_current_seat();
     state->focused = seat_get_focus(seat) == &ws->node;
-
-    // Set focused_inactive_child to the direct tiling child
-    struct sway_container *focus = seat_get_focus_inactive_tiling(seat, ws);
-    if (focus) {
-        while (focus->parent) {
-            focus = focus->parent;
-        }
-    }
-    state->focused_inactive_child = focus;
 }
 
 static void copy_container_state(struct sway_container *container,
@@ -145,12 +136,6 @@ static void copy_container_state(struct sway_container *container,
 
     struct sway_seat *seat = input_manager_current_seat();
     state->focused = seat_get_focus(seat) == &container->node;
-
-    if (!container->view) {
-        struct sway_node *focus =
-            seat_get_active_tiling_child(seat, &container->node);
-        state->focused_inactive_child = focus ? focus->sway_container : NULL;
-    }
 }
 
 static void transaction_add_node(struct sway_transaction *transaction,

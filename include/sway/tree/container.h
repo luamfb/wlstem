@@ -26,7 +26,6 @@ struct sway_container_state {
     struct sway_container *parent;
     list_t *children;
 
-    struct sway_container *focused_inactive_child;
     bool focused;
 
     int border_thickness;
