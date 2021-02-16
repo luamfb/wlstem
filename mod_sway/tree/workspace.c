@@ -208,25 +208,6 @@ static int workspace_output_get_priority(struct sway_workspace *ws,
     return index_name < 0 || index_id < index_name ? index_id : index_name;
 }
 
-void workspace_output_raise_priority(struct sway_workspace *ws,
-        struct sway_output *old_output, struct sway_output *output) {
-    int old_index = workspace_output_get_priority(ws, old_output);
-    if (old_index < 0) {
-        return;
-    }
-
-    int new_index = workspace_output_get_priority(ws, output);
-    if (new_index < 0) {
-        char identifier[128];
-        output_get_identifier(identifier, sizeof(identifier), output);
-        list_insert(ws->output_priority, old_index, strdup(identifier));
-    } else if (new_index > old_index) {
-        char *name = ws->output_priority->items[new_index];
-        list_del(ws->output_priority, new_index);
-        list_insert(ws->output_priority, old_index, name);
-    }
-}
-
 void workspace_output_add_priority(struct sway_workspace *workspace,
         struct sway_output *output) {
     if (workspace_output_get_priority(workspace, output) < 0) {
