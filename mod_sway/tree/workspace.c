@@ -49,7 +49,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
     node_init(&ws->node, N_WORKSPACE, ws);
     ws->name = name ? strdup(name) : NULL;
     ws->tiling = create_list();
-    ws->output_priority = create_list();
 
     output_add_workspace(output, ws);
     output_sort_workspaces(output);
@@ -70,7 +69,6 @@ void workspace_destroy(struct sway_workspace *workspace) {
     }
 
     free(workspace->name);
-    list_free_items_and_destroy(workspace->output_priority);
     list_free(workspace->tiling);
     list_free(workspace->current.tiling);
     free(workspace);
