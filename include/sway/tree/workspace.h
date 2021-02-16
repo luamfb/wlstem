@@ -55,9 +55,6 @@ bool workspace_is_empty(struct sway_workspace *ws);
 void workspace_output_add_priority(struct sway_workspace *workspace,
         struct sway_output *output);
 
-struct sway_output *workspace_output_get_highest_available(
-        struct sway_workspace *ws, struct sway_output *exclude);
-
 void workspace_detect_urgent(struct sway_workspace *workspace);
 
 void workspace_for_each_container(struct sway_workspace *ws,
