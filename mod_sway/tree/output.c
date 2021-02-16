@@ -34,17 +34,6 @@ static void restore_workspaces(struct sway_output *output) {
             continue;
         }
 
-        for (int j = 0; j < other->workspaces->length; j++) {
-            struct sway_workspace *ws = other->workspaces->items[j];
-            struct sway_output *highest =
-                workspace_output_get_highest_available(ws, NULL);
-            if (highest == output) {
-                workspace_detach(ws);
-                output_add_workspace(output, ws);
-                j--;
-            }
-        }
-
         if (other->workspaces->length == 0) {
             char *next = workspace_next_name(other->wlr_output->name);
             free(next);
@@ -134,11 +123,7 @@ static void output_evacuate(struct sway_output *output) {
 
         workspace_detach(workspace);
 
-        struct sway_output *new_output =
-            workspace_output_get_highest_available(workspace, output);
-        if (!new_output) {
-            new_output = fallback_output;
-        }
+        struct sway_output *new_output = fallback_output;
         if (!new_output) {
             new_output = root->noop_output;
         }

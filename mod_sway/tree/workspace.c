@@ -217,11 +217,6 @@ void workspace_output_add_priority(struct sway_workspace *workspace,
     }
 }
 
-struct sway_output *workspace_output_get_highest_available(
-        struct sway_workspace *ws, struct sway_output *exclude) {
-    return NULL;
-}
-
 void workspace_for_each_container(struct sway_workspace *ws,
         void (*f)(struct sway_container *con, void *data), void *data) {
     // Tiling
