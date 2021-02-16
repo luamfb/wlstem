@@ -51,9 +51,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
     ws->tiling = create_list();
     ws->output_priority = create_list();
 
-    // If not already added, add the output to the lowest priority
-    workspace_output_add_priority(ws, output);
-
     output_add_workspace(output, ws);
     output_sort_workspaces(output);
 
@@ -192,29 +189,6 @@ bool workspace_is_empty(struct sway_workspace *ws) {
         return false;
     }
     return true;
-}
-
-static int find_output(const void *id1, const void *id2) {
-    return strcmp(id1, id2);
-}
-
-static int workspace_output_get_priority(struct sway_workspace *ws,
-        struct sway_output *output) {
-    char identifier[128];
-    output_get_identifier(identifier, sizeof(identifier), output);
-    int index_id = list_seq_find(ws->output_priority, find_output, identifier);
-    int index_name = list_seq_find(ws->output_priority, find_output,
-            output->wlr_output->name);
-    return index_name < 0 || index_id < index_name ? index_id : index_name;
-}
-
-void workspace_output_add_priority(struct sway_workspace *workspace,
-        struct sway_output *output) {
-    if (workspace_output_get_priority(workspace, output) < 0) {
-        char identifier[128];
-        output_get_identifier(identifier, sizeof(identifier), output);
-        list_add(workspace->output_priority, strdup(identifier));
-    }
 }
 
 void workspace_for_each_container(struct sway_workspace *ws,
