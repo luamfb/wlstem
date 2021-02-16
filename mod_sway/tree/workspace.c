@@ -219,24 +219,6 @@ void workspace_output_add_priority(struct sway_workspace *workspace,
 
 struct sway_output *workspace_output_get_highest_available(
         struct sway_workspace *ws, struct sway_output *exclude) {
-    char exclude_id[128] = {'\0'};
-    if (exclude) {
-        output_get_identifier(exclude_id, sizeof(exclude_id), exclude);
-    }
-
-    for (int i = 0; i < ws->output_priority->length; i++) {
-        char *name = ws->output_priority->items[i];
-        if (exclude && (strcmp(name, exclude->wlr_output->name) == 0
-                    || strcmp(name, exclude_id) == 0)) {
-            continue;
-        }
-
-        struct sway_output *output = output_by_name_or_id(name);
-        if (output) {
-            return output;
-        }
-    }
-
     return NULL;
 }
 
