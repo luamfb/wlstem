@@ -52,9 +52,6 @@ bool workspace_is_visible(struct sway_workspace *ws);
 
 bool workspace_is_empty(struct sway_workspace *ws);
 
-void workspace_output_add_priority(struct sway_workspace *workspace,
-        struct sway_output *output);
-
 void workspace_detect_urgent(struct sway_workspace *workspace);
 
 void workspace_for_each_container(struct sway_workspace *ws,

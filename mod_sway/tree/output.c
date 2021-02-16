@@ -136,7 +136,6 @@ static void output_evacuate(struct sway_output *output) {
             continue;
         }
 
-        workspace_output_add_priority(workspace, new_output);
         output_add_workspace(new_output, workspace);
         output_sort_workspaces(new_output);
 
