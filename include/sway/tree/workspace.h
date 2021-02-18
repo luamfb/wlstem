@@ -43,15 +43,11 @@ void workspace_consider_destroy(struct sway_workspace *ws);
 
 char *workspace_next_name(const char *output_name);
 
-bool workspace_switch(struct sway_workspace *workspace);
-
 struct sway_workspace *workspace_by_number(const char* name);
 
 bool workspace_is_visible(struct sway_workspace *ws);
 
 bool workspace_is_empty(struct sway_workspace *ws);
-
-void workspace_detect_urgent(struct sway_workspace *workspace);
 
 void workspace_for_each_container(struct sway_workspace *ws,
         void (*f)(struct sway_container *con, void *data), void *data);
@@ -59,35 +55,11 @@ void workspace_for_each_container(struct sway_workspace *ws,
 struct sway_container *workspace_find_container(struct sway_workspace *ws,
         bool (*test)(struct sway_container *con, void *data), void *data);
 
-/**
- * Wrap the workspace's tiling children in a new container.
- * The new container will be the only direct tiling child of the workspace.
- * The new container is returned.
- */
-struct sway_container *workspace_wrap_children(struct sway_workspace *ws);
-
-void workspace_unwrap_children(struct sway_workspace *ws,
-        struct sway_container *wrap);
-
 void workspace_detach(struct sway_workspace *workspace);
 
 struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
         struct sway_container *con);
 
-/**
- * Adds a tiling container to the workspace without considering
- * the workspace_layout, so the con will not be split.
- */
-void workspace_insert_tiling_direct(struct sway_workspace *workspace,
-        struct sway_container *con, int index);
-
-struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
-        struct sway_container *con, int index);
-
-struct sway_container *workspace_split(struct sway_workspace *workspace);
-
 void workspace_get_box(struct sway_workspace *workspace, struct wlr_box *box);
-
-size_t workspace_num_tiling_views(struct sway_workspace *ws);
 
 #endif
