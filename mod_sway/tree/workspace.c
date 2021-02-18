@@ -161,20 +161,6 @@ struct sway_workspace *workspace_by_number(const char* name) {
     return root_find_workspace(_workspace_by_number, (void *) name);
 }
 
-bool workspace_switch(struct sway_workspace *workspace) {
-    struct sway_seat *seat = input_manager_current_seat();
-
-    sway_log(SWAY_DEBUG, "Switching to workspace %p:%s",
-        workspace, workspace->name);
-    struct sway_node *next = seat_get_focus_inactive(seat, &workspace->node);
-    if (next == NULL) {
-        next = &workspace->node;
-    }
-    seat_set_focus(seat, next);
-    arrange_workspace(workspace);
-    return true;
-}
-
 bool workspace_is_visible(struct sway_workspace *ws) {
     if (ws->node.destroying) {
         return false;
@@ -219,40 +205,6 @@ static void set_workspace(struct sway_container *container, void *data) {
     container->workspace = container->parent->workspace;
 }
 
-static void workspace_attach_tiling(struct sway_workspace *ws,
-        struct sway_container *con) {
-    list_add(ws->tiling, con);
-    con->workspace = ws;
-    container_for_each_child(con, set_workspace, NULL);
-    node_set_dirty(&ws->node);
-    node_set_dirty(&con->node);
-}
-
-struct sway_container *workspace_wrap_children(struct sway_workspace *ws) {
-    struct sway_container *middle = container_create(NULL);
-    while (ws->tiling->length) {
-        struct sway_container *child = ws->tiling->items[0];
-        container_detach(child);
-        container_add_child(middle, child);
-    }
-    workspace_attach_tiling(ws, middle);
-    return middle;
-}
-
-void workspace_unwrap_children(struct sway_workspace *ws,
-        struct sway_container *wrap) {
-    if (!sway_assert(workspace_is_empty(ws),
-            "target workspace must be empty")) {
-        return;
-    }
-
-    while (wrap->children->length) {
-        struct sway_container *child = wrap->children->items[0];
-        container_detach(child);
-        workspace_add_tiling(ws, child);
-    }
-}
-
 void workspace_detach(struct sway_workspace *workspace) {
     struct sway_output *output = workspace->output;
     int index = list_find(output->workspaces, workspace);
@@ -278,57 +230,9 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     return con;
 }
 
-void workspace_insert_tiling_direct(struct sway_workspace *workspace,
-        struct sway_container *con, int index) {
-    list_insert(workspace->tiling, index, con);
-    con->workspace = workspace;
-    container_for_each_child(con, set_workspace, NULL);
-    node_set_dirty(&workspace->node);
-    node_set_dirty(&con->node);
-}
-
-struct sway_container *workspace_insert_tiling(struct sway_workspace *workspace,
-        struct sway_container *con, int index) {
-    if (con->workspace) {
-        container_detach(con);
-    }
-    workspace_insert_tiling_direct(workspace, con, index);
-    return con;
-}
-
-struct sway_container *workspace_split(struct sway_workspace *workspace) {
-    if (workspace->tiling->length == 0) {
-        return NULL;
-    }
-
-    struct sway_container *middle = workspace_wrap_children(workspace);
-
-    struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
-        if (seat_get_focus(seat) == &workspace->node) {
-            seat_set_focus(seat, &middle->node);
-        }
-    }
-
-    return middle;
-}
-
 void workspace_get_box(struct sway_workspace *workspace, struct wlr_box *box) {
     box->x = workspace->x;
     box->y = workspace->y;
     box->width = workspace->width;
     box->height = workspace->height;
-}
-
-static void count_tiling_views(struct sway_container *con, void *data) {
-    if (con->view) {
-        size_t *count = data;
-        *count += 1;
-    }
-}
-
-size_t workspace_num_tiling_views(struct sway_workspace *ws) {
-    size_t count = 0;
-    workspace_for_each_container(ws, count_tiling_views, &count);
-    return count;
 }
