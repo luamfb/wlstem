@@ -104,9 +104,6 @@ struct sway_node *node_get_parent(struct sway_node *node) {
     switch (node->type) {
     case N_CONTAINER: {
             struct sway_container *con = node->sway_container;
-            if (con->parent) {
-                return &con->parent->node;
-            }
             if (con->workspace) {
                 return &con->workspace->node;
             }

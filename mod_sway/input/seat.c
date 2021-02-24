@@ -1100,15 +1100,6 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         }
     }
 
-    // Put the container parents on the focus stack, then the workspace, then
-    // the focused container.
-    if (container) {
-        struct sway_container *parent = container->parent;
-        while (parent) {
-            seat_set_raw_focus(seat, &parent->node);
-            parent = parent->parent;
-        }
-    }
     if (new_workspace) {
         seat_set_raw_focus(seat, &new_workspace->node);
     }

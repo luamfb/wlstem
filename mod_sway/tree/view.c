@@ -384,7 +384,7 @@ static bool should_focus(struct sway_view *view) {
     }
 
     // If the view is the only one in the focused workspace, it'll get focus
-    if (!view->container->parent && !prev_con) {
+    if (!prev_con) {
         size_t num_children = view->container->workspace->tiling->length;
         if (num_children == 1) {
             return true;
@@ -487,9 +487,7 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
 
     view_update_title(view, false);
 
-    if (container->parent) {
-        arrange_container(container->parent);
-    } else if (container->workspace) {
+    if (container->workspace) {
         arrange_workspace(container->workspace);
     }
 
