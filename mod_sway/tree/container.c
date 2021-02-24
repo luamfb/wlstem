@@ -371,60 +371,6 @@ void container_calculate_title_height(struct sway_container *container) {
     container->title_baseline = baseline;
 }
 
-/**
- * Calculate and return the length of the tree representation.
- * An example tree representation is: V[Terminal, Firefox]
- * If buffer is not NULL, also populate the buffer with the representation.
- */
-size_t container_build_representation(list_t *children, char *buffer) {
-    size_t len = 2;
-    lenient_strcat(buffer, "X[");
-    for (int i = 0; i < children->length; ++i) {
-        if (i != 0) {
-            ++len;
-            lenient_strcat(buffer, " ");
-        }
-        struct sway_container *child = children->items[i];
-        const char *identifier = NULL;
-        if (child->view) {
-            identifier = view_get_class(child->view);
-            if (!identifier) {
-                identifier = view_get_app_id(child->view);
-            }
-        } else {
-            identifier = child->formatted_title;
-        }
-        if (identifier) {
-            len += strlen(identifier);
-            lenient_strcat(buffer, identifier);
-        } else {
-            len += 6;
-            lenient_strcat(buffer, "(null)");
-        }
-    }
-    ++len;
-    lenient_strcat(buffer, "]");
-    return len;
-}
-
-void container_update_representation(struct sway_container *con) {
-    if (!con->view) {
-        size_t len = container_build_representation(con->children, NULL);
-        free(con->formatted_title);
-        con->formatted_title = calloc(len + 1, sizeof(char));
-        if (!sway_assert(con->formatted_title,
-                    "Unable to allocate title string")) {
-            return;
-        }
-        container_build_representation(con->children, con->formatted_title);
-        container_calculate_title_height(con);
-        container_update_title_textures(con);
-    }
-    if (con->parent) {
-        container_update_representation(con->parent);
-    }
-}
-
 size_t container_titlebar_height(void) {
     return config->font_height + config->titlebar_v_padding * 2;
 }
@@ -572,7 +518,6 @@ void container_add_sibling(struct sway_container *fixed,
     active->parent = fixed->parent;
     active->workspace = fixed->workspace;
     container_for_each_child(active, set_workspace, NULL);
-    container_update_representation(active);
 }
 
 void container_detach(struct sway_container *child) {
@@ -590,7 +535,6 @@ void container_detach(struct sway_container *child) {
     container_for_each_child(child, set_workspace, NULL);
 
     if (old_parent) {
-        container_update_representation(old_parent);
         node_set_dirty(&old_parent->node);
     } else if (old_workspace) {
         node_set_dirty(&old_workspace->node);
