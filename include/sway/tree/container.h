@@ -23,7 +23,6 @@ struct sway_container_state {
     double width, height;
 
     struct sway_workspace *workspace;
-    struct sway_container *parent;
 
     bool focused;
 
@@ -81,7 +80,6 @@ struct sway_container {
     bool border_right;
 
     struct sway_workspace *workspace;
-    struct sway_container *parent;    // NULL if container in root of workspace
 
     // Outputs currently being intersected
     list_t *outputs; // struct sway_output

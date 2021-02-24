@@ -76,7 +76,7 @@ void container_begin_destroy(struct sway_container *con) {
     con->node.destroying = true;
     node_set_dirty(&con->node);
 
-    if (con->parent || con->workspace) {
+    if (con->workspace) {
         container_detach(con);
     }
 }
@@ -444,12 +444,10 @@ void container_add_sibling(struct sway_container *fixed,
     list_t *siblings = container_get_siblings(fixed);
     int index = list_find(siblings, fixed);
     list_insert(siblings, index + after, active);
-    active->parent = fixed->parent;
     active->workspace = fixed->workspace;
 }
 
 void container_detach(struct sway_container *child) {
-    struct sway_container *old_parent = child->parent;
     struct sway_workspace *old_workspace = child->workspace;
     list_t *siblings = container_get_siblings(child);
     if (siblings) {
@@ -458,12 +456,9 @@ void container_detach(struct sway_container *child) {
             list_del(siblings, index);
         }
     }
-    child->parent = NULL;
     child->workspace = NULL;
 
-    if (old_parent) {
-        node_set_dirty(&old_parent->node);
-    } else if (old_workspace) {
+    if (old_workspace) {
         node_set_dirty(&old_workspace->node);
     }
     node_set_dirty(&child->node);
@@ -471,7 +466,7 @@ void container_detach(struct sway_container *child) {
 
 void container_replace(struct sway_container *container,
         struct sway_container *replacement) {
-    if (container->parent || container->workspace) {
+    if (container->workspace) {
         float width_fraction = container->width_fraction;
         float height_fraction = container->height_fraction;
         container_add_sibling(container, replacement, 1);
