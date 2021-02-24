@@ -109,9 +109,11 @@ static void seat_send_activate(struct sway_node *node, struct sway_seat *seat) {
         view_set_activated(node->sway_container->view, true);
     } else {
         list_t *children = node_get_children(node);
-        for (int i = 0; i < children->length; ++i) {
-            struct sway_container *child = children->items[i];
-            seat_send_activate(&child->node, seat);
+        if (children) {
+            for (int i = 0; i < children->length; ++i) {
+                struct sway_container *child = children->items[i];
+                seat_send_activate(&child->node, seat);
+            }
         }
     }
 }
