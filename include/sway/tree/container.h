@@ -118,12 +118,6 @@ struct sway_container *tiling_container_at(
         struct sway_node *parent, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
-/**
- * Returns true if the given container is an ancestor of this container.
- */
-bool container_has_ancestor(struct sway_container *container,
-        struct sway_container *ancestor);
-
 void container_update_textures_recursive(struct sway_container *con);
 
 void container_damage_whole(struct sway_container *container);
@@ -152,13 +146,6 @@ void container_get_box(struct sway_container *container, struct wlr_box *box);
  * ends the operation.
  */
 void container_end_mouse_operation(struct sway_container *container);
-
-/**
- * Walk up the container tree branch starting at the given container, and return
- * its earliest ancestor.
- */
-struct sway_container *container_toplevel_ancestor(
-        struct sway_container *container);
 
 /**
  * Return the output which will be used for scale purposes.
