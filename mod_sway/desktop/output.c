@@ -662,8 +662,6 @@ void output_damage_whole_container(struct sway_output *output,
     // Damage subsurfaces as well, which may extend outside the box
     if (con->view) {
         damage_child_views_iterator(con, output);
-    } else {
-        container_for_each_child(con, damage_child_views_iterator, output);
     }
 }
 

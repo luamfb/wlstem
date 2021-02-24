@@ -181,7 +181,6 @@ void workspace_for_each_container(struct sway_workspace *ws,
     for (int i = 0; i < ws->tiling->length; ++i) {
         struct sway_container *container = ws->tiling->items[i];
         f(container, data);
-        container_for_each_child(container, f, data);
     }
 }
 
@@ -194,10 +193,6 @@ struct sway_container *workspace_find_container(struct sway_workspace *ws,
         }
     }
     return NULL;
-}
-
-static void set_workspace(struct sway_container *container, void *data) {
-    container->workspace = container->parent->workspace;
 }
 
 void workspace_detach(struct sway_workspace *workspace) {
@@ -219,7 +214,6 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     }
     list_add(workspace->tiling, con);
     con->workspace = workspace;
-    container_for_each_child(con, set_workspace, NULL);
     node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);
     return con;

@@ -1011,7 +1011,6 @@ static void seat_send_unfocus(struct sway_node *node, struct sway_seat *seat) {
         workspace_for_each_container(node->sway_workspace, send_unfocus, seat);
     } else {
         send_unfocus(node->sway_container, seat);
-        container_for_each_child(node->sway_container, send_unfocus, seat);
     }
 }
 
