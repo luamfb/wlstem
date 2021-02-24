@@ -160,12 +160,14 @@ static struct sway_container *container_at_linear(struct sway_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     list_t *children = node_get_children(parent);
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        struct sway_container *container =
-            tiling_container_at(&child->node, lx, ly, surface, sx, sy);
-        if (container) {
-            return container;
+    if (children) {
+        for (int i = 0; i < children->length; ++i) {
+            struct sway_container *child = children->items[i];
+            struct sway_container *container =
+                tiling_container_at(&child->node, lx, ly, surface, sx, sy);
+            if (container) {
+                return container;
+            }
         }
     }
     return NULL;
