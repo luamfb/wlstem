@@ -213,17 +213,6 @@ struct sway_container *container_at(struct sway_workspace *workspace,
     return NULL;
 }
 
-bool container_has_ancestor(struct sway_container *descendant,
-        struct sway_container *ancestor) {
-    while (descendant) {
-        descendant = descendant->parent;
-        if (descendant == ancestor) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void container_damage_whole(struct sway_container *container) {
     for (int i = 0; i < root->outputs->length; ++i) {
         struct sway_output *output = root->outputs->items[i];
@@ -368,15 +357,6 @@ void container_end_mouse_operation(struct sway_container *container) {
     wl_list_for_each(seat, &server.input->seats, link) {
         seatop_unref(seat, container);
     }
-}
-
-struct sway_container *container_toplevel_ancestor(
-        struct sway_container *container) {
-    while (container->parent) {
-        container = container->parent;
-    }
-
-    return container;
 }
 
 static void surface_send_enter_iterator(struct wlr_surface *surface,
