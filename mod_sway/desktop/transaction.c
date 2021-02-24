@@ -127,11 +127,6 @@ static void copy_container_state(struct sway_container *container,
     state->content_width = container->content_width;
     state->content_height = container->content_height;
 
-    if (!container->view) {
-        state->children = create_list();
-        list_cat(state->children, container->children);
-    }
-
     struct sway_seat *seat = input_manager_current_seat();
     state->focused = seat_get_focus(seat) == &container->node;
 }
@@ -196,13 +191,6 @@ static void apply_container_state(struct sway_container *container,
             desktop_damage_box(&box);
         }
     }
-
-    // There are separate children lists for each instruction state, the
-    // container's current state and the container's pending state
-    // (ie. con->children). The list itself needs to be freed here.
-    // Any child containers which are being deleted will be cleaned up in
-    // transaction_destroy().
-    list_free(container->current.children);
 
     memcpy(&container->current, state, sizeof(struct sway_container_state));
 

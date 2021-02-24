@@ -32,10 +32,6 @@ struct sway_container *container_create(struct sway_view *view) {
     c->view = view;
     c->alpha = 1.0f;
 
-    if (!view) {
-        c->children = create_list();
-        c->current.children = create_list();
-    }
     c->outputs = create_list();
 
     wl_signal_init(&c->events.destroy);
@@ -58,8 +54,6 @@ void container_destroy(struct sway_container *con) {
     wlr_texture_destroy(con->title_focused);
     wlr_texture_destroy(con->title_unfocused);
     wlr_texture_destroy(con->title_urgent);
-    list_free(con->children);
-    list_free(con->current.children);
     list_free(con->outputs);
 
     if (con->view) {
@@ -222,13 +216,6 @@ struct sway_container *container_at(struct sway_workspace *workspace,
 void container_for_each_child(struct sway_container *container,
         void (*f)(struct sway_container *container, void *data),
         void *data) {
-    if (container->children)  {
-        for (int i = 0; i < container->children->length; ++i) {
-            struct sway_container *child = container->children->items[i];
-            f(child, data);
-            container_for_each_child(child, f, data);
-        }
-    }
 }
 
 bool container_has_ancestor(struct sway_container *descendant,
@@ -371,11 +358,6 @@ void container_set_resizing(struct sway_container *con, bool resizing) {
         if (con->view->impl->set_resizing) {
             con->view->impl->set_resizing(con->view, resizing);
         }
-    } else {
-        for (int i = 0; i < con->children->length; ++i ) {
-            struct sway_container *child = con->children->items[i];
-            container_set_resizing(child, resizing);
-        }
     }
 }
 
@@ -468,9 +450,6 @@ void container_discover_outputs(struct sway_container *con) {
 }
 
 list_t *container_get_siblings(struct sway_container *container) {
-    if (container->parent) {
-        return container->parent->children;
-    }
     return container->workspace->tiling;
 }
 
@@ -479,9 +458,6 @@ int container_sibling_index(struct sway_container *child) {
 }
 
 list_t *container_get_current_siblings(struct sway_container *container) {
-    if (container->current.parent) {
-        return container->current.parent->current.children;
-    }
     return container->current.workspace->current.tiling;
 }
 

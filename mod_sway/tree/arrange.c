@@ -92,7 +92,6 @@ void arrange_container(struct sway_container *container) {
     }
     struct wlr_box box;
     container_get_box(container, &box);
-    arrange_children(container->children, &box);
     node_set_dirty(&container->node);
 }
 
