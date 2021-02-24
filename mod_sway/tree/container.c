@@ -213,11 +213,6 @@ struct sway_container *container_at(struct sway_workspace *workspace,
     return NULL;
 }
 
-void container_for_each_child(struct sway_container *container,
-        void (*f)(struct sway_container *container, void *data),
-        void *data) {
-}
-
 bool container_has_ancestor(struct sway_container *descendant,
         struct sway_container *ancestor) {
     while (descendant) {
@@ -461,10 +456,6 @@ list_t *container_get_current_siblings(struct sway_container *container) {
     return container->current.workspace->current.tiling;
 }
 
-static void set_workspace(struct sway_container *container, void *data) {
-    container->workspace = container->parent->workspace;
-}
-
 void container_add_sibling(struct sway_container *fixed,
         struct sway_container *active, bool after) {
     if (active->workspace) {
@@ -475,7 +466,6 @@ void container_add_sibling(struct sway_container *fixed,
     list_insert(siblings, index + after, active);
     active->parent = fixed->parent;
     active->workspace = fixed->workspace;
-    container_for_each_child(active, set_workspace, NULL);
 }
 
 void container_detach(struct sway_container *child) {
@@ -490,7 +480,6 @@ void container_detach(struct sway_container *child) {
     }
     child->parent = NULL;
     child->workspace = NULL;
-    container_for_each_child(child, set_workspace, NULL);
 
     if (old_parent) {
         node_set_dirty(&old_parent->node);
