@@ -133,8 +133,6 @@ void container_update_textures_recursive(struct sway_container *con);
 
 void container_damage_whole(struct sway_container *container);
 
-void container_reap_empty(struct sway_container *con);
-
 void container_update_title_textures(struct sway_container *container);
 
 /**
