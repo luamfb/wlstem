@@ -105,20 +105,6 @@ void container_reap_empty(struct sway_container *con) {
     }
 }
 
-struct sway_container *container_flatten(struct sway_container *container) {
-    if (container->view) {
-        return NULL;
-    }
-    while (container && container->children->length == 1) {
-        struct sway_container *child = container->children->items[0];
-        struct sway_container *parent = container->parent;
-        container_replace(container, child);
-        container_begin_destroy(container);
-        container = parent;
-    }
-    return container;
-}
-
 struct sway_container *container_find_child(struct sway_container *container,
         bool (*test)(struct sway_container *con, void *data), void *data) {
     if (!container->children) {
@@ -599,18 +585,6 @@ static void set_workspace(struct sway_container *container, void *data) {
     container->workspace = container->parent->workspace;
 }
 
-void container_insert_child(struct sway_container *parent,
-        struct sway_container *child, int i) {
-    if (child->workspace) {
-        container_detach(child);
-    }
-    list_insert(parent->children, i, child);
-    child->parent = parent;
-    child->workspace = parent->workspace;
-    container_for_each_child(child, set_workspace, NULL);
-    container_update_representation(parent);
-}
-
 void container_add_sibling(struct sway_container *fixed,
         struct sway_container *active, bool after) {
     if (active->workspace) {
@@ -623,20 +597,6 @@ void container_add_sibling(struct sway_container *fixed,
     active->workspace = fixed->workspace;
     container_for_each_child(active, set_workspace, NULL);
     container_update_representation(active);
-}
-
-void container_add_child(struct sway_container *parent,
-        struct sway_container *child) {
-    if (child->workspace) {
-        container_detach(child);
-    }
-    list_add(parent->children, child);
-    child->parent = parent;
-    child->workspace = parent->workspace;
-    container_for_each_child(child, set_workspace, NULL);
-    container_update_representation(parent);
-    node_set_dirty(&child->node);
-    node_set_dirty(&parent->node);
 }
 
 void container_detach(struct sway_container *child) {
@@ -672,39 +632,4 @@ void container_replace(struct sway_container *container,
         replacement->width_fraction = width_fraction;
         replacement->height_fraction = height_fraction;
     }
-}
-
-struct sway_container *container_split(struct sway_container *child) {
-    // i3 doesn't split singleton H/V containers
-    // https://github.com/i3/i3/blob/3cd1c45eba6de073bc4300eebb4e1cc1a0c4479a/src/tree.c#L354
-    if (child->parent || child->workspace) {
-        list_t *siblings = container_get_siblings(child);
-        if (siblings->length == 1) {
-            if (child->parent) {
-                container_update_representation(child->parent);
-            }
-            return child;
-        }
-    }
-
-    struct sway_seat *seat = input_manager_get_default_seat();
-    bool set_focus = (seat_get_focus(seat) == &child->node);
-
-    struct sway_container *cont = container_create(NULL);
-    cont->width = child->width;
-    cont->height = child->height;
-    cont->width_fraction = child->width_fraction;
-    cont->height_fraction = child->height_fraction;
-    cont->x = child->x;
-    cont->y = child->y;
-
-    container_replace(child, cont);
-    container_add_child(cont, child);
-
-    if (set_focus) {
-        seat_set_raw_focus(seat, &cont->node);
-        seat_set_raw_focus(seat, &child->node);
-    }
-
-    return cont;
 }

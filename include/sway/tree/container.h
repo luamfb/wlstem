@@ -142,8 +142,6 @@ void container_damage_whole(struct sway_container *container);
 
 void container_reap_empty(struct sway_container *con);
 
-struct sway_container *container_flatten(struct sway_container *container);
-
 void container_update_title_textures(struct sway_container *container);
 
 /**
@@ -196,12 +194,6 @@ int container_sibling_index(struct sway_container *child);
 
 list_t *container_get_current_siblings(struct sway_container *container);
 
-void container_add_child(struct sway_container *parent,
-        struct sway_container *child);
-
-void container_insert_child(struct sway_container *parent,
-        struct sway_container *child, int i);
-
 /**
  * Side should be 0 to add before, or 1 to add after.
  */
@@ -212,7 +204,5 @@ void container_detach(struct sway_container *child);
 
 void container_replace(struct sway_container *container,
         struct sway_container *replacement);
-
-struct sway_container *container_split(struct sway_container *child);
 
 #endif
