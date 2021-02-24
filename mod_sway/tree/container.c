@@ -87,24 +87,6 @@ void container_begin_destroy(struct sway_container *con) {
     }
 }
 
-void container_reap_empty(struct sway_container *con) {
-    if (con->view) {
-        return;
-    }
-    struct sway_workspace *ws = con->workspace;
-    while (con) {
-        if (con->children->length) {
-            return;
-        }
-        struct sway_container *parent = con->parent;
-        container_begin_destroy(con);
-        con = parent;
-    }
-    if (ws) {
-        workspace_consider_destroy(ws);
-    }
-}
-
 static struct sway_container *surface_at_view(struct sway_container *con, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     if (!sway_assert(con->view, "Expected a view")) {
