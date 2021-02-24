@@ -105,24 +105,6 @@ void container_reap_empty(struct sway_container *con) {
     }
 }
 
-struct sway_container *container_find_child(struct sway_container *container,
-        bool (*test)(struct sway_container *con, void *data), void *data) {
-    if (!container->children) {
-        return NULL;
-    }
-    for (int i = 0; i < container->children->length; ++i) {
-        struct sway_container *child = container->children->items[i];
-        if (test(child, data)) {
-            return child;
-        }
-        struct sway_container *res = container_find_child(child, test, data);
-        if (res) {
-            return res;
-        }
-    }
-    return NULL;
-}
-
 static struct sway_container *surface_at_view(struct sway_container *con, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     if (!sway_assert(con->view, "Expected a view")) {
@@ -474,14 +456,6 @@ void container_get_box(struct sway_container *container, struct wlr_box *box) {
     box->y = container->y;
     box->width = container->width;
     box->height = container->height;
-}
-
-static bool find_urgent_iterator(struct sway_container *con, void *data) {
-    return con->view && view_is_urgent(con->view);
-}
-
-bool container_has_urgent_child(struct sway_container *container) {
-    return container_find_child(container, find_urgent_iterator, NULL);
 }
 
 void container_end_mouse_operation(struct sway_container *container) {
