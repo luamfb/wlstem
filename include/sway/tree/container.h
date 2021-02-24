@@ -24,7 +24,6 @@ struct sway_container_state {
 
     struct sway_workspace *workspace;
     struct sway_container *parent;
-    list_t *children;
 
     bool focused;
 
@@ -83,7 +82,6 @@ struct sway_container {
 
     struct sway_workspace *workspace;
     struct sway_container *parent;    // NULL if container in root of workspace
-    list_t *children;                 // struct sway_container
 
     // Outputs currently being intersected
     list_t *outputs; // struct sway_output

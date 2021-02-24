@@ -619,7 +619,6 @@ static void render_container(struct sway_output *output,
             .width = con->current.width,
             .height = con->current.height,
         },
-        .children = con->current.children,
         .focused = focused,
     };
     render_containers(output, damage, &data);
