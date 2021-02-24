@@ -486,8 +486,6 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     view_set_tiled(view, true);
 
     view_update_title(view, false);
-    container_update_representation(container);
-
 
     if (container->parent) {
         arrange_container(container->parent);
