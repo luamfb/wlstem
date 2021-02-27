@@ -252,6 +252,11 @@ void output_add_workspace(struct sway_output *output,
     if (workspace->output) {
         workspace_detach(workspace);
     }
+    if (output->workspaces->length) {
+        sway_log(SWAY_ERROR,
+            "tried to add workspace to output which already has an active workspace");
+        assert(false);
+    }
     list_add(output->workspaces, workspace);
     workspace->output = output;
     node_set_dirty(&output->node);
