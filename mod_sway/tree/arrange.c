@@ -26,7 +26,6 @@ static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
     double child_x = parent->x;
     for (int i = 0; i < children->length; ++i) {
         struct sway_container *child = children->items[i];
-        child->child_total_width = child_total_width;
         child->x = child_x;
         child->y = parent->y;
         child->width = round(width_fraction * child_total_width);

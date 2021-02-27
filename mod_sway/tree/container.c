@@ -467,11 +467,7 @@ void container_detach(struct sway_container *child) {
 void container_replace(struct sway_container *container,
         struct sway_container *replacement) {
     if (container->workspace) {
-        float width_fraction = container->width_fraction;
-        float height_fraction = container->height_fraction;
         container_add_sibling(container, replacement, 1);
         container_detach(container);
-        replacement->width_fraction = width_fraction;
-        replacement->height_fraction = height_fraction;
     }
 }
