@@ -116,11 +116,6 @@ char *workspace_next_name(const char *output_name) {
     output_name = output->wlr_output->name;
     output_get_identifier(identifier, sizeof(identifier), output);
 
-    char *target = NULL;
-    if (target != NULL) {
-        return target;
-    }
-    // As a fall back, use the next available number
     char name[12] = "";
     unsigned int ws_num = 1;
     do {
