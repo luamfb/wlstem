@@ -73,50 +73,6 @@ void root_for_each_container(void (*f)(struct sway_container *con, void *data),
     }
 }
 
-struct sway_output *root_find_output(
-        bool (*test)(struct sway_output *output, void *data), void *data) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
-        if (test(output, data)) {
-            return output;
-        }
-    }
-    return NULL;
-}
-
-struct sway_workspace *root_find_workspace(
-        bool (*test)(struct sway_workspace *ws, void *data), void *data) {
-    struct sway_workspace *result = NULL;
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
-        if ((result = output_find_workspace(output, test, data))) {
-            return result;
-        }
-    }
-    return NULL;
-}
-
-struct sway_container *root_find_container(
-        bool (*test)(struct sway_container *con, void *data), void *data) {
-    struct sway_container *result = NULL;
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
-        if ((result = output_find_container(output, test, data))) {
-            return result;
-        }
-    }
-
-    // Saved workspaces
-    struct sway_workspace *ws = root->noop_output->active_workspace;
-    if (ws) {
-        if ((result = workspace_find_container(ws, test, data))) {
-            return result;
-        }
-    }
-
-    return NULL;
-}
-
 void root_get_box(struct sway_root *root, struct wlr_box *box) {
     box->x = root->x;
     box->y = root->y;
