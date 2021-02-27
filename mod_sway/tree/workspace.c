@@ -51,7 +51,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
     ws->tiling = create_list();
 
     output_add_workspace(output, ws);
-    output_sort_workspaces(output);
 
     wl_signal_emit(&root->events.new_node, &ws->node);
 

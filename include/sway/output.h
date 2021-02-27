@@ -94,8 +94,6 @@ struct sway_output *output_by_name_or_id(const char *name_or_id);
 // this includes all the outputs, including disabled ones
 struct sway_output *all_output_by_name_or_id(const char *name_or_id);
 
-void output_sort_workspaces(struct sway_output *output);
-
 void output_enable(struct sway_output *output);
 
 void output_disable(struct sway_output *output);
