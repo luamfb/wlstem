@@ -74,7 +74,6 @@ void seat_destroy(struct sway_seat *seat) {
     wl_list_remove(&seat->request_set_primary_selection.link);
     wl_list_remove(&seat->link);
     wlr_seat_destroy(seat->wlr_seat);
-    free(seat->prev_workspace_name);
     free(seat);
 }
 
@@ -1025,15 +1024,6 @@ static void set_workspace(struct sway_seat *seat,
     if (seat->workspace == new_ws) {
         return;
     }
-
-    if (seat->workspace) {
-        free(seat->prev_workspace_name);
-        seat->prev_workspace_name = strdup(seat->workspace->name);
-        if (!seat->prev_workspace_name) {
-            sway_log(SWAY_ERROR, "Unable to allocate previous workspace name");
-        }
-    }
-
     seat->workspace = new_ws;
 }
 
