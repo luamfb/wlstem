@@ -50,8 +50,7 @@ static void output_seize_containers_from_workspace(
     workspace_begin_destroy(giver);
 }
 
-static void restore_workspaces(struct sway_output *output) {
-    // Saved workspaces
+static void seize_containers_from_noop_output(struct sway_output *output) {
     if (root->noop_output->active_workspace) {
         struct sway_workspace *ws = root->noop_output->active_workspace;
         workspace_detach(ws);
@@ -89,7 +88,7 @@ void output_enable(struct sway_output *output) {
     output->enabled = true;
     list_add(root->outputs, output);
 
-    restore_workspaces(output);
+    seize_containers_from_noop_output(output);
 
     struct sway_workspace *ws = NULL;
     if (!output->active_workspace) {
