@@ -77,7 +77,7 @@ void arrange_workspace(struct sway_workspace *workspace) {
     workspace->y = output->ly + area->y;
 
     node_set_dirty(&workspace->node);
-    sway_log(SWAY_DEBUG, "Arranging workspace '%s' at %f, %f", workspace->name,
+    sway_log(SWAY_DEBUG, "Arranging workspace at %f, %f",
             workspace->x, workspace->y);
     struct wlr_box box;
     workspace_get_box(workspace, &box);

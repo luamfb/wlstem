@@ -19,13 +19,12 @@
 #include "log.h"
 #include "util.h"
 
-struct sway_workspace *workspace_create(struct sway_output *output,
-        const char *name) {
+struct sway_workspace *workspace_create(struct sway_output *output) {
     if (!sway_assert(output != NULL, "Tried to create workspace for NULL output")) {
         abort();
     }
 
-    sway_log(SWAY_DEBUG, "Adding workspace %s for output %s", name,
+    sway_log(SWAY_DEBUG, "Adding workspace for output %s",
             output->wlr_output->name);
 
     struct sway_workspace *ws = calloc(1, sizeof(struct sway_workspace));
@@ -34,7 +33,6 @@ struct sway_workspace *workspace_create(struct sway_output *output,
         return NULL;
     }
     node_init(&ws->node, N_WORKSPACE, ws);
-    ws->name = name ? strdup(name) : NULL;
     ws->tiling = create_list();
 
     output_add_workspace(output, ws);
@@ -54,14 +52,13 @@ void workspace_destroy(struct sway_workspace *workspace) {
         return;
     }
 
-    free(workspace->name);
     list_free(workspace->tiling);
     list_free(workspace->current.tiling);
     free(workspace);
 }
 
 void workspace_begin_destroy(struct sway_workspace *workspace) {
-    sway_log(SWAY_DEBUG, "Destroying workspace '%s'", workspace->name);
+    sway_log(SWAY_DEBUG, "Destroying workspace %p", workspace);
     wl_signal_emit(&workspace->node.events.destroy, &workspace->node);
 
     if (workspace->output) {
@@ -89,41 +86,6 @@ void workspace_consider_destroy(struct sway_workspace *ws) {
     }
 
     workspace_begin_destroy(ws);
-}
-
-char *workspace_next_name(const char *output_name) {
-    sway_log(SWAY_DEBUG, "Workspace: Generating new workspace name for output %s",
-            output_name);
-
-    char identifier[128];
-    struct sway_output *output = output_by_name_or_id(output_name);
-    if (!output) {
-        return NULL;
-    }
-    output_name = output->wlr_output->name;
-    output_get_identifier(identifier, sizeof(identifier), output);
-
-    char name[12] = "";
-    unsigned int ws_num = 1;
-    do {
-        snprintf(name, sizeof(name), "%u", ws_num++);
-    } while (workspace_by_number(name));
-    return strdup(name);
-}
-
-static bool _workspace_by_number(struct sway_workspace *ws, void *data) {
-    char *name = data;
-    char *ws_name = ws->name;
-    while (isdigit(*name)) {
-        if (*name++ != *ws_name++) {
-            return false;
-        }
-    }
-    return !isdigit(*ws_name);
-}
-
-struct sway_workspace *workspace_by_number(const char* name) {
-    return root_find_workspace(_workspace_by_number, (void *) name);
 }
 
 bool workspace_is_visible(struct sway_workspace *ws) {
