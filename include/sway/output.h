@@ -36,7 +36,7 @@ struct sway_output {
     struct wlr_output_mode *current_mode;
 
     bool enabling, enabled;
-    list_t *workspaces;
+    struct sway_workspace *active_workspace;
 
     struct sway_output_state current;
 

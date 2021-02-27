@@ -92,9 +92,8 @@ void arrange_output(struct sway_output *output) {
     output->width = output_box->width;
     output->height = output_box->height;
 
-    for (int i = 0; i < output->workspaces->length; ++i) {
-        struct sway_workspace *workspace = output->workspaces->items[i];
-        arrange_workspace(workspace);
+    if (output->active_workspace) {
+        arrange_workspace(output->active_workspace);
     }
 }
 

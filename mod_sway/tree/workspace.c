@@ -197,9 +197,8 @@ struct sway_container *workspace_find_container(struct sway_workspace *ws,
 
 void workspace_detach(struct sway_workspace *workspace) {
     struct sway_output *output = workspace->output;
-    int index = list_find(output->workspaces, workspace);
-    if (index != -1) {
-        list_del(output->workspaces, index);
+    if (output->active_workspace == workspace) {
+        output->active_workspace = NULL;
     }
     workspace->output = NULL;
 
