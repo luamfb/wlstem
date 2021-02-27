@@ -30,8 +30,6 @@ struct sway_workspace {
     struct sway_workspace_state current;
 };
 
-struct sway_output *workspace_get_initial_output(const char *name);
-
 struct sway_workspace *workspace_create(struct sway_output *output,
         const char *name);
 
