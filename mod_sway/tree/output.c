@@ -51,19 +51,6 @@ static void output_seize_containers_from_workspace(
 }
 
 static void restore_workspaces(struct sway_output *output) {
-    // Workspace output priority
-    for (int i = 0; i < root->outputs->length; i++) {
-        struct sway_output *other = root->outputs->items[i];
-        if (other == output) {
-            continue;
-        }
-
-        if (other->workspaces->length == 0) {
-            char *next = workspace_next_name(other->wlr_output->name);
-            free(next);
-        }
-    }
-
     // Saved workspaces
     while (root->noop_output->workspaces->length) {
         struct sway_workspace *ws = root->noop_output->workspaces->items[0];
