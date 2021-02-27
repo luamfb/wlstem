@@ -26,6 +26,30 @@ enum wlr_direction opposite_direction(enum wlr_direction d) {
     return 0;
 }
 
+static void output_seize_containers_from_workspace(
+    struct sway_output *absorber,
+    struct sway_workspace *giver)
+{
+    if (!sway_assert(absorber->workspaces->length,
+            "Expected output with at least 1 workspace")) {
+        assert(false);
+    }
+    struct sway_workspace *absorber_ws = absorber->workspaces->items[0];
+
+    while (giver->tiling->length) {
+        struct sway_container *container = giver->tiling->items[0];
+        workspace_add_tiling(absorber_ws, container);
+    }
+
+    node_set_dirty(&absorber->node);
+    node_set_dirty(&absorber_ws->node);
+
+    if (giver->output) {
+        workspace_detach(giver);
+    }
+    workspace_begin_destroy(giver);
+}
+
 static void restore_workspaces(struct sway_output *output) {
     // Workspace output priority
     for (int i = 0; i < root->outputs->length; i++) {
@@ -44,7 +68,7 @@ static void restore_workspaces(struct sway_output *output) {
     while (root->noop_output->workspaces->length) {
         struct sway_workspace *ws = root->noop_output->workspaces->items[0];
         workspace_detach(ws);
-        output_add_workspace(output, ws);
+        output_seize_containers_from_workspace(output, ws);
     }
 
     output_sort_workspaces(output);
@@ -136,8 +160,7 @@ static void output_evacuate(struct sway_output *output) {
             continue;
         }
 
-        output_add_workspace(new_output, workspace);
-        output_sort_workspaces(new_output);
+        output_seize_containers_from_workspace(new_output, workspace);
 
         // If there is an old workspace (the noop output may not have one),
         // check to see if it is empty and should be destroyed.
