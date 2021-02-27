@@ -18,41 +18,8 @@ static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
         return;
     }
 
-    // Count the number of new windows we are resizing, and how much space
-    // is currently occupied
-    int new_children = 0;
-    double current_width_fraction = 0;
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        current_width_fraction += child->width_fraction;
-        if (child->width_fraction <= 0) {
-            new_children += 1;
-        }
-    }
-
-    // Calculate each height fraction
-    double total_width_fraction = 0;
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        if (child->width_fraction <= 0) {
-            if (current_width_fraction <= 0) {
-                child->width_fraction = 1.0;
-            } else if (children->length > new_children) {
-                child->width_fraction = current_width_fraction /
-                    (children->length - new_children);
-            } else {
-                child->width_fraction = current_width_fraction;
-            }
-        }
-        total_width_fraction += child->width_fraction;
-    }
-    // Normalize width fractions so the sum is 1.0
-    for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        child->width_fraction /= total_width_fraction;
-    }
-
     double child_total_width = parent->width;
+    double width_fraction = 1.0 / (double)children->length;
 
     // Resize windows
     sway_log(SWAY_DEBUG, "Arranging %p horizontally", parent);
@@ -62,7 +29,7 @@ static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
         child->child_total_width = child_total_width;
         child->x = child_x;
         child->y = parent->y;
-        child->width = round(child->width_fraction * child_total_width);
+        child->width = round(width_fraction * child_total_width);
         child->height = parent->height;
         child_x += child->width;
 
