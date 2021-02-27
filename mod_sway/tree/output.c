@@ -84,7 +84,6 @@ void output_enable(struct sway_output *output) {
     if (!sway_assert(!output->enabled, "output is already enabled")) {
         return;
     }
-    struct wlr_output *wlr_output = output->wlr_output;
     output->enabled = true;
     list_add(root->outputs, output);
 
@@ -93,9 +92,8 @@ void output_enable(struct sway_output *output) {
     struct sway_workspace *ws = NULL;
     if (!output->active_workspace) {
         // Create workspace
-        char *ws_name = workspace_next_name(wlr_output->name);
-        sway_log(SWAY_DEBUG, "Creating default workspace %s", ws_name);
-        ws = workspace_create(output, ws_name);
+        sway_log(SWAY_DEBUG, "Creating default workspace");
+        ws = workspace_create(output);
         // Set each seat's focus if not already set
         struct sway_seat *seat = NULL;
         wl_list_for_each(seat, &server.input->seats, link) {
@@ -103,7 +101,6 @@ void output_enable(struct sway_output *output) {
                 seat_set_focus_workspace(seat, ws);
             }
         }
-        free(ws_name);
     }
 
     input_manager_configure_xcursor();

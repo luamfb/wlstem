@@ -48,7 +48,7 @@ char *node_get_name(struct sway_node *node) {
     case N_OUTPUT:
         return node->sway_output->wlr_output->name;
     case N_WORKSPACE:
-        return node->sway_workspace->name;
+        return "workspace";
     case N_CONTAINER:
         return node->sway_container->title;
     }

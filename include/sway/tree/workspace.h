@@ -19,8 +19,6 @@ struct sway_workspace_state {
 struct sway_workspace {
     struct sway_node node;
 
-    char *name;
-
     double x, y;
     int width, height;
 
@@ -30,18 +28,13 @@ struct sway_workspace {
     struct sway_workspace_state current;
 };
 
-struct sway_workspace *workspace_create(struct sway_output *output,
-        const char *name);
+struct sway_workspace *workspace_create(struct sway_output *output);
 
 void workspace_destroy(struct sway_workspace *workspace);
 
 void workspace_begin_destroy(struct sway_workspace *workspace);
 
 void workspace_consider_destroy(struct sway_workspace *ws);
-
-char *workspace_next_name(const char *output_name);
-
-struct sway_workspace *workspace_by_number(const char* name);
 
 bool workspace_is_visible(struct sway_workspace *ws);
 
