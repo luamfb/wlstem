@@ -57,8 +57,6 @@ static void restore_workspaces(struct sway_output *output) {
         workspace_detach(ws);
         output_seize_containers_from_workspace(output, ws);
     }
-
-    output_sort_workspaces(output);
 }
 
 struct sway_output *output_create(struct wlr_output *wlr_output) {
@@ -298,9 +296,6 @@ struct sway_container *output_find_container(struct sway_output *output,
         }
     }
     return NULL;
-}
-
-void output_sort_workspaces(struct sway_output *output) {
 }
 
 void output_get_box(struct sway_output *output, struct wlr_box *box) {
