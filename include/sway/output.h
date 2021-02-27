@@ -145,12 +145,6 @@ void output_for_each_workspace(struct sway_output *output,
 void output_for_each_container(struct sway_output *output,
         void (*f)(struct sway_container *con, void *data), void *data);
 
-struct sway_workspace *output_find_workspace(struct sway_output *output,
-        bool (*test)(struct sway_workspace *ws, void *data), void *data);
-
-struct sway_container *output_find_container(struct sway_output *output,
-        bool (*test)(struct sway_container *con, void *data), void *data);
-
 void output_get_box(struct sway_output *output, struct wlr_box *box);
 
 void render_rect(struct sway_output *output,

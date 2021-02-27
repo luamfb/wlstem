@@ -111,17 +111,6 @@ void workspace_for_each_container(struct sway_workspace *ws,
     }
 }
 
-struct sway_container *workspace_find_container(struct sway_workspace *ws,
-        bool (*test)(struct sway_container *con, void *data), void *data) {
-    for (int i = 0; i < ws->tiling->length; ++i) {
-        struct sway_container *child = ws->tiling->items[i];
-        if (test(child, data)) {
-            return child;
-        }
-    }
-    return NULL;
-}
-
 void workspace_detach(struct sway_workspace *workspace) {
     struct sway_output *output = workspace->output;
     if (output->active_workspace == workspace) {

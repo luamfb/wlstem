@@ -47,15 +47,6 @@ void root_for_each_workspace(void (*f)(struct sway_workspace *ws, void *data),
 void root_for_each_container(void (*f)(struct sway_container *con, void *data),
         void *data);
 
-struct sway_output *root_find_output(
-        bool (*test)(struct sway_output *output, void *data), void *data);
-
-struct sway_workspace *root_find_workspace(
-        bool (*test)(struct sway_workspace *ws, void *data), void *data);
-
-struct sway_container *root_find_container(
-        bool (*test)(struct sway_container *con, void *data), void *data);
-
 void root_get_box(struct sway_root *root, struct wlr_box *box);
 
 #endif

@@ -43,9 +43,6 @@ bool workspace_is_empty(struct sway_workspace *ws);
 void workspace_for_each_container(struct sway_workspace *ws,
         void (*f)(struct sway_container *con, void *data), void *data);
 
-struct sway_container *workspace_find_container(struct sway_workspace *ws,
-        bool (*test)(struct sway_container *con, void *data), void *data);
-
 void workspace_detach(struct sway_workspace *workspace);
 
 struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,

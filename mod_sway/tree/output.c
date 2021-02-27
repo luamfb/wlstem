@@ -273,27 +273,6 @@ void output_for_each_container(struct sway_output *output,
     }
 }
 
-struct sway_workspace *output_find_workspace(struct sway_output *output,
-        bool (*test)(struct sway_workspace *ws, void *data), void *data) {
-    if (output->active_workspace) {
-        if (test(output->active_workspace, data)) {
-            return output->active_workspace;
-        }
-    }
-    return NULL;
-}
-
-struct sway_container *output_find_container(struct sway_output *output,
-        bool (*test)(struct sway_container *con, void *data), void *data) {
-    struct sway_container *result = NULL;
-    if (output->active_workspace) {
-        if ((result = workspace_find_container(output->active_workspace, test, data))) {
-            return result;
-        }
-    }
-    return NULL;
-}
-
 void output_get_box(struct sway_output *output, struct wlr_box *box) {
     box->x = output->lx;
     box->y = output->ly;
