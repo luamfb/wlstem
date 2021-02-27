@@ -30,11 +30,11 @@ static void output_seize_containers_from_workspace(
     struct sway_output *absorber,
     struct sway_workspace *giver)
 {
-    if (!sway_assert(absorber->workspaces->length,
-            "Expected output with at least 1 workspace")) {
+    if (!sway_assert(absorber->active_workspace,
+            "Expected output with an active workspace")) {
         assert(false);
     }
-    struct sway_workspace *absorber_ws = absorber->workspaces->items[0];
+    struct sway_workspace *absorber_ws = absorber->active_workspace;
 
     while (giver->tiling->length) {
         struct sway_container *container = giver->tiling->items[0];
@@ -52,8 +52,8 @@ static void output_seize_containers_from_workspace(
 
 static void restore_workspaces(struct sway_output *output) {
     // Saved workspaces
-    while (root->noop_output->workspaces->length) {
-        struct sway_workspace *ws = root->noop_output->workspaces->items[0];
+    if (root->noop_output->active_workspace) {
+        struct sway_workspace *ws = root->noop_output->active_workspace;
         workspace_detach(ws);
         output_seize_containers_from_workspace(output, ws);
     }
@@ -73,7 +73,7 @@ struct sway_output *output_create(struct wlr_output *wlr_output) {
 
     wl_list_insert(&root->all_outputs, &output->link);
 
-    output->workspaces = create_list();
+    output->active_workspace = NULL;
 
     size_t len = sizeof(output->layers) / sizeof(output->layers[0]);
     for (size_t i = 0; i < len; ++i) {
@@ -94,7 +94,7 @@ void output_enable(struct sway_output *output) {
     restore_workspaces(output);
 
     struct sway_workspace *ws = NULL;
-    if (!output->workspaces->length) {
+    if (!output->active_workspace) {
         // Create workspace
         char *ws_name = workspace_next_name(wlr_output->name);
         sway_log(SWAY_DEBUG, "Creating default workspace %s", ws_name);
@@ -118,7 +118,7 @@ void output_enable(struct sway_output *output) {
 }
 
 static void output_evacuate(struct sway_output *output) {
-    if (!output->workspaces->length) {
+    if (!output->active_workspace) {
         return;
     }
     struct sway_output *fallback_output = NULL;
@@ -129,8 +129,8 @@ static void output_evacuate(struct sway_output *output) {
         }
     }
 
-    while (output->workspaces->length) {
-        struct sway_workspace *workspace = output->workspaces->items[0];
+    while (output->active_workspace) {
+        struct sway_workspace *workspace = output->active_workspace;
 
         workspace_detach(workspace);
 
@@ -170,7 +170,9 @@ void output_destroy(struct sway_output *output) {
                 "which is still referenced by transactions")) {
         return;
     }
-    list_free(output->workspaces);
+    if (output->active_workspace) {
+        workspace_begin_destroy(output->active_workspace);
+    }
     wl_event_source_remove(output->repaint_timer);
     free(output);
 }
@@ -252,12 +254,12 @@ void output_add_workspace(struct sway_output *output,
     if (workspace->output) {
         workspace_detach(workspace);
     }
-    if (output->workspaces->length) {
+    if (output->active_workspace) {
         sway_log(SWAY_ERROR,
             "tried to add workspace to output which already has an active workspace");
         assert(false);
     }
-    list_add(output->workspaces, workspace);
+    output->active_workspace = workspace;
     workspace->output = output;
     node_set_dirty(&output->node);
     node_set_dirty(&workspace->node);
@@ -265,26 +267,23 @@ void output_add_workspace(struct sway_output *output,
 
 void output_for_each_workspace(struct sway_output *output,
         void (*f)(struct sway_workspace *ws, void *data), void *data) {
-    for (int i = 0; i < output->workspaces->length; ++i) {
-        struct sway_workspace *workspace = output->workspaces->items[i];
-        f(workspace, data);
+    if (output->active_workspace) {
+        f(output->active_workspace, data);
     }
 }
 
 void output_for_each_container(struct sway_output *output,
         void (*f)(struct sway_container *con, void *data), void *data) {
-    for (int i = 0; i < output->workspaces->length; ++i) {
-        struct sway_workspace *workspace = output->workspaces->items[i];
-        workspace_for_each_container(workspace, f, data);
+    if (output->active_workspace) {
+        workspace_for_each_container(output->active_workspace, f, data);
     }
 }
 
 struct sway_workspace *output_find_workspace(struct sway_output *output,
         bool (*test)(struct sway_workspace *ws, void *data), void *data) {
-    for (int i = 0; i < output->workspaces->length; ++i) {
-        struct sway_workspace *workspace = output->workspaces->items[i];
-        if (test(workspace, data)) {
-            return workspace;
+    if (output->active_workspace) {
+        if (test(output->active_workspace, data)) {
+            return output->active_workspace;
         }
     }
     return NULL;
@@ -293,33 +292,15 @@ struct sway_workspace *output_find_workspace(struct sway_output *output,
 struct sway_container *output_find_container(struct sway_output *output,
         bool (*test)(struct sway_container *con, void *data), void *data) {
     struct sway_container *result = NULL;
-    for (int i = 0; i < output->workspaces->length; ++i) {
-        struct sway_workspace *workspace = output->workspaces->items[i];
-        if ((result = workspace_find_container(workspace, test, data))) {
+    if (output->active_workspace) {
+        if ((result = workspace_find_container(output->active_workspace, test, data))) {
             return result;
         }
     }
     return NULL;
 }
 
-static int sort_workspace_cmp_qsort(const void *_a, const void *_b) {
-    struct sway_workspace *a = *(void **)_a;
-    struct sway_workspace *b = *(void **)_b;
-
-    if (isdigit(a->name[0]) && isdigit(b->name[0])) {
-        int a_num = strtol(a->name, NULL, 10);
-        int b_num = strtol(b->name, NULL, 10);
-        return (a_num < b_num) ? -1 : (a_num > b_num);
-    } else if (isdigit(a->name[0])) {
-        return -1;
-    } else if (isdigit(b->name[0])) {
-        return 1;
-    }
-    return 0;
-}
-
 void output_sort_workspaces(struct sway_output *output) {
-    list_stable_sort(output->workspaces, sort_workspace_cmp_qsort);
 }
 
 void output_get_box(struct sway_output *output, struct wlr_box *box) {
