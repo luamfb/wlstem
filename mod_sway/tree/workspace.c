@@ -104,16 +104,9 @@ void workspace_consider_destroy(struct sway_workspace *ws) {
     workspace_begin_destroy(ws);
 }
 
-static void workspace_name_from_binding(const struct sway_binding * binding,
-        const char* output_name, int *min_order, char **earliest_name) {
-}
-
 char *workspace_next_name(const char *output_name) {
     sway_log(SWAY_DEBUG, "Workspace: Generating new workspace name for output %s",
             output_name);
-    // Scan for available workspace names by looking through output-workspace
-    // assignments primarily, falling back to bindings and numbers.
-    struct sway_mode *mode = config->current_mode;
 
     char identifier[128];
     struct sway_output *output = output_by_name_or_id(output_name);
@@ -123,16 +116,7 @@ char *workspace_next_name(const char *output_name) {
     output_name = output->wlr_output->name;
     output_get_identifier(identifier, sizeof(identifier), output);
 
-    int order = INT_MAX;
     char *target = NULL;
-    for (int i = 0; i < mode->keysym_bindings->length; ++i) {
-        workspace_name_from_binding(mode->keysym_bindings->items[i],
-                output_name, &order, &target);
-    }
-    for (int i = 0; i < mode->keycode_bindings->length; ++i) {
-        workspace_name_from_binding(mode->keycode_bindings->items[i],
-                output_name, &order, &target);
-    }
     if (target != NULL) {
         return target;
     }
