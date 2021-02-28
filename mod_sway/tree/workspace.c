@@ -68,26 +68,6 @@ void workspace_begin_destroy(struct sway_workspace *workspace) {
     node_set_dirty(&workspace->node);
 }
 
-void workspace_consider_destroy(struct sway_workspace *ws) {
-    if (ws->tiling->length) {
-        return;
-    }
-
-    if (ws->output && output_get_active_workspace(ws->output) == ws) {
-        return;
-    }
-
-    struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
-        struct sway_node *node = seat_get_focus_inactive(seat, &root->node);
-        if (node == &ws->node) {
-            return;
-        }
-    }
-
-    workspace_begin_destroy(ws);
-}
-
 bool workspace_is_visible(struct sway_workspace *ws) {
     if (ws->node.destroying) {
         return false;

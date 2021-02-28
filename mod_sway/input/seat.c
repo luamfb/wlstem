@@ -1076,10 +1076,6 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         node_set_dirty(&new_output->node);
     }
 
-    // find new output's old workspace, which might have to be removed if empty
-    struct sway_workspace *new_output_last_ws =
-        new_output ? output_get_active_workspace(new_output) : NULL;
-
     // Unfocus the previous focus
     if (last_focus) {
         seat_send_unfocus(last_focus, seat);
@@ -1123,13 +1119,6 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         } else {
             view_set_urgent(view, false);
         }
-    }
-
-    if (new_output_last_ws) {
-        workspace_consider_destroy(new_output_last_ws);
-    }
-    if (last_workspace && last_workspace != new_output_last_ws) {
-        workspace_consider_destroy(last_workspace);
     }
 
     seat->has_focus = true;

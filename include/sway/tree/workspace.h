@@ -34,8 +34,6 @@ void workspace_destroy(struct sway_workspace *workspace);
 
 void workspace_begin_destroy(struct sway_workspace *workspace);
 
-void workspace_consider_destroy(struct sway_workspace *ws);
-
 bool workspace_is_visible(struct sway_workspace *ws);
 
 bool workspace_is_empty(struct sway_workspace *ws);

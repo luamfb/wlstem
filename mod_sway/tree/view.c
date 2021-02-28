@@ -523,9 +523,6 @@ void view_unmap(struct sway_view *view) {
 
     struct sway_workspace *ws = view->container->workspace;
     container_begin_destroy(view->container);
-    if (ws) {
-        workspace_consider_destroy(ws);
-    }
 
     if (ws && !ws->node.destroying) {
         arrange_workspace(ws);
