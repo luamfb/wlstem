@@ -133,21 +133,12 @@ static void output_evacuate(struct sway_output *output) {
             new_output = root->noop_output;
         }
 
-        struct sway_workspace *new_output_ws =
-            output_get_active_workspace(new_output);
-
         if (workspace_is_empty(workspace)) {
             workspace_begin_destroy(workspace);
             continue;
         }
 
         output_seize_containers_from_workspace(new_output, workspace);
-
-        // If there is an old workspace (the noop output may not have one),
-        // check to see if it is empty and should be destroyed.
-        if (new_output_ws) {
-            workspace_consider_destroy(new_output_ws);
-        }
     }
 }
 
