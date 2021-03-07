@@ -237,7 +237,9 @@ struct sway_output *output_get_in_direction(struct sway_output *reference,
 void output_add_workspace(struct sway_output *output,
         struct sway_workspace *workspace) {
     if (workspace->output) {
-        workspace_detach(workspace);
+        sway_log(SWAY_ERROR,
+            "tried to add workspace which is already tied to another output");
+        assert(false);
     }
     if (output->active_workspace) {
         sway_log(SWAY_ERROR,
