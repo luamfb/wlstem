@@ -605,11 +605,6 @@ static void render_containers_linear(struct sway_output *output,
     }
 }
 
-static void render_containers(struct sway_output *output,
-        pixman_region32_t *damage, struct parent_data *parent) {
-    render_containers_linear(output, damage, parent);
-}
-
 static void render_container(struct sway_output *output,
         pixman_region32_t *damage, struct sway_container *con, bool focused) {
     struct parent_data data = {
@@ -621,7 +616,7 @@ static void render_container(struct sway_output *output,
         },
         .focused = focused,
     };
-    render_containers(output, damage, &data);
+    render_containers_linear(output, damage, &data);
 }
 
 static void render_workspace(struct sway_output *output,
@@ -636,7 +631,7 @@ static void render_workspace(struct sway_output *output,
         .children = ws->current.tiling,
         .focused = focused,
     };
-    render_containers(output, damage, &data);
+    render_containers_linear(output, damage, &data);
 }
 
 static void render_seatops(struct sway_output *output,
