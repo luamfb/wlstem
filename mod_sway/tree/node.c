@@ -15,20 +15,6 @@ void node_init(struct sway_node *node, enum sway_node_type type, void *thing) {
     wl_signal_init(&node->events.destroy);
 }
 
-const char *node_type_to_str(enum sway_node_type type) {
-    switch (type) {
-    case N_ROOT:
-        return "N_ROOT";
-    case N_OUTPUT:
-        return "N_OUTPUT";
-    case N_WORKSPACE:
-        return "N_WORKSPACE";
-    case N_CONTAINER:
-        return "N_CONTAINER";
-    }
-    return "";
-}
-
 void node_set_dirty(struct sway_node *node) {
     if (node->dirty) {
         return;
@@ -39,37 +25,6 @@ void node_set_dirty(struct sway_node *node) {
 
 bool node_is_view(struct sway_node *node) {
     return node->type == N_CONTAINER && node->sway_container->view;
-}
-
-char *node_get_name(struct sway_node *node) {
-    switch (node->type) {
-    case N_ROOT:
-        return "root";
-    case N_OUTPUT:
-        return node->sway_output->wlr_output->name;
-    case N_WORKSPACE:
-        return "workspace";
-    case N_CONTAINER:
-        return node->sway_container->title;
-    }
-    return NULL;
-}
-
-void node_get_box(struct sway_node *node, struct wlr_box *box) {
-    switch (node->type) {
-    case N_ROOT:
-        root_get_box(root, box);
-        break;
-    case N_OUTPUT:
-        output_get_box(node->sway_output, box);
-        break;
-    case N_WORKSPACE:
-        workspace_get_box(node->sway_workspace, box);
-        break;
-    case N_CONTAINER:
-        container_get_box(node->sway_container, box);
-        break;
-    }
 }
 
 struct sway_output *node_get_output(struct sway_node *node) {
