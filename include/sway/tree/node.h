@@ -50,8 +50,6 @@ struct sway_node {
 
 void node_init(struct sway_node *node, enum sway_node_type type, void *thing);
 
-const char *node_type_to_str(enum sway_node_type type);
-
 /**
  * Mark a node as dirty if it isn't already. Dirty nodes will be included in the
  * next transaction then unmarked as dirty.
@@ -59,10 +57,6 @@ const char *node_type_to_str(enum sway_node_type type);
 void node_set_dirty(struct sway_node *node);
 
 bool node_is_view(struct sway_node *node);
-
-char *node_get_name(struct sway_node *node);
-
-void node_get_box(struct sway_node *node, struct wlr_box *box);
 
 struct sway_output *node_get_output(struct sway_node *node);
 
