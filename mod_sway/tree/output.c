@@ -123,7 +123,7 @@ static void output_evacuate(struct sway_output *output) {
         }
     }
 
-    while (output->active_workspace) {
+    if (output->active_workspace) {
         struct sway_workspace *workspace = output->active_workspace;
 
         workspace_detach(workspace);
@@ -133,12 +133,9 @@ static void output_evacuate(struct sway_output *output) {
             new_output = root->noop_output;
         }
 
-        if (workspace_is_empty(workspace)) {
-            workspace_begin_destroy(workspace);
-            continue;
+        if (!workspace_is_empty(workspace)) {
+            output_seize_containers_from_workspace(new_output, workspace);
         }
-
-        output_seize_containers_from_workspace(new_output, workspace);
     }
 }
 
