@@ -11,21 +11,6 @@
 #include "log.h"
 #include "util.h"
 
-enum wlr_direction opposite_direction(enum wlr_direction d) {
-    switch (d) {
-    case WLR_DIRECTION_UP:
-        return WLR_DIRECTION_DOWN;
-    case WLR_DIRECTION_DOWN:
-        return WLR_DIRECTION_UP;
-    case WLR_DIRECTION_RIGHT:
-        return WLR_DIRECTION_LEFT;
-    case WLR_DIRECTION_LEFT:
-        return WLR_DIRECTION_RIGHT;
-    }
-    assert(false);
-    return 0;
-}
-
 static void output_seize_containers_from_workspace(
     struct sway_output *absorber,
     struct sway_workspace *giver)
