@@ -155,8 +155,6 @@ void premultiply_alpha(float color[4], float opacity);
 
 void scale_box(struct wlr_box *box, float scale);
 
-enum wlr_direction opposite_direction(enum wlr_direction d);
-
 void handle_output_layout_change(struct wl_listener *listener, void *data);
 
 void handle_output_manager_apply(struct wl_listener *listener, void *data);
