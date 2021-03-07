@@ -53,7 +53,6 @@ static void output_seize_containers_from_workspace(
 static void seize_containers_from_noop_output(struct sway_output *output) {
     if (root->noop_output->active_workspace) {
         struct sway_workspace *ws = root->noop_output->active_workspace;
-        workspace_detach(ws);
         output_seize_containers_from_workspace(output, ws);
     }
 }
