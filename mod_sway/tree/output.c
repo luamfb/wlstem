@@ -43,11 +43,6 @@ static void output_seize_containers_from_workspace(
 
     node_set_dirty(&absorber->node);
     node_set_dirty(&absorber_ws->node);
-
-    if (giver->output) {
-        workspace_detach(giver);
-    }
-    workspace_begin_destroy(giver);
 }
 
 static void seize_containers_from_noop_output(struct sway_output *output) {
