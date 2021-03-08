@@ -80,7 +80,7 @@ void arrange_workspace(struct sway_workspace *workspace) {
     sway_log(SWAY_DEBUG, "Arranging workspace at %f, %f",
             workspace->x, workspace->y);
     struct wlr_box box;
-    workspace_get_box(workspace, &box);
+    output_get_render_box(output, &box);
     arrange_children(workspace->tiling, &box);
 }
 

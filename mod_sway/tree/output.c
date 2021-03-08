@@ -248,3 +248,10 @@ void output_get_box(struct sway_output *output, struct wlr_box *box) {
     box->width = output->width;
     box->height = output->height;
 }
+
+void output_get_render_box(struct sway_output *output, struct wlr_box *box) {
+    box->x = output->render_lx;
+    box->y = output->render_ly;
+    box->width = output->usable_area.width;
+    box->height = output->usable_area.height;
+}

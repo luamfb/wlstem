@@ -113,10 +113,3 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     node_set_dirty(&con->node);
     return con;
 }
-
-void workspace_get_box(struct sway_workspace *workspace, struct wlr_box *box) {
-    box->x = workspace->x;
-    box->y = workspace->y;
-    box->width = workspace->width;
-    box->height = workspace->height;
-}
