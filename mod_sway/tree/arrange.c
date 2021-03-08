@@ -61,29 +61,6 @@ void arrange_container(struct sway_container *container) {
     node_set_dirty(&container->node);
 }
 
-void arrange_workspace(struct sway_workspace *workspace) {
-    if (!workspace->output) {
-        // Happens when there are no outputs connected
-        return;
-    }
-    struct sway_output *output = workspace->output;
-    struct wlr_box *area = &output->usable_area;
-    sway_log(SWAY_DEBUG, "Usable area for ws: %dx%d@%d,%d",
-            area->width, area->height, area->x, area->y);
-
-    workspace->width = area->width;
-    workspace->height = area->height;
-    workspace->x = output->render_lx;
-    workspace->y = output->render_ly;
-
-    node_set_dirty(&workspace->node);
-    sway_log(SWAY_DEBUG, "Arranging workspace at %f, %f",
-            workspace->x, workspace->y);
-    struct wlr_box box;
-    output_get_render_box(output, &box);
-    arrange_children(workspace->tiling, &box);
-}
-
 void arrange_output(struct sway_output *output) {
     const struct wlr_box *output_box = wlr_output_layout_get_box(
             root->output_layout, output->wlr_output);
@@ -93,12 +70,30 @@ void arrange_output(struct sway_output *output) {
     output->height = output_box->height;
 
     struct wlr_box *area = &output->usable_area;
+    sway_log(SWAY_DEBUG, "output usable area: %dx%d@%d,%d",
+        area->width, area->height, area->x, area->y);
+
     output->render_lx = output->lx + area->x;
     output->render_ly = output->ly + area->y;
 
+    sway_log(SWAY_DEBUG, "Arranging renderview of output %s at %d, %d",
+        output->wlr_output->name, output->render_lx, output->render_ly);
+
     if (output->active_workspace) {
-        arrange_workspace(output->active_workspace);
+        struct sway_workspace *ws = output->active_workspace;
+        // initializing coordinates too, for now
+        ws->width = area->width;
+        ws->height = area->height;
+        ws->x = output->render_lx;
+        ws->y = output->render_ly;
+
+        struct wlr_box box;
+        output_get_render_box(output, &box);
+        arrange_children(ws->tiling, &box);
+
+        node_set_dirty(&ws->node);
     }
+
 }
 
 void arrange_root(void) {
