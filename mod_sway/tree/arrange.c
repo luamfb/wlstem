@@ -81,13 +81,8 @@ void arrange_output(struct sway_output *output) {
 
     if (output->active_workspace) {
         struct sway_workspace *ws = output->active_workspace;
-        // initializing coordinates too, for now
-        ws->width = area->width;
-        ws->height = area->height;
-        ws->x = output->render_lx;
-        ws->y = output->render_ly;
-
         struct wlr_box box;
+
         output_get_render_box(output, &box);
         arrange_children(ws->tiling, &box);
 

@@ -94,11 +94,6 @@ static void copy_workspace_state(struct sway_workspace *ws,
         struct sway_transaction_instruction *instruction) {
     struct sway_workspace_state *state = &instruction->workspace_state;
 
-    state->x = ws->x;
-    state->y = ws->y;
-    state->width = ws->width;
-    state->height = ws->height;
-
     state->output = ws->output;
     state->tiling = create_list();
     list_cat(state->tiling, ws->tiling);
