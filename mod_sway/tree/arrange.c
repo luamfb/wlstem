@@ -124,7 +124,7 @@ void arrange_node(struct sway_node *node) {
         arrange_output(node->sway_output);
         break;
     case N_WORKSPACE:
-        arrange_workspace(node->sway_workspace);
+        arrange_output(node->sway_workspace->output);
         break;
     case N_CONTAINER:
         arrange_container(node->sway_container);

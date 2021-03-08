@@ -487,8 +487,8 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
 
     view_update_title(view, false);
 
-    if (container->workspace) {
-        arrange_workspace(container->workspace);
+    if (container->workspace && container->workspace->output) {
+        arrange_output(container->workspace->output);
     }
 
     if (should_focus(view)) {
@@ -524,8 +524,8 @@ void view_unmap(struct sway_view *view) {
     struct sway_workspace *ws = view->container->workspace;
     container_begin_destroy(view->container);
 
-    if (ws && !ws->node.destroying) {
-        arrange_workspace(ws);
+    if (ws && !ws->node.destroying && ws->output) {
+        arrange_output(ws->output);
     }
 
     struct sway_seat *seat;
