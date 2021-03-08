@@ -8,8 +8,6 @@ struct sway_node;
 
 void arrange_container(struct sway_container *container);
 
-void arrange_workspace(struct sway_workspace *workspace);
-
 void arrange_output(struct sway_output *output);
 
 void arrange_root(void);
