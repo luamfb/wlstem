@@ -623,10 +623,10 @@ static void render_workspace(struct sway_output *output,
         pixman_region32_t *damage, struct sway_workspace *ws, bool focused) {
     struct parent_data data = {
         .box = {
-            .x = ws->current.x,
-            .y = ws->current.y,
-            .width = ws->current.width,
-            .height = ws->current.height,
+            .x = output->current.render_lx,
+            .y = output->current.render_ly,
+            .width = output->usable_area.width,
+            .height = output->usable_area.height,
         },
         .children = ws->current.tiling,
         .focused = focused,

@@ -8,8 +8,6 @@
 struct sway_view;
 
 struct sway_workspace_state {
-    double x, y;
-    int width, height;
     struct sway_output *output;
     list_t *tiling;
 
@@ -18,9 +16,6 @@ struct sway_workspace_state {
 
 struct sway_workspace {
     struct sway_node node;
-
-    double x, y;
-    int width, height;
 
     struct sway_output *output; // NULL if no outputs are connected
     list_t *tiling;             // struct sway_container

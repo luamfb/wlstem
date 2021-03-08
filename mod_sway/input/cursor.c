@@ -1140,9 +1140,13 @@ void cursor_warp_to_workspace(struct sway_cursor *cursor,
     if (!workspace) {
         return;
     }
+    struct sway_output *output = workspace->output;
+    if (!output) {
+        return;
+    }
 
-    double x = workspace->x + workspace->width / 2.0;
-    double y = workspace->y + workspace->height / 2.0;
+    double x = (double)output->render_lx + (double)output->usable_area.width / 2.0;
+    double y = (double)output->render_ly + (double)output->usable_area.height / 2.0;
 
     wlr_cursor_warp(cursor->cursor, NULL, x, y);
     cursor_unhide(cursor);
