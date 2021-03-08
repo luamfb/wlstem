@@ -73,8 +73,8 @@ void arrange_workspace(struct sway_workspace *workspace) {
 
     workspace->width = area->width;
     workspace->height = area->height;
-    workspace->x = output->lx + area->x;
-    workspace->y = output->ly + area->y;
+    workspace->x = output->render_lx;
+    workspace->y = output->render_ly;
 
     node_set_dirty(&workspace->node);
     sway_log(SWAY_DEBUG, "Arranging workspace at %f, %f",
@@ -91,6 +91,10 @@ void arrange_output(struct sway_output *output) {
     output->ly = output_box->y;
     output->width = output_box->width;
     output->height = output_box->height;
+
+    struct wlr_box *area = &output->usable_area;
+    output->render_lx = output->lx + area->x;
+    output->render_ly = output->ly + area->y;
 
     if (output->active_workspace) {
         arrange_workspace(output->active_workspace);
