@@ -14,6 +14,7 @@ struct sway_container;
 
 struct sway_output_state {
     struct sway_workspace *active_workspace;
+    int render_lx, render_ly; // in layout coords
 };
 
 struct sway_output {
@@ -29,6 +30,7 @@ struct sway_output {
     struct wlr_output_damage *damage;
 
     int lx, ly; // layout coords
+    int render_lx, render_ly; // in layout coords
     int width, height; // transformed buffer size
     enum wl_output_subpixel detected_subpixel;
     enum scale_filter_mode scale_filter;
