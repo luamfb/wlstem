@@ -375,11 +375,11 @@ static struct sway_workspace *select_workspace(struct sway_view *view) {
 static bool should_focus(struct sway_view *view) {
     struct sway_seat *seat = input_manager_current_seat();
     struct sway_container *prev_con = seat_get_focused_container(seat);
-    struct sway_workspace *prev_ws = seat_get_focused_workspace(seat);
+    struct sway_output *prev_output = seat_get_focused_output(seat);
     struct sway_workspace *map_ws = view->container->workspace;
 
-    // Views can only take focus if they are mapped into the active workspace
-    if (prev_ws != map_ws) {
+    // Views can only take focus if they are mapped into the active output
+    if (map_ws && prev_output != map_ws->output) {
         return false;
     }
 
