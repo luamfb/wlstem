@@ -274,7 +274,19 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
     }
 
     if (!next_focus) {
-        struct sway_workspace *ws = seat_get_last_known_workspace(seat);
+        struct sway_workspace *ws = NULL;
+        struct sway_seat_node *current;
+        wl_list_for_each(current, &seat->focus_stack, link) {
+            struct sway_node *node = current->node;
+            if (node->type == N_CONTAINER &&
+                    node->sway_container->workspace) {
+                ws = node->sway_container->workspace;
+                break;
+            } else if (node->type == N_WORKSPACE) {
+                ws = node->sway_workspace;
+                break;
+            }
+        }
         if (!ws) {
             return;
         }
@@ -1277,20 +1289,6 @@ struct sway_workspace *seat_get_focused_workspace(struct sway_seat *seat) {
         return focus->sway_workspace;
     }
     return NULL; // output doesn't have a workspace yet
-}
-
-struct sway_workspace *seat_get_last_known_workspace(struct sway_seat *seat) {
-    struct sway_seat_node *current;
-    wl_list_for_each(current, &seat->focus_stack, link) {
-        struct sway_node *node = current->node;
-        if (node->type == N_CONTAINER &&
-                node->sway_container->workspace) {
-            return node->sway_container->workspace;
-        } else if (node->type == N_WORKSPACE) {
-            return node->sway_workspace;
-        }
-    }
-    return NULL;
 }
 
 struct sway_container *seat_get_focused_container(struct sway_seat *seat) {
