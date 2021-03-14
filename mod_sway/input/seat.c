@@ -1063,7 +1063,7 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         return;
     }
 
-    struct sway_workspace *last_workspace = seat_get_focused_workspace(seat);
+    struct sway_output *last_output = seat_get_focused_output(seat);
 
     if (node == NULL) {
         // Close any popups on the old focus
@@ -1084,7 +1084,7 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
     struct sway_output *new_output =
         new_workspace ? new_workspace->output : NULL;
 
-    if (last_workspace != new_workspace && new_output) {
+    if (new_output && last_output != new_output) {
         node_set_dirty(&new_output->node);
     }
 
@@ -1117,7 +1117,7 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
     if (container && container->view && view_is_urgent(container->view) &&
             !container->view->urgent_timer) {
         struct sway_view *view = container->view;
-        if (last_workspace && last_workspace != new_workspace &&
+        if (last_output && last_output != new_output &&
                 config->urgent_timeout > 0) {
             view->urgent_timer = wl_event_loop_add_timer(server.wl_event_loop,
                     handle_urgent_timeout, view);
@@ -1277,18 +1277,18 @@ struct sway_node *seat_get_focus(struct sway_seat *seat) {
     return current->node;
 }
 
-struct sway_workspace *seat_get_focused_workspace(struct sway_seat *seat) {
+struct sway_output *seat_get_focused_output(struct sway_seat *seat) {
     struct sway_node *focus = seat_get_focus_inactive(seat, &root->node);
     if (!focus) {
         return NULL;
     }
+    struct sway_workspace *ws = NULL;
     if (focus->type == N_CONTAINER) {
-        return focus->sway_container->workspace;
+        ws = focus->sway_container->workspace;
+    } else if (focus->type == N_WORKSPACE) {
+        ws = focus->sway_workspace;
     }
-    if (focus->type == N_WORKSPACE) {
-        return focus->sway_workspace;
-    }
-    return NULL; // output doesn't have a workspace yet
+    return ws ? ws->output : NULL;
 }
 
 struct sway_container *seat_get_focused_container(struct sway_seat *seat) {

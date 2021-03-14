@@ -173,7 +173,7 @@ void seat_set_exclusive_client(struct sway_seat *seat,
 
 struct sway_node *seat_get_focus(struct sway_seat *seat);
 
-struct sway_workspace *seat_get_focused_workspace(struct sway_seat *seat);
+struct sway_output *seat_get_focused_output(struct sway_seat *seat);
 
 struct sway_container *seat_get_focused_container(struct sway_seat *seat);
 
