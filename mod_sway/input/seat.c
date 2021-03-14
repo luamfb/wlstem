@@ -229,19 +229,6 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
 
     if (node->type == N_WORKSPACE) {
         seat_node_destroy(seat_node);
-        // If an unmanaged or layer surface is focused when an output gets
-        // disabled and an empty workspace on the output was focused by the
-        // seat, the seat needs to refocus it's focus inactive to update the
-        // value of seat->workspace.
-        if (seat->workspace == node->sway_workspace) {
-            struct sway_node *node = seat_get_focus_inactive(seat, &root->node);
-            seat_set_focus(seat, NULL);
-            if (node) {
-                seat_set_focus(seat, node);
-            } else {
-                seat->workspace = NULL;
-            }
-        }
         return;
     }
 
@@ -1031,14 +1018,6 @@ static int handle_urgent_timeout(void *data) {
     return 0;
 }
 
-static void set_workspace(struct sway_seat *seat,
-        struct sway_workspace *new_ws) {
-    if (seat->workspace == new_ws) {
-        return;
-    }
-    seat->workspace = new_ws;
-}
-
 void seat_set_raw_focus(struct sway_seat *seat, struct sway_node *node) {
     struct sway_seat_node *seat_node = seat_node_from_node(seat, node);
     wl_list_remove(&seat_node->link);
@@ -1105,8 +1084,6 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         seat_set_raw_focus(seat, &container->node);
         seat_send_focus(&container->node, seat);
     }
-
-    set_workspace(seat, new_workspace);
 
     // Close any popups on the old focus
     if (last_focus && node_is_view(last_focus)) {
