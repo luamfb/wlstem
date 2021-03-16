@@ -433,7 +433,12 @@ int container_sibling_index(struct sway_container *child) {
 }
 
 list_t *container_get_current_siblings(struct sway_container *container) {
-    return container->current.workspace->current.output->current.tiling;
+    struct sway_output *current_output = container->current.workspace->current.output;
+    if (!current_output) {
+        sway_log(SWAY_ERROR, "container has no current output!");
+        assert(false);
+    }
+    return current_output->current.tiling;
 }
 
 void container_add_sibling(struct sway_container *fixed,

@@ -82,7 +82,14 @@ struct sway_node *node_get_parent(struct sway_node *node) {
 list_t *node_get_children(struct sway_node *node) {
     switch (node->type) {
     case N_WORKSPACE:
-        return node->sway_workspace->output->tiling;
+        {
+            struct sway_output *output = node->sway_workspace->output;
+            if (output) {
+                return output->tiling;
+            }
+            sway_log(SWAY_DEBUG, "workspace has no output!");
+            return NULL;
+        }
     case N_OUTPUT:
     case N_ROOT:
     case N_CONTAINER:

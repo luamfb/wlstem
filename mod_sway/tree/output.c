@@ -22,6 +22,11 @@ static void output_seize_containers_from_workspace(
     struct sway_workspace *absorber_ws = absorber->active_workspace;
     struct sway_output *giver_output = giver->output;
 
+    if (!giver_output) {
+        sway_log(SWAY_ERROR, "expected workspace with output");
+        assert(false);
+    }
+
     while (giver_output->tiling->length) {
         struct sway_container *container = giver_output->tiling->items[0];
         workspace_add_tiling(absorber_ws, container);
