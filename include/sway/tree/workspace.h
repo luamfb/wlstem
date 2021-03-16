@@ -9,7 +9,6 @@ struct sway_view;
 
 struct sway_workspace_state {
     struct sway_output *output;
-    list_t *tiling;
 
     bool focused;
 };
@@ -18,7 +17,6 @@ struct sway_workspace {
     struct sway_node node;
 
     struct sway_output *output; // NULL if no outputs are connected
-    list_t *tiling;             // struct sway_container
 
     struct sway_workspace_state current;
 };

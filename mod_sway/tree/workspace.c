@@ -33,7 +33,6 @@ struct sway_workspace *workspace_create(struct sway_output *output) {
         return NULL;
     }
     node_init(&ws->node, N_WORKSPACE, ws);
-    ws->tiling = create_list();
 
     output_add_workspace(output, ws);
 
@@ -52,8 +51,6 @@ void workspace_destroy(struct sway_workspace *workspace) {
         return;
     }
 
-    list_free(workspace->tiling);
-    list_free(workspace->current.tiling);
     free(workspace);
 }
 
@@ -76,7 +73,7 @@ bool workspace_is_visible(struct sway_workspace *ws) {
 }
 
 bool workspace_is_empty(struct sway_workspace *ws) {
-    if (ws->tiling->length) {
+    if (ws->output->tiling->length) {
         return false;
     }
     return true;
@@ -85,8 +82,8 @@ bool workspace_is_empty(struct sway_workspace *ws) {
 void workspace_for_each_container(struct sway_workspace *ws,
         void (*f)(struct sway_container *con, void *data), void *data) {
     // Tiling
-    for (int i = 0; i < ws->tiling->length; ++i) {
-        struct sway_container *container = ws->tiling->items[i];
+    for (int i = 0; i < ws->output->tiling->length; ++i) {
+        struct sway_container *container = ws->output->tiling->items[i];
         f(container, data);
     }
 }
@@ -107,7 +104,7 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     if (con->workspace) {
         container_detach(con);
     }
-    list_add(workspace->tiling, con);
+    list_add(workspace->output->tiling, con);
     con->workspace = workspace;
     node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);

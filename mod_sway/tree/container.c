@@ -425,7 +425,7 @@ void container_discover_outputs(struct sway_container *con) {
 }
 
 list_t *container_get_siblings(struct sway_container *container) {
-    return container->workspace->tiling;
+    return container->workspace->output->tiling;
 }
 
 int container_sibling_index(struct sway_container *child) {
@@ -433,7 +433,7 @@ int container_sibling_index(struct sway_container *child) {
 }
 
 list_t *container_get_current_siblings(struct sway_container *container) {
-    return container->current.workspace->current.tiling;
+    return container->current.workspace->current.output->current.tiling;
 }
 
 void container_add_sibling(struct sway_container *fixed,

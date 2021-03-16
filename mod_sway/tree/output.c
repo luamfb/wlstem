@@ -20,9 +20,10 @@ static void output_seize_containers_from_workspace(
         assert(false);
     }
     struct sway_workspace *absorber_ws = absorber->active_workspace;
+    struct sway_output *giver_output = giver->output;
 
-    while (giver->tiling->length) {
-        struct sway_container *container = giver->tiling->items[0];
+    while (giver_output->tiling->length) {
+        struct sway_container *container = giver_output->tiling->items[0];
         workspace_add_tiling(absorber_ws, container);
     }
 
@@ -63,6 +64,7 @@ void output_enable(struct sway_output *output) {
     if (!sway_assert(!output->enabled, "output is already enabled")) {
         return;
     }
+    output->tiling = create_list();
     output->enabled = true;
     list_add(root->outputs, output);
 
@@ -135,6 +137,8 @@ void output_destroy(struct sway_output *output) {
         workspace_begin_destroy(output->active_workspace);
     }
     wl_event_source_remove(output->repaint_timer);
+    list_free(output->tiling);
+    list_free(output->current.tiling);
     free(output);
 }
 

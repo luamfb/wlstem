@@ -1233,7 +1233,7 @@ struct sway_node *seat_get_active_tiling_child(struct sway_seat *seat,
         if (parent->type == N_WORKSPACE) {
             // Only consider tiling children
             struct sway_workspace *ws = parent->sway_workspace;
-            if (list_find(ws->tiling, node->sway_container) == -1) {
+            if (list_find(ws->output->tiling, node->sway_container) == -1) {
                 continue;
             }
         }
