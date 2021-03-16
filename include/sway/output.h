@@ -14,6 +14,7 @@ struct sway_container;
 
 struct sway_output_state {
     struct sway_workspace *active_workspace;
+    list_t *tiling;             // struct sway_container
     int render_lx, render_ly; // in layout coords
 };
 
@@ -28,6 +29,8 @@ struct sway_output {
 
     struct timespec last_frame;
     struct wlr_output_damage *damage;
+
+    list_t *tiling;             // struct sway_container
 
     int lx, ly; // layout coords
     int render_lx, render_ly; // in layout coords

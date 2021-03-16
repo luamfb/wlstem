@@ -84,7 +84,7 @@ void arrange_output(struct sway_output *output) {
         struct wlr_box box;
 
         output_get_render_box(output, &box);
-        arrange_children(ws->tiling, &box);
+        arrange_children(output->tiling, &box);
 
         node_set_dirty(&ws->node);
     }

@@ -87,6 +87,8 @@ static void copy_output_state(struct sway_output *output,
         struct sway_transaction_instruction *instruction) {
     struct sway_output_state *state = &instruction->output_state;
 
+    state->tiling = create_list();
+    list_cat(state->tiling, output->tiling);
     state->active_workspace = output_get_active_workspace(output);
 }
 
@@ -95,8 +97,6 @@ static void copy_workspace_state(struct sway_workspace *ws,
     struct sway_workspace_state *state = &instruction->workspace_state;
 
     state->output = ws->output;
-    state->tiling = create_list();
-    list_cat(state->tiling, ws->tiling);
 
     struct sway_seat *seat = input_manager_current_seat();
     state->focused = seat_get_focus(seat) == &ws->node;
@@ -156,6 +156,7 @@ static void transaction_add_node(struct sway_transaction *transaction,
 static void apply_output_state(struct sway_output *output,
         struct sway_output_state *state) {
     output_damage_whole(output);
+    list_free(output->current.tiling);
     memcpy(&output->current, state, sizeof(struct sway_output_state));
     output_damage_whole(output);
 }
@@ -163,7 +164,6 @@ static void apply_output_state(struct sway_output *output,
 static void apply_workspace_state(struct sway_workspace *ws,
         struct sway_workspace_state *state) {
     output_damage_whole(ws->current.output);
-    list_free(ws->current.tiling);
     memcpy(&ws->current, state, sizeof(struct sway_workspace_state));
     output_damage_whole(ws->current.output);
 }

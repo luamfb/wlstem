@@ -628,7 +628,7 @@ static void render_workspace(struct sway_output *output,
             .width = output->usable_area.width,
             .height = output->usable_area.height,
         },
-        .children = ws->current.tiling,
+        .children = output->current.tiling,
         .focused = focused,
     };
     render_containers_linear(output, damage, &data);
