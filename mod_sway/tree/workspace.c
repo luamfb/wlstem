@@ -23,6 +23,10 @@ struct sway_workspace *workspace_create(struct sway_output *output) {
     if (!sway_assert(output != NULL, "Tried to create workspace for NULL output")) {
         abort();
     }
+    if (!sway_assert(!output->active_workspace,
+            "Tried to create workspace to output which already has one")) {
+        abort();
+    }
 
     sway_log(SWAY_DEBUG, "Adding workspace for output %s",
             output->wlr_output->name);
@@ -34,7 +38,10 @@ struct sway_workspace *workspace_create(struct sway_output *output) {
     }
     node_init(&ws->node, N_WORKSPACE, ws);
 
-    output_add_workspace(output, ws);
+    output->active_workspace = ws;
+    ws->output = output;
+    node_set_dirty(&output->node);
+    node_set_dirty(&ws->node);
 
     wl_signal_emit(&root->events.new_node, &ws->node);
 
