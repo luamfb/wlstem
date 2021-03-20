@@ -266,8 +266,8 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
         wl_list_for_each(current, &seat->focus_stack, link) {
             struct sway_node *node = current->node;
             if (node->type == N_CONTAINER &&
-                    node->sway_container->workspace) {
-                ws = node->sway_container->workspace;
+                    node->sway_container->output->active_workspace) {
+                ws = node->sway_container->output->active_workspace;
                 break;
             } else if (node->type == N_WORKSPACE) {
                 ws = node->sway_workspace;
@@ -304,8 +304,8 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
         // Setting focus_inactive
         focus = seat_get_focus_inactive(seat, &root->node);
         seat_set_raw_focus(seat, next_focus);
-        if (focus->type == N_CONTAINER && focus->sway_container->workspace) {
-            seat_set_raw_focus(seat, &focus->sway_container->workspace->node);
+        if (focus->type == N_CONTAINER && focus->sway_container->output->active_workspace) {
+            seat_set_raw_focus(seat, &focus->sway_container->output->active_workspace->node);
         }
         seat_set_raw_focus(seat, focus);
     }
@@ -1055,13 +1055,14 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
         return;
     }
 
+    struct sway_output *new_output = node->type == N_WORKSPACE ?
+        node->sway_workspace->output : node->sway_container->output;
+
     struct sway_workspace *new_workspace = node->type == N_WORKSPACE ?
-        node->sway_workspace : node->sway_container->workspace;
+        node->sway_workspace : new_output->active_workspace;
     struct sway_container *container = node->type == N_CONTAINER ?
         node->sway_container : NULL;
 
-    struct sway_output *new_output =
-        new_workspace ? new_workspace->output : NULL;
 
     if (new_output && last_output != new_output) {
         node_set_dirty(&new_output->node);
@@ -1264,13 +1265,12 @@ struct sway_output *seat_get_focused_output(struct sway_seat *seat) {
     if (!focus) {
         return NULL;
     }
-    struct sway_workspace *ws = NULL;
     if (focus->type == N_CONTAINER) {
-        ws = focus->sway_container->workspace;
+        return focus->sway_container->output;
     } else if (focus->type == N_WORKSPACE) {
-        ws = focus->sway_workspace;
+        return focus->sway_workspace->output;
     }
-    return ws ? ws->output : NULL;
+    return NULL;
 }
 
 struct sway_container *seat_get_focused_container(struct sway_seat *seat) {

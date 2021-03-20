@@ -233,7 +233,11 @@ void view_set_activated(struct sway_view *view, bool activated) {
 }
 
 void view_request_activate(struct sway_view *view) {
-    struct sway_workspace *ws = view->container->workspace;
+    struct sway_output *output = view->container->output;
+    if (!output) {
+        return;
+    }
+    struct sway_workspace *ws = output->active_workspace;
     if (!ws) {
         return;
     }
@@ -363,7 +367,10 @@ static struct sway_workspace *select_workspace(struct sway_view *view) {
     if (node && node->type == N_WORKSPACE) {
         return node->sway_workspace;
     } else if (node && node->type == N_CONTAINER) {
-        return node->sway_container->workspace;
+        if (!sway_assert(node->sway_container->output, "cotnainer has no output")) {
+            abort();
+        }
+        return node->sway_container->output->active_workspace;
     }
 
     // When there's no outputs connected, the above should match a workspace on
@@ -376,16 +383,16 @@ static bool should_focus(struct sway_view *view) {
     struct sway_seat *seat = input_manager_current_seat();
     struct sway_container *prev_con = seat_get_focused_container(seat);
     struct sway_output *prev_output = seat_get_focused_output(seat);
-    struct sway_workspace *map_ws = view->container->workspace;
+    struct sway_output *map_output = view->container->output;
 
     // Views can only take focus if they are mapped into the active output
-    if (map_ws && prev_output != map_ws->output) {
+    if (map_output && prev_output != map_output) {
         return false;
     }
 
     // If the view is the only one in the focused workspace, it'll get focus
     if (!prev_con) {
-        struct sway_output *output = view->container->workspace->output;
+        struct sway_output *output = view->container->output;
         if (!output) {
             sway_log(SWAY_DEBUG, "workspace has no output!");
             return false;
@@ -492,8 +499,8 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
 
     view_update_title(view, false);
 
-    if (container->workspace && container->workspace->output) {
-        arrange_output(container->workspace->output);
+    if (container->output) {
+        arrange_output(container->output);
     }
 
     if (should_focus(view)) {
@@ -526,11 +533,11 @@ void view_unmap(struct sway_view *view) {
         view->foreign_toplevel = NULL;
     }
 
-    struct sway_workspace *ws = view->container->workspace;
+    struct sway_output *output = view->container->output;
     container_begin_destroy(view->container);
 
-    if (ws && !ws->node.destroying && ws->output) {
-        arrange_output(ws->output);
+    if (output && output->active_workspace && !output->active_workspace->node.destroying) {
+        arrange_output(output);
     }
 
     struct sway_seat *seat;
@@ -743,9 +750,9 @@ void view_child_init(struct sway_view_child *child,
     wl_signal_add(&view->events.unmap, &child->view_unmap);
     child->view_unmap.notify = view_child_handle_view_unmap;
 
-    struct sway_workspace *workspace = child->view->container->workspace;
-    if (workspace) {
-        wlr_surface_send_enter(child->surface, workspace->output->wlr_output);
+    struct sway_output *output = child->view->container->output;
+    if (output) {
+        wlr_surface_send_enter(child->surface, output->wlr_output);
     }
 
     view_init_subsurfaces(child->view, surface);
@@ -924,12 +931,12 @@ bool view_is_visible(struct sway_view *view) {
     if (view->container->node.destroying) {
         return false;
     }
-    struct sway_workspace *workspace = view->container->workspace;
-    if (!workspace) {
+    struct sway_output *output = view->container->output;
+    if (!output) {
         return false;
     }
 
-    if (workspace && !workspace_is_visible(workspace)) {
+    if (output && output->active_workspace && !workspace_is_visible(output->active_workspace)) {
         return false;
     }
     return true;
