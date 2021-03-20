@@ -29,10 +29,8 @@ bool node_is_view(struct sway_node *node) {
 
 struct sway_output *node_get_output(struct sway_node *node) {
     switch (node->type) {
-    case N_CONTAINER: {
-        struct sway_workspace *ws = node->sway_container->workspace;
-        return ws ? ws->output : NULL;
-    }
+    case N_CONTAINER:
+        return node->sway_container->output;
     case N_WORKSPACE:
         return node->sway_workspace->output;
     case N_OUTPUT:
@@ -57,10 +55,11 @@ bool node_is_container_or_ws(struct sway_node *node) {
 
 struct sway_node *node_get_parent(struct sway_node *node) {
     switch (node->type) {
-    case N_CONTAINER: {
-            struct sway_container *con = node->sway_container;
-            if (con->workspace) {
-                return &con->workspace->node;
+    case N_CONTAINER:
+        if (node->sway_container->output) {
+            struct sway_workspace *ws = node->sway_container->output->active_workspace;
+            if (ws) {
+                return &ws->node;
             }
         }
         return NULL;

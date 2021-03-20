@@ -76,7 +76,7 @@ void container_begin_destroy(struct sway_container *con) {
     con->node.destroying = true;
     node_set_dirty(&con->node);
 
-    if (con->workspace) {
+    if (con->output) {
         container_detach(con);
     }
 }
@@ -425,7 +425,7 @@ void container_discover_outputs(struct sway_container *con) {
 }
 
 list_t *container_get_siblings(struct sway_container *container) {
-    return container->workspace->output->tiling;
+    return container->output->tiling;
 }
 
 int container_sibling_index(struct sway_container *child) {
@@ -433,7 +433,7 @@ int container_sibling_index(struct sway_container *child) {
 }
 
 list_t *container_get_current_siblings(struct sway_container *container) {
-    struct sway_output *current_output = container->current.workspace->current.output;
+    struct sway_output *current_output = container->current.output;
     if (!current_output) {
         sway_log(SWAY_ERROR, "container has no current output!");
         assert(false);
@@ -443,17 +443,17 @@ list_t *container_get_current_siblings(struct sway_container *container) {
 
 void container_add_sibling(struct sway_container *fixed,
         struct sway_container *active, bool after) {
-    if (active->workspace) {
+    if (active->output) {
         container_detach(active);
     }
     list_t *siblings = container_get_siblings(fixed);
     int index = list_find(siblings, fixed);
     list_insert(siblings, index + after, active);
-    active->workspace = fixed->workspace;
+    active->output = fixed->output;
 }
 
 void container_detach(struct sway_container *child) {
-    struct sway_workspace *old_workspace = child->workspace;
+    struct sway_output *old_output = child->output;
     list_t *siblings = container_get_siblings(child);
     if (siblings) {
         int index = list_find(siblings, child);
@@ -461,17 +461,17 @@ void container_detach(struct sway_container *child) {
             list_del(siblings, index);
         }
     }
-    child->workspace = NULL;
+    child->output = NULL;
 
-    if (old_workspace) {
-        node_set_dirty(&old_workspace->node);
+    if (old_output) {
+        node_set_dirty(&old_output->node);
     }
     node_set_dirty(&child->node);
 }
 
 void container_replace(struct sway_container *container,
         struct sway_container *replacement) {
-    if (container->workspace) {
+    if (container->output) {
         container_add_sibling(container, replacement, 1);
         container_detach(container);
     }

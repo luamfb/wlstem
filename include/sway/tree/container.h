@@ -12,7 +12,6 @@ struct sway_seat;
 
 struct sway_root;
 struct sway_output;
-struct sway_workspace;
 struct sway_view;
 
 enum wlr_direction;
@@ -22,7 +21,7 @@ struct sway_container_state {
     double x, y;
     double width, height;
 
-    struct sway_workspace *workspace;
+    struct sway_output *output;
 
     bool focused;
 
@@ -70,7 +69,7 @@ struct sway_container {
     bool border_left;
     bool border_right;
 
-    struct sway_workspace *workspace;
+    struct sway_output *output;
 
     // Outputs currently being intersected
     list_t *outputs; // struct sway_output
