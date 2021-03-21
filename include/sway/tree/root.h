@@ -41,6 +41,9 @@ struct sway_root *root_create(void);
 
 void root_destroy(struct sway_root *root);
 
+void root_for_each_output(void (*f)(struct sway_output *output, void *data),
+        void *data);
+
 void root_for_each_workspace(void (*f)(struct sway_workspace *ws, void *data),
         void *data);
 
