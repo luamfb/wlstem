@@ -60,7 +60,7 @@ bool node_is_view(struct sway_node *node);
 
 struct sway_output *node_get_output(struct sway_node *node);
 
-bool node_is_container_or_ws(struct sway_node *node);
+bool node_may_have_container_children(struct sway_node *node);
 
 struct sway_node *node_get_parent(struct sway_node *node);
 

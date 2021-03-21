@@ -41,7 +41,7 @@ struct sway_output *node_get_output(struct sway_node *node) {
     return NULL;
 }
 
-bool node_is_container_or_ws(struct sway_node *node) {
+bool node_may_have_container_children(struct sway_node *node) {
     switch (node->type) {
     case N_CONTAINER:
     case N_WORKSPACE:
