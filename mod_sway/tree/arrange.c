@@ -104,20 +104,3 @@ void arrange_root(void) {
         arrange_output(output);
     }
 }
-
-void arrange_node(struct sway_node *node) {
-    switch (node->type) {
-    case N_ROOT:
-        arrange_root();
-        break;
-    case N_OUTPUT:
-        arrange_output(node->sway_output);
-        break;
-    case N_WORKSPACE:
-        arrange_output(node->sway_workspace->output);
-        break;
-    case N_CONTAINER:
-        arrange_container(node->sway_container);
-        break;
-    }
-}
