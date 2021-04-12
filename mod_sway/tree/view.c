@@ -363,7 +363,7 @@ static struct sway_workspace *select_workspace(struct sway_view *view) {
     struct sway_seat *seat = input_manager_current_seat();
 
     // Use the focused workspace
-    struct sway_node *node = seat_get_focus_inactive(seat, &root->node);
+    struct sway_node *node = seat_get_next_in_focus_stack(seat);
     if (node && node->type == N_WORKSPACE) {
         return node->sway_workspace;
     } else if (node && node->type == N_CONTAINER) {
@@ -459,7 +459,7 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
 
     struct sway_seat *seat = input_manager_current_seat();
     struct sway_node *node = ws ? seat_get_focus_inactive(seat, &ws->node)
-        : seat_get_focus_inactive(seat, &root->node);
+        : seat_get_next_in_focus_stack(seat);
     struct sway_container *target_sibling = node->type == N_CONTAINER ?
         node->sway_container : NULL;
 

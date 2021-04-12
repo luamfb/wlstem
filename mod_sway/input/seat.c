@@ -301,8 +301,7 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
             seat_set_focus(seat, next_focus);
         }
     } else {
-        // Setting focus_inactive
-        focus = seat_get_focus_inactive(seat, &root->node);
+        focus = seat_get_next_in_focus_stack(seat);
         seat_set_raw_focus(seat, next_focus);
         if (focus->type == N_CONTAINER && focus->sway_container->output->active_workspace) {
             seat_set_raw_focus(seat, &focus->sway_container->output->active_workspace->node);
@@ -604,7 +603,7 @@ struct sway_seat *seat_create(const char *seat_name) {
         // Since this is not the first seat, attempt to set initial focus
         struct sway_seat *current_seat = input_manager_current_seat();
         struct sway_node *current_focus =
-            seat_get_focus_inactive(current_seat, &root->node);
+            seat_get_next_in_focus_stack(current_seat);
         seat_set_focus(seat, current_focus);
     }
 
@@ -1145,7 +1144,7 @@ void seat_set_focus_layer(struct sway_seat *seat,
         struct wlr_layer_surface_v1 *layer) {
     if (!layer && seat->focused_layer) {
         seat->focused_layer = NULL;
-        struct sway_node *previous = seat_get_focus_inactive(seat, &root->node);
+        struct sway_node *previous = seat_get_next_in_focus_stack(seat);
         if (previous) {
             // Hack to get seat to re-focus the return value of get_focus
             seat_set_focus(seat, NULL);
@@ -1201,6 +1200,20 @@ void seat_set_exclusive_client(struct sway_seat *seat,
         }
     }
     seat->exclusive_client = client;
+}
+
+struct sway_node *seat_get_next_in_focus_stack(struct sway_seat *seat) {
+    struct sway_seat_node *current;
+    wl_list_for_each(current, &seat->focus_stack, link) {
+        struct sway_node *node = current->node;
+        // ensure it's not a detached workspace
+        if (node->type != N_WORKSPACE || node_get_parent(node)) {
+            // TODO remove assertion when root node is no longer in use.
+            assert(node == seat_get_focus_inactive(seat, &root->node));
+            return node;
+        }
+    }
+    return NULL;
 }
 
 struct sway_node *seat_get_focus_inactive(struct sway_seat *seat,
@@ -1261,7 +1274,7 @@ struct sway_node *seat_get_focus(struct sway_seat *seat) {
 }
 
 struct sway_output *seat_get_focused_output(struct sway_seat *seat) {
-    struct sway_node *focus = seat_get_focus_inactive(seat, &root->node);
+    struct sway_node *focus = seat_get_next_in_focus_stack(seat);
     if (!focus) {
         return NULL;
     }

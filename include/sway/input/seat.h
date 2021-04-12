@@ -176,6 +176,7 @@ struct sway_output *seat_get_focused_output(struct sway_seat *seat);
 
 struct sway_container *seat_get_focused_container(struct sway_seat *seat);
 
+struct sway_node *seat_get_next_in_focus_stack(struct sway_seat *seat);
 /**
  * Return the last container to be focused for the seat (or the most recently
  * opened if no container has received focused) that is a child of the given
