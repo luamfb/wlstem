@@ -174,8 +174,8 @@ sway_inc = include_directories('include')
 subdir('include')
 subdir('protocols')
 subdir('common')
+subdir('wlstem')
 subdir('mod_sway')
-
 subdir('client')
 
 summary({
