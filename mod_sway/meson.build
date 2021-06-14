@@ -30,7 +30,6 @@ sway_sources = files(
     'config/input.c',
 
     'bindkey.c',
-    'exec.c',
 
     'tree/arrange.c',
     'tree/container.c',
@@ -66,6 +65,6 @@ executable(
     sway_sources,
     include_directories: [sway_inc],
     dependencies: sway_deps,
-    link_with: [lib_sway_common],
+    link_with: [lib_sway_common, lib_wlstem],
     install: true
 )
