@@ -5,13 +5,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <signal.h>
-#include "sway/commands.h"
-#include "sway/config.h"
-#include "sway/tree/container.h"
-#include "sway/tree/root.h"
-#include "sway/tree/workspace.h"
 #include "log.h"
-#include "stringop.h"
 
 bool wls_try_exec(char *cmd) {
     if (cmd == NULL) {
