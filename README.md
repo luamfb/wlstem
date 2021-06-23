@@ -26,7 +26,7 @@ transferred from sway's modified code to wlstem.
 - pango
 - cairo
 - pixman
-- wayland's core libraries:
+- Wayland's core libraries:
   - wayland-server
   - wayland-client
   - wayland-cursor
@@ -38,7 +38,9 @@ transferred from sway's modified code to wlstem.
 - mesa (GLESv2) (‡)
 
 (\*) Compile-time dependencies.
+
 (†) Only if xwayland support is desired.
+
 (‡) Usually installed by default at Unix-like systems
 
 ## Building
