@@ -37,10 +37,8 @@ transferred from sway's modified code to wlstem.
 - xkbcommon (†)
 - mesa (GLESv2) (‡)
 
-(\*) Compile-time dependencies.
-
-(†) Only if xwayland support is desired.
-
+(\*) Compile-time dependencies.  
+(†) Only if xwayland support is desired.  
 (‡) Usually installed by default at Unix-like systems
 
 ## Building
