@@ -169,7 +169,7 @@ else
 endif
 
 
-sway_inc = include_directories('include')
+sway_inc = include_directories('include', 'wlstem/include')
 
 subdir('include')
 subdir('protocols')
