@@ -5,5 +5,5 @@ lib_wlstem = shared_library(
         'log.c',
     ),
     dependencies: [],
-    include_directories: sway_inc
+    include_directories: include_directories('include')
 )
