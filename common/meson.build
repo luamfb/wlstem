@@ -3,7 +3,6 @@ lib_sway_common = static_library(
     files(
         'cairo.c',
         'loop.c',
-        'list.c',
         'pango.c',
         'stringop.c',
         'util.c'
