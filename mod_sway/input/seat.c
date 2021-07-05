@@ -1209,7 +1209,7 @@ struct sway_node *seat_get_next_in_focus_stack(struct sway_seat *seat) {
         // ensure it's not a detached workspace
         if (node->type != N_WORKSPACE || node_get_parent(node)) {
             // TODO remove assertion when root node is no longer in use.
-            assert(node == seat_get_focus_inactive(seat, &root->node));
+            //assert(node == seat_get_focus_inactive(seat, &root->node));
             return node;
         }
     }
