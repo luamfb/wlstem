@@ -5,14 +5,12 @@
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/render/wlr_texture.h>
 #include "sway/tree/container.h"
-#include "sway/tree/node.h"
 #include "config.h"
 #include "list.h"
 
 extern struct sway_root *root;
 
 struct sway_root {
-    struct sway_node node;
     struct wlr_output_layout *output_layout;
 
     struct wl_listener output_layout_change;
