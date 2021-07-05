@@ -312,7 +312,7 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
 
 static struct sway_seat_node *seat_node_from_node(
         struct sway_seat *seat, struct sway_node *node) {
-    if (node->type == N_ROOT || node->type == N_OUTPUT) {
+    if (node->type == N_OUTPUT) {
         // these don't get seat nodes ever
         return NULL;
     }

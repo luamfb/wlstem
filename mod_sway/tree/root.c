@@ -28,7 +28,6 @@ struct sway_root *root_create(void) {
         sway_log(SWAY_ERROR, "Unable to allocate sway_root");
         return NULL;
     }
-    node_init(&root->node, N_ROOT, root);
     root->output_layout = wlr_output_layout_create();
     wl_list_init(&root->all_outputs);
 #if HAVE_XWAYLAND

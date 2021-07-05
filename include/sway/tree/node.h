@@ -6,7 +6,6 @@
 #define MIN_SANE_W 100
 #define MIN_SANE_H 60
 
-struct sway_root;
 struct sway_output;
 struct sway_workspace;
 struct sway_container;
@@ -14,7 +13,6 @@ struct sway_transaction_instruction;
 struct wlr_box;
 
 enum sway_node_type {
-    N_ROOT,
     N_OUTPUT,
     N_WORKSPACE,
     N_CONTAINER,
@@ -23,7 +21,6 @@ enum sway_node_type {
 struct sway_node {
     enum sway_node_type type;
     union {
-        struct sway_root *sway_root;
         struct sway_output *sway_output;
         struct sway_workspace *sway_workspace;
         struct sway_container *sway_container;

@@ -59,9 +59,6 @@ static void transaction_destroy(struct sway_transaction *transaction) {
         }
         if (node->destroying && node->ntxnrefs == 0) {
             switch (node->type) {
-            case N_ROOT:
-                sway_assert(false, "Never reached");
-                break;
             case N_OUTPUT:
                 output_destroy(node->sway_output);
                 break;
@@ -136,8 +133,6 @@ static void transaction_add_node(struct sway_transaction *transaction,
     instruction->node = node;
 
     switch (node->type) {
-    case N_ROOT:
-        break;
     case N_OUTPUT:
         copy_output_state(node->sway_output, instruction);
         break;
@@ -252,8 +247,6 @@ static void transaction_apply(struct sway_transaction *transaction) {
         struct sway_node *node = instruction->node;
 
         switch (node->type) {
-        case N_ROOT:
-            break;
         case N_OUTPUT:
             apply_output_state(node->sway_output, &instruction->output_state);
             break;
