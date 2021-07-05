@@ -71,7 +71,9 @@ struct sway_node *node_get_parent(struct sway_node *node) {
         }
         return NULL;
     case N_OUTPUT:
-        return &root->node;
+        // To differentiate from the NULL cases, an output's parent
+        // is itself.
+        return node;
     case N_ROOT:
         return NULL;
     }
@@ -98,11 +100,13 @@ list_t *node_get_children(struct sway_node *node) {
 }
 
 bool node_has_ancestor(struct sway_node *node, struct sway_node *ancestor) {
+    struct sway_node *prev = node;
     struct sway_node *parent = node_get_parent(node);
-    while (parent) {
+    while (parent && prev != parent) {
         if (parent == ancestor) {
             return true;
         }
+        prev = parent;
         parent = node_get_parent(parent);
     }
     return false;
