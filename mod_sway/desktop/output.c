@@ -355,7 +355,7 @@ static void output_for_each_surface(struct sway_output *output,
         .view = NULL,
     };
 
-    struct sway_workspace *workspace = output_get_active_workspace(output);
+    struct sway_workspace *workspace = output->active_workspace;
     if (!workspace) {
         return;
     }
@@ -395,10 +395,6 @@ void scale_box(struct wlr_box *box, float scale) {
     box->height = scale_length(box->height, box->y, scale);
     box->x = round(box->x * scale);
     box->y = round(box->y * scale);
-}
-
-struct sway_workspace *output_get_active_workspace(struct sway_output *output) {
-    return output->active_workspace;
 }
 
 bool output_has_opaque_overlay_layer_surface(struct sway_output *output) {

@@ -76,7 +76,7 @@ bool workspace_is_visible(struct sway_workspace *ws) {
     if (ws->node.destroying) {
         return false;
     }
-    return output_get_active_workspace(ws->output) == ws;
+    return ws->output->active_workspace == ws;
 }
 
 bool workspace_is_empty(struct sway_workspace *ws) {

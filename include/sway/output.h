@@ -102,8 +102,6 @@ void output_disable(struct sway_output *output);
 
 bool output_has_opaque_overlay_layer_surface(struct sway_output *output);
 
-struct sway_workspace *output_get_active_workspace(struct sway_output *output);
-
 void output_render(struct sway_output *output, struct timespec *when,
     pixman_region32_t *damage);
 
