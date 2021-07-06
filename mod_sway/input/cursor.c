@@ -143,7 +143,7 @@ struct sway_node *node_at_coords(
     }
 
     struct sway_container *c;
-    if ((c = container_at(ws, lx, ly, surface, sx, sy))) {
+    if ((c = container_at(output, lx, ly, surface, sx, sy))) {
         return &c->node;
     }
 

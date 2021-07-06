@@ -98,7 +98,7 @@ void container_begin_destroy(struct sway_container *con);
  * surface-local coordinates of the given layout coordinates if the container
  * is a view and the view contains a surface at those coordinates.
  */
-struct sway_container *container_at(struct sway_workspace *workspace,
+struct sway_container *container_at(struct sway_output *output,
         double lx, double ly, struct wlr_surface **surface,
         double *sx, double *sy);
 

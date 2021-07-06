@@ -185,13 +185,18 @@ static bool surface_is_popup(struct wlr_surface *surface) {
     return false;
 }
 
-struct sway_container *container_at(struct sway_workspace *workspace,
+struct sway_container *container_at(struct sway_output *output,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     struct sway_container *c;
 
     struct sway_seat *seat = input_manager_current_seat();
     struct sway_container *focus = seat_get_focused_container(seat);
+    struct sway_workspace *workspace = output->active_workspace;
+    if (!sway_assert(workspace, "Output has no active workspace")) {
+        return NULL;
+    }
+
     // Focused view's popups
     if (focus && focus->view) {
         c = surface_at_view(focus, lx, ly, surface, sx, sy);
