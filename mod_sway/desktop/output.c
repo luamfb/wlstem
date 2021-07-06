@@ -398,15 +398,7 @@ void scale_box(struct wlr_box *box, float scale) {
 }
 
 struct sway_workspace *output_get_active_workspace(struct sway_output *output) {
-    struct sway_seat *seat = input_manager_current_seat();
-    struct sway_node *focus = seat_get_active_tiling_child(seat, &output->node);
-    if (!focus) {
-        if (!output->active_workspace) {
-            return NULL;
-        }
-        return output->active_workspace;
-    }
-    return focus->sway_workspace;
+    return output->active_workspace;
 }
 
 bool output_has_opaque_overlay_layer_surface(struct sway_output *output) {
