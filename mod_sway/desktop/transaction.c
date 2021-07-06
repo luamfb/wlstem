@@ -86,7 +86,7 @@ static void copy_output_state(struct sway_output *output,
 
     state->tiling = create_list();
     list_cat(state->tiling, output->tiling);
-    state->active_workspace = output_get_active_workspace(output);
+    state->active_workspace = output->active_workspace;
 }
 
 static void copy_workspace_state(struct sway_workspace *ws,

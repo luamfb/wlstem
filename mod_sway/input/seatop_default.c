@@ -230,7 +230,7 @@ static void check_focus_follows_mouse(struct sway_seat *seat,
         }
         struct sway_output *hovered_output = wlr_output->data;
         if (focus && hovered_output != node_get_output(focus)) {
-            struct sway_workspace *ws = output_get_active_workspace(hovered_output);
+            struct sway_workspace *ws = hovered_output->active_workspace;
             seat_set_focus(seat, &ws->node);
         }
         return;

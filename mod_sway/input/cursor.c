@@ -111,7 +111,7 @@ struct sway_node *node_at_coords(
     wlr_output_layout_output_coords(root->output_layout, wlr_output, &ox, &oy);
 
     // find the focused workspace on the output for this seat
-    struct sway_workspace *ws = output_get_active_workspace(output);
+    struct sway_workspace *ws = output->active_workspace;
     if (!ws) {
         return NULL;
     }
