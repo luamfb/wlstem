@@ -157,8 +157,8 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
 
     add_or_remove_button_to_state(seat, device, button, state);
 
-    // Handle clicking an empty workspace
-    if (node && node->type == N_WORKSPACE) {
+    // Handle clicking an empty output
+    if (node && node->type == N_OUTPUT) {
         if (state == WLR_BUTTON_PRESSED) {
             seat_set_focus(seat, node);
         }
@@ -230,15 +230,14 @@ static void check_focus_follows_mouse(struct sway_seat *seat,
         }
         struct sway_output *hovered_output = wlr_output->data;
         if (focus && hovered_output != node_get_output(focus)) {
-            struct sway_workspace *ws = hovered_output->active_workspace;
-            seat_set_focus(seat, &ws->node);
+            seat_set_focus(seat, &hovered_output->node);
         }
         return;
     }
 
-    // If a workspace node is hovered (eg. in the gap area), only set focus if
-    // the workspace is on a different output to the previous focus.
-    if (focus && hovered_node->type == N_WORKSPACE) {
+    // If an output node is hovered (eg. in the gap area), only set focus if
+    // the output is different than the previous focus.
+    if (focus && hovered_node->type == N_OUTPUT) {
         struct sway_output *focused_output = node_get_output(focus);
         struct sway_output *hovered_output = node_get_output(hovered_node);
         if (hovered_output != focused_output) {

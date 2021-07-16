@@ -36,46 +36,28 @@ struct sway_workspace *workspace_create(struct sway_output *output) {
         sway_log(SWAY_ERROR, "Unable to allocate sway_workspace");
         return NULL;
     }
-    node_init(&ws->node, N_WORKSPACE, ws);
 
     output->active_workspace = ws;
     ws->output = output;
     node_set_dirty(&output->node);
-    node_set_dirty(&ws->node);
-
-    wl_signal_emit(&root->events.new_node, &ws->node);
 
     return ws;
 }
 
 void workspace_destroy(struct sway_workspace *workspace) {
-    if (!sway_assert(workspace->node.destroying,
-                "Tried to free workspace which wasn't marked as destroying")) {
-        return;
-    }
-    if (!sway_assert(workspace->node.ntxnrefs == 0, "Tried to free workspace "
-                "which is still referenced by transactions")) {
-        return;
-    }
-
     free(workspace);
 }
 
 void workspace_begin_destroy(struct sway_workspace *workspace) {
     sway_log(SWAY_DEBUG, "Destroying workspace %p", workspace);
-    wl_signal_emit(&workspace->node.events.destroy, &workspace->node);
 
     if (workspace->output) {
         workspace_detach(workspace);
     }
-    workspace->node.destroying = true;
-    node_set_dirty(&workspace->node);
+    workspace_destroy(workspace);
 }
 
 bool workspace_is_visible(struct sway_workspace *ws) {
-    if (ws->node.destroying) {
-        return false;
-    }
     return ws->output->active_workspace == ws;
 }
 
@@ -110,7 +92,6 @@ void workspace_detach(struct sway_workspace *workspace) {
     }
     workspace->output = NULL;
 
-    node_set_dirty(&workspace->node);
     node_set_dirty(&output->node);
 }
 
@@ -122,7 +103,6 @@ struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
     struct sway_output *output = workspace->output;
     list_add(output->tiling, con);
     con->output = output;
-    node_set_dirty(&workspace->node);
     node_set_dirty(&con->node);
     return con;
 }

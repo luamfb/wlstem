@@ -14,7 +14,6 @@ struct wlr_box;
 
 enum sway_node_type {
     N_OUTPUT,
-    N_WORKSPACE,
     N_CONTAINER,
 };
 
@@ -22,7 +21,6 @@ struct sway_node {
     enum sway_node_type type;
     union {
         struct sway_output *sway_output;
-        struct sway_workspace *sway_workspace;
         struct sway_container *sway_container;
     };
 

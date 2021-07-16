@@ -62,9 +62,6 @@ static void transaction_destroy(struct sway_transaction *transaction) {
             case N_OUTPUT:
                 output_destroy(node->sway_output);
                 break;
-            case N_WORKSPACE:
-                workspace_destroy(node->sway_workspace);
-                break;
             case N_CONTAINER:
                 container_destroy(node->sway_container);
                 break;
@@ -87,16 +84,6 @@ static void copy_output_state(struct sway_output *output,
     state->tiling = create_list();
     list_cat(state->tiling, output->tiling);
     state->active_workspace = output->active_workspace;
-}
-
-static void copy_workspace_state(struct sway_workspace *ws,
-        struct sway_transaction_instruction *instruction) {
-    struct sway_workspace_state *state = &instruction->workspace_state;
-
-    state->output = ws->output;
-
-    struct sway_seat *seat = input_manager_current_seat();
-    state->focused = seat_get_focus(seat) == &ws->node;
 }
 
 static void copy_container_state(struct sway_container *container,
@@ -136,9 +123,6 @@ static void transaction_add_node(struct sway_transaction *transaction,
     case N_OUTPUT:
         copy_output_state(node->sway_output, instruction);
         break;
-    case N_WORKSPACE:
-        copy_workspace_state(node->sway_workspace, instruction);
-        break;
     case N_CONTAINER:
         copy_container_state(node->sway_container, instruction);
         break;
@@ -154,13 +138,6 @@ static void apply_output_state(struct sway_output *output,
     list_free(output->current.tiling);
     memcpy(&output->current, state, sizeof(struct sway_output_state));
     output_damage_whole(output);
-}
-
-static void apply_workspace_state(struct sway_workspace *ws,
-        struct sway_workspace_state *state) {
-    output_damage_whole(ws->current.output);
-    memcpy(&ws->current, state, sizeof(struct sway_workspace_state));
-    output_damage_whole(ws->current.output);
 }
 
 static void apply_container_state(struct sway_container *container,
@@ -249,10 +226,6 @@ static void transaction_apply(struct sway_transaction *transaction) {
         switch (node->type) {
         case N_OUTPUT:
             apply_output_state(node->sway_output, &instruction->output_state);
-            break;
-        case N_WORKSPACE:
-            apply_workspace_state(node->sway_workspace,
-                    &instruction->workspace_state);
             break;
         case N_CONTAINER:
             apply_container_state(node->sway_container,

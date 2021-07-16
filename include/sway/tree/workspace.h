@@ -14,8 +14,6 @@ struct sway_workspace_state {
 };
 
 struct sway_workspace {
-    struct sway_node node;
-
     struct sway_output *output; // NULL if no outputs are connected
 
     struct sway_workspace_state current;

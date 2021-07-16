@@ -158,7 +158,7 @@ struct sway_node *node_at_coords(
         return NULL;
     }
 
-    return &ws->node;
+    return &output->node;
 }
 
 void cursor_rebase(struct sway_cursor *cursor) {
@@ -1135,12 +1135,8 @@ void cursor_warp_to_container(struct sway_cursor *cursor,
  * Warps the cursor to the middle of the workspace argument.
  * If workspace is NULL, returns without doing anything.
  */
-void cursor_warp_to_workspace(struct sway_cursor *cursor,
-        struct sway_workspace *workspace) {
-    if (!workspace) {
-        return;
-    }
-    struct sway_output *output = workspace->output;
+void cursor_warp_to_output(struct sway_cursor *cursor,
+        struct sway_output *output) {
     if (!output) {
         return;
     }
