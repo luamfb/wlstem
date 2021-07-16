@@ -120,8 +120,8 @@ void cursor_set_image_surface(struct sway_cursor *cursor,
 void cursor_warp_to_container(struct sway_cursor *cursor,
     struct sway_container *container, bool force);
 
-void cursor_warp_to_workspace(struct sway_cursor *cursor,
-        struct sway_workspace *workspace);
+void cursor_warp_to_output(struct sway_cursor *cursor,
+        struct sway_output *output);
 
 
 void sway_cursor_constrain(struct sway_cursor *cursor,

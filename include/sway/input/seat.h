@@ -150,8 +150,8 @@ void seat_set_focus(struct sway_seat *seat, struct sway_node *node);
 void seat_set_focus_container(struct sway_seat *seat,
         struct sway_container *con);
 
-void seat_set_focus_workspace(struct sway_seat *seat,
-        struct sway_workspace *ws);
+void seat_set_focus_output(struct sway_seat *seat,
+        struct sway_output *output);
 
 /**
  * Manipulate the focus stack without triggering any other behaviour.

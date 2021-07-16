@@ -33,7 +33,6 @@ static void output_seize_containers_from_workspace(
     }
 
     node_set_dirty(&absorber->node);
-    node_set_dirty(&absorber_ws->node);
 }
 
 static void seize_containers_from_noop_output(struct sway_output *output) {
@@ -75,16 +74,15 @@ void output_enable(struct sway_output *output) {
 
     seize_containers_from_noop_output(output);
 
-    struct sway_workspace *ws = NULL;
     if (!output->active_workspace) {
         // Create workspace
         sway_log(SWAY_DEBUG, "Creating default workspace");
-        ws = workspace_create(output);
+        workspace_create(output);
         // Set each seat's focus if not already set
         struct sway_seat *seat = NULL;
         wl_list_for_each(seat, &server.input->seats, link) {
             if (!seat->has_focus) {
-                seat_set_focus_workspace(seat, ws);
+                seat_set_focus_output(seat, output);
             }
         }
     }

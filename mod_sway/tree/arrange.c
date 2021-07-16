@@ -80,13 +80,12 @@ void arrange_output(struct sway_output *output) {
         output->wlr_output->name, output->render_lx, output->render_ly);
 
     if (output->active_workspace) {
-        struct sway_workspace *ws = output->active_workspace;
         struct wlr_box box;
 
         output_get_render_box(output, &box);
         arrange_children(output->tiling, &box);
 
-        node_set_dirty(&ws->node);
+        node_set_dirty(&output->node);
     }
 
 }

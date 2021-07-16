@@ -359,23 +359,20 @@ static void view_populate_pid(struct sway_view *view) {
     view->pid = pid;
 }
 
-static struct sway_workspace *select_workspace(struct sway_view *view) {
+static struct sway_output *select_output(struct sway_view *view) {
     struct sway_seat *seat = input_manager_current_seat();
 
     // Use the focused workspace
     struct sway_node *node = seat_get_next_in_focus_stack(seat);
-    if (node && node->type == N_WORKSPACE) {
-        return node->sway_workspace;
+    if (node && node->type == N_OUTPUT) {
+        return node->sway_output;
     } else if (node && node->type == N_CONTAINER) {
         if (!sway_assert(node->sway_container->output, "cotnainer has no output")) {
             abort();
         }
-        return node->sway_container->output->active_workspace;
+        return node->sway_container->output;
     }
-
-    // When there's no outputs connected, the above should match a workspace on
-    // the noop output.
-    sway_assert(false, "Expected to find a workspace");
+    sway_log(SWAY_DEBUG, "no outputs found");
     return NULL;
 }
 
@@ -452,13 +449,10 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     view_populate_pid(view);
     view->container = container_create(view);
 
-    struct sway_workspace *ws = NULL;
-    if (!ws) {
-        ws = select_workspace(view);
-    }
+    struct sway_output *output = select_output(view);
 
     struct sway_seat *seat = input_manager_current_seat();
-    struct sway_node *node = ws ? seat_get_focus_inactive(seat, &ws->node)
+    struct sway_node *node = output ? seat_get_focus_inactive(seat, &output->node)
         : seat_get_next_in_focus_stack(seat);
     struct sway_container *target_sibling = node->type == N_CONTAINER ?
         node->sway_container : NULL;
@@ -481,8 +475,12 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     struct sway_container *container = view->container;
     if (target_sibling) {
         container_add_sibling(target_sibling, container, 1);
-    } else if (ws) {
-        container = workspace_add_tiling(ws, container);
+    } else if (output) {
+        if (!output->active_workspace) {
+            sway_log(SWAY_DEBUG, "output without active workspace...");
+            return;
+        }
+        container = workspace_add_tiling(output->active_workspace, container);
     }
 
     view_init_subsurfaces(view, wlr_surface);
@@ -536,7 +534,7 @@ void view_unmap(struct sway_view *view) {
     struct sway_output *output = view->container->output;
     container_begin_destroy(view->container);
 
-    if (output && output->active_workspace && !output->active_workspace->node.destroying) {
+    if (output && output->active_workspace && !output->node.destroying) {
         arrange_output(output);
     }
 

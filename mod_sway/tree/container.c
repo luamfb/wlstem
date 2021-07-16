@@ -212,7 +212,7 @@ struct sway_container *container_at(struct sway_output *output,
         }
     }
     // Tiling (non-focused)
-    if ((c = tiling_container_at(&workspace->node, lx, ly, surface, sx, sy))) {
+    if ((c = tiling_container_at(&output->node, lx, ly, surface, sx, sy))) {
         return c;
     }
     return NULL;
