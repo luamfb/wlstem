@@ -365,14 +365,28 @@ static struct sway_output *select_output(struct sway_view *view) {
     // Use the focused workspace
     struct sway_node *node = seat_get_next_in_focus_stack(seat);
     if (node && node->type == N_OUTPUT) {
-        return node->sway_output;
+        struct sway_output *output = node->sway_output;
+        if (output->active_workspace) {
+            return output;
+        }
     } else if (node && node->type == N_CONTAINER) {
-        if (!sway_assert(node->sway_container->output, "cotnainer has no output")) {
+        struct sway_output *output = node->sway_container->output;
+        if (!sway_assert(output, "container has no output")) {
             abort();
         }
-        return node->sway_container->output;
+        if (output->active_workspace) {
+            return node->sway_container->output;
+        }
+    } else if (node) {
+        sway_log(SWAY_ERROR,
+            "%s: unknown node type %d (%x) from node ID %lu",
+            __func__,
+            node->type,
+            node->type,
+            node->id);
+        abort();
     }
-    sway_log(SWAY_DEBUG, "no outputs found");
+    sway_log(SWAY_DEBUG, "no active outputs found");
     return NULL;
 }
 
