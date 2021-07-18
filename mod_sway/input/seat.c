@@ -307,6 +307,8 @@ static struct sway_seat_node *seat_node_from_node(
     struct sway_seat_node *seat_node = NULL;
     wl_list_for_each(seat_node, &seat->focus_stack, link) {
         if (seat_node->node == node) {
+            sway_log(SWAY_DEBUG, "found seat_node %p for node ID %lu",
+                seat_node, node->id);
             return seat_node;
         }
     }
@@ -316,6 +318,9 @@ static struct sway_seat_node *seat_node_from_node(
         sway_log(SWAY_ERROR, "could not allocate seat node");
         return NULL;
     }
+
+    sway_log(SWAY_DEBUG, "new seat_node %p created for node ID %lu", seat_node,
+        node->id);
 
     seat_node->node = node;
     seat_node->seat = seat;
@@ -1004,14 +1009,50 @@ static int handle_urgent_timeout(void *data) {
     return 0;
 }
 
+static void dump_focus_stack(struct sway_seat *seat) {
+    sway_log(SWAY_DEBUG, "=== focus stack dump start ===");
+
+    struct sway_seat_node *seat_node;
+    wl_list_for_each(seat_node, &seat->focus_stack, link) {
+        if (!seat_node) {
+            sway_log(SWAY_ERROR, "NULL seat_node DETECTED IN FOCUS STACK!");
+            continue;
+        }
+        sway_log(SWAY_DEBUG, "seat_node %p:", seat_node);
+        struct sway_node *node = seat_node->node;
+        if (!node) {
+            sway_log(SWAY_ERROR, "NULL node DETECTED IN FOCUS STACK!");
+            continue;
+        }
+        sway_log(SWAY_DEBUG, "   node ID %lu", node->id);
+        if (node->type == N_CONTAINER) {
+            sway_log(SWAY_DEBUG, "   type: container (%p)", node->sway_container);
+        } else if (node->type == N_OUTPUT) {
+            sway_log(SWAY_DEBUG, "   type: output (%p)", node->sway_output);
+        } else {
+            sway_log(SWAY_ERROR, "   type: UNKNOWN!!");
+        }
+
+        sway_log(SWAY_DEBUG, "   referenced by %lu transactions", node->ntxnrefs);
+        sway_log(SWAY_DEBUG, "   dirty = %s", node->dirty ? "true" : "false");
+        sway_log(SWAY_DEBUG, "   destroying = %s", node->destroying ? "true" : "false");
+    }
+
+    sway_log(SWAY_DEBUG, "=== focus stack dump end ===");
+}
+
 void seat_set_raw_focus(struct sway_seat *seat, struct sway_node *node) {
     struct sway_seat_node *seat_node = seat_node_from_node(seat, node);
+    assert(seat_node->node == node);
+    sway_log(SWAY_DEBUG, "setting focus to seat_node %p with node ID %lu",
+        seat_node, node->id);
     wl_list_remove(&seat_node->link);
     wl_list_insert(&seat->focus_stack, &seat_node->link);
     node_set_dirty(node);
 
     struct sway_node *parent = node_get_parent(node);
     node_set_dirty(parent);
+    dump_focus_stack(seat);
 }
 
 void seat_set_focus(struct sway_seat *seat, struct sway_node *node) {
@@ -1190,12 +1231,20 @@ void seat_set_exclusive_client(struct sway_seat *seat,
 }
 
 struct sway_node *seat_get_next_in_focus_stack(struct sway_seat *seat) {
-    struct sway_seat_node *current;
-    wl_list_for_each(current, &seat->focus_stack, link) {
-        struct sway_node *node = current->node;
-        return node;
+    dump_focus_stack(seat);
+    if (wl_list_empty(&seat->focus_stack)) {
+        sway_log(SWAY_DEBUG, "empty focus stack");
+        return NULL;
     }
-    return NULL;
+    struct sway_seat_node *seat_node = wl_container_of(seat->focus_stack.next, seat_node, link);
+    if (!seat_node) {
+        sway_log(SWAY_DEBUG, "seat_node is NULL!");
+        return NULL;
+    }
+    struct sway_node *node = seat_node->node;
+    sway_log(SWAY_DEBUG, "selected focused node ID %lu from seat_node %p",
+        node->id, seat_node);
+    return node;
 }
 
 struct sway_node *seat_get_focus_inactive(struct sway_seat *seat,
