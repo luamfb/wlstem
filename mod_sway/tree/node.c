@@ -9,6 +9,9 @@
 
 void node_init(struct sway_node *node, enum sway_node_type type, void *thing) {
     static size_t next_id = 1;
+    if (type != N_OUTPUT && type != N_CONTAINER) {
+        sway_log(SWAY_ERROR, "node_init: invalid node type %d (%x)", type, type);
+    }
     node->id = next_id++;
     node->type = type;
     node->sway_output = thing;
