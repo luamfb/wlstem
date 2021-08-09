@@ -11,22 +11,15 @@
 #include "log.h"
 #include "util.h"
 
-static void output_seize_containers_from_workspace(
-    struct sway_output *absorber,
-    struct sway_workspace *giver)
+static void output_seize_containers_from(struct sway_output *absorber,
+    struct sway_output *giver)
 {
     if (!sway_assert(absorber->active_workspace,
             "Expected output with an active workspace")) {
         assert(false);
     }
-    struct sway_output *giver_output = giver->output;
-    if (!giver_output) {
-        sway_log(SWAY_ERROR, "expected workspace with output");
-        assert(false);
-    }
-
-    while (giver_output->tiling->length) {
-        struct sway_container *container = giver_output->tiling->items[0];
+    while (giver->tiling->length) {
+        struct sway_container *container = giver->tiling->items[0];
         output_add_container(absorber, container);
     }
 
@@ -35,8 +28,7 @@ static void output_seize_containers_from_workspace(
 
 static void seize_containers_from_noop_output(struct sway_output *output) {
     if (root->noop_output->active_workspace) {
-        struct sway_workspace *ws = root->noop_output->active_workspace;
-        output_seize_containers_from_workspace(output, ws);
+        output_seize_containers_from(output, root->noop_output);
     }
 }
 
@@ -113,7 +105,7 @@ static void output_evacuate(struct sway_output *output) {
         }
 
         if (output_has_containers(output)) {
-            output_seize_containers_from_workspace(new_output, workspace);
+            output_seize_containers_from(new_output, output);
         }
         workspace_detach(workspace);
     }
