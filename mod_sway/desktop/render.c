@@ -619,8 +619,8 @@ static void render_container(struct sway_output *output,
     render_containers_linear(output, damage, &data);
 }
 
-static void render_workspace(struct sway_output *output,
-        pixman_region32_t *damage, struct sway_workspace *ws, bool focused) {
+static void render_output(struct sway_output *output,
+        pixman_region32_t *damage) {
     struct parent_data data = {
         .box = {
             .x = output->current.render_lx,
@@ -629,7 +629,7 @@ static void render_workspace(struct sway_output *output,
             .height = output->usable_area.height,
         },
         .children = output->current.tiling,
-        .focused = focused,
+        .focused = false,
     };
     render_containers_linear(output, damage, &data);
 }
@@ -691,7 +691,7 @@ void output_render(struct sway_output *output, struct timespec *when,
     render_layer_toplevel(output, damage,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
 
-    render_workspace(output, damage, workspace, workspace->current.focused);
+    render_output(output, damage);
 #if HAVE_XWAYLAND
     render_unmanaged(output, damage, &root->xwayland_unmanaged);
 #endif
