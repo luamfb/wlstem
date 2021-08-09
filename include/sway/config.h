@@ -44,16 +44,6 @@ bool cmd_bindsym(
         binding_callback_type callback);
 
 /**
- * Focus on window activation.
- */
-enum sway_fowa {
-    FOWA_SMART,
-    FOWA_URGENT,
-    FOWA_FOCUS,
-    FOWA_NONE,
-};
-
-/**
  * A "mode" of keybindings created via the `mode` command.
  */
 struct sway_mode {
@@ -288,7 +278,6 @@ struct sway_config {
     int titlebar_h_padding;
     int titlebar_v_padding;
     size_t urgent_timeout;
-    enum sway_fowa focus_on_window_activation;
     enum xwayland_mode xwayland;
 
     // Flags
