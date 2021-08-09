@@ -17,7 +17,6 @@
 #include "sway/server.h"
 #include "sway/tree/arrange.h"
 #include "sway/tree/view.h"
-#include "sway/tree/workspace.h"
 #include "list.h"
 #include "log.h"
 #include "stringop.h"

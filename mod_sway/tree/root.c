@@ -9,7 +9,6 @@
 #include "sway/tree/arrange.h"
 #include "sway/tree/container.h"
 #include "sway/tree/root.h"
-#include "sway/tree/workspace.h"
 #include "list.h"
 #include "log.h"
 #include "util.h"

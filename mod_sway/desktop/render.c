@@ -27,7 +27,6 @@
 #include "sway/tree/container.h"
 #include "sway/tree/root.h"
 #include "sway/tree/view.h"
-#include "sway/tree/workspace.h"
 
 struct render_data {
     pixman_region32_t *damage;
