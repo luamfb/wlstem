@@ -167,6 +167,9 @@ void seat_set_focus_surface(struct sway_seat *seat,
 void seat_set_focus_layer(struct sway_seat *seat,
         struct wlr_layer_surface_v1 *layer);
 
+void remove_node_from_focus_stack(struct sway_seat *seat,
+        struct sway_node *node);
+
 void seat_set_exclusive_client(struct sway_seat *seat,
         struct wl_client *client);
 

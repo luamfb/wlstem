@@ -152,6 +152,13 @@ static void untrack_output(struct sway_container *con, void *data) {
     }
 }
 
+static void remove_output_from_all_focus_stacks(struct sway_output *output) {
+    struct sway_seat *seat = NULL;
+    wl_list_for_each(seat, &server.input->seats, link) {
+        remove_node_from_focus_stack(seat, &output->node);
+    }
+}
+
 void output_disable(struct sway_output *output) {
     if (!sway_assert(output->enabled, "Expected an enabled output")) {
         return;
@@ -165,6 +172,7 @@ void output_disable(struct sway_output *output) {
     wl_signal_emit(&output->events.destroy, output);
 
     output_evacuate(output);
+    remove_output_from_all_focus_stacks(output);
 
     root_for_each_container(untrack_output, output);
 
