@@ -94,15 +94,3 @@ void workspace_detach(struct sway_workspace *workspace) {
 
     node_set_dirty(&output->node);
 }
-
-struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
-        struct sway_container *con) {
-    if (con->output) {
-        container_detach(con);
-    }
-    struct sway_output *output = workspace->output;
-    list_add(output->tiling, con);
-    con->output = output;
-    node_set_dirty(&con->node);
-    return con;
-}

@@ -494,7 +494,7 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
             sway_log(SWAY_DEBUG, "output without active workspace...");
             return;
         }
-        container = workspace_add_tiling(output->active_workspace, container);
+        container = output_add_container(output, container);
     }
 
     view_init_subsurfaces(view, wlr_surface);

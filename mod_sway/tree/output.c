@@ -19,9 +19,7 @@ static void output_seize_containers_from_workspace(
             "Expected output with an active workspace")) {
         assert(false);
     }
-    struct sway_workspace *absorber_ws = absorber->active_workspace;
     struct sway_output *giver_output = giver->output;
-
     if (!giver_output) {
         sway_log(SWAY_ERROR, "expected workspace with output");
         assert(false);
@@ -29,7 +27,7 @@ static void output_seize_containers_from_workspace(
 
     while (giver_output->tiling->length) {
         struct sway_container *container = giver_output->tiling->items[0];
-        workspace_add_tiling(absorber_ws, container);
+        output_add_container(absorber, container);
     }
 
     node_set_dirty(&absorber->node);
@@ -250,4 +248,15 @@ void output_get_render_box(struct sway_output *output, struct wlr_box *box) {
     box->y = output->render_ly;
     box->width = output->usable_area.width;
     box->height = output->usable_area.height;
+}
+
+struct sway_container *output_add_container(struct sway_output *output,
+        struct sway_container *con) {
+    if (con->output) {
+        container_detach(con);
+    }
+    list_add(output->tiling, con);
+    con->output = output;
+    node_set_dirty(&con->node);
+    return con;
 }

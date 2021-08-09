@@ -34,7 +34,4 @@ void workspace_for_each_container(struct sway_workspace *ws,
 
 void workspace_detach(struct sway_workspace *workspace);
 
-struct sway_container *workspace_add_tiling(struct sway_workspace *workspace,
-        struct sway_container *con);
-
 #endif
