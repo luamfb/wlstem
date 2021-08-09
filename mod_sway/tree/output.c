@@ -213,13 +213,6 @@ struct sway_output *output_get_in_direction(struct sway_output *reference,
     return output_from_wlr_output(wlr_adjacent);
 }
 
-void output_for_each_workspace(struct sway_output *output,
-        void (*f)(struct sway_workspace *ws, void *data), void *data) {
-    if (output->active_workspace) {
-        f(output->active_workspace, data);
-    }
-}
-
 void output_for_each_container(struct sway_output *output,
         void (*f)(struct sway_container *con, void *data), void *data) {
     if (output->active_workspace) {
