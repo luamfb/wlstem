@@ -166,4 +166,7 @@ void handle_output_manager_test(struct wl_listener *listener, void *data);
 void handle_output_power_manager_set_mode(struct wl_listener *listener,
     void *data);
 
+struct sway_container *output_add_container(struct sway_output *output,
+        struct sway_container *con);
+
 #endif
