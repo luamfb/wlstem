@@ -241,25 +241,7 @@ void view_request_activate(struct sway_view *view) {
     if (!ws) {
         return;
     }
-    struct sway_seat *seat = input_manager_current_seat();
-
-    switch (config->focus_on_window_activation) {
-    case FOWA_SMART:
-        if (workspace_is_visible(ws)) {
-            seat_set_focus_container(seat, view->container);
-        } else {
-            view_set_urgent(view, true);
-        }
-        break;
-    case FOWA_URGENT:
-        view_set_urgent(view, true);
-        break;
-    case FOWA_FOCUS:
-        seat_set_focus_container(seat, view->container);
-        break;
-    case FOWA_NONE:
-        break;
-    }
+    view_set_urgent(view, true);
 }
 
 void view_set_csd_from_server(struct sway_view *view, bool enabled) {
