@@ -14,7 +14,7 @@ struct sway_server;
 struct sway_container;
 
 struct sway_output_state {
-    struct sway_workspace *active_workspace;
+    bool active;
     list_t *tiling;             // struct sway_container
     int render_lx, render_ly; // in layout coords
 };
@@ -42,7 +42,7 @@ struct sway_output {
     struct wlr_output_mode *current_mode;
 
     bool enabling, enabled;
-    struct sway_workspace *active_workspace;
+    bool active;
 
     struct sway_output_state current;
 

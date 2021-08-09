@@ -24,7 +24,6 @@
 #include "sway/tree/arrange.h"
 #include "sway/tree/container.h"
 #include "sway/tree/view.h"
-#include "sway/tree/workspace.h"
 #include "sway/config.h"
 #include "sway/xdg_decoration.h"
 #include "pango.h"
@@ -237,8 +236,7 @@ void view_request_activate(struct sway_view *view) {
     if (!output) {
         return;
     }
-    struct sway_workspace *ws = output->active_workspace;
-    if (!ws) {
+    if (!output->active) {
         return;
     }
     view_set_urgent(view, true);
@@ -348,7 +346,7 @@ static struct sway_output *select_output(struct sway_view *view) {
     struct sway_node *node = seat_get_next_in_focus_stack(seat);
     if (node && node->type == N_OUTPUT) {
         struct sway_output *output = node->sway_output;
-        if (output->active_workspace) {
+        if (output->active) {
             return output;
         }
     } else if (node && node->type == N_CONTAINER) {
@@ -356,7 +354,7 @@ static struct sway_output *select_output(struct sway_view *view) {
         if (!sway_assert(output, "container has no output")) {
             abort();
         }
-        if (output->active_workspace) {
+        if (output->active) {
             return node->sway_container->output;
         }
     } else if (node) {
@@ -472,8 +470,8 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     if (target_sibling) {
         container_add_sibling(target_sibling, container, 1);
     } else if (output) {
-        if (!output->active_workspace) {
-            sway_log(SWAY_DEBUG, "output without active workspace...");
+        if (!output->active) {
+            sway_log(SWAY_DEBUG, "output is not active...");
             return;
         }
         container = output_add_container(output, container);
@@ -530,7 +528,7 @@ void view_unmap(struct sway_view *view) {
     struct sway_output *output = view->container->output;
     container_begin_destroy(view->container);
 
-    if (output && output->active_workspace && !output->node.destroying) {
+    if (output && output->active && !output->node.destroying) {
         arrange_output(output);
     }
 

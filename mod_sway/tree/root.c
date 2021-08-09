@@ -65,7 +65,7 @@ void root_for_each_container(void (*f)(struct sway_container *con, void *data),
         output_for_each_container(output, f, data);
     }
 
-    if (root->noop_output->active_workspace) {
+    if (root->noop_output->active) {
         output_for_each_container(root->noop_output, f, data);
     }
 }

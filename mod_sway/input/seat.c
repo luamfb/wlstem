@@ -263,7 +263,7 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
         wl_list_for_each(current, &seat->focus_stack, link) {
             struct sway_node *node = current->node;
             if (node->type == N_CONTAINER &&
-                    node->sway_container->output->active_workspace) {
+                    node->sway_container->output->active) {
                 output = node->sway_container->output;
                 break;
             } else if (node->type == N_OUTPUT) {
@@ -294,7 +294,7 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
     } else {
         focus = seat_get_next_in_focus_stack(seat);
         seat_set_raw_focus(seat, next_focus);
-        if (focus->type == N_CONTAINER && focus->sway_container->output->active_workspace) {
+        if (focus->type == N_CONTAINER && focus->sway_container->output->active) {
             seat_set_raw_focus(seat, &focus->sway_container->output->node);
         }
         seat_set_raw_focus(seat, focus);

@@ -7,15 +7,13 @@
 #include "sway/layers.h"
 #include "sway/output.h"
 #include "sway/tree/arrange.h"
-#include "sway/tree/workspace.h"
 #include "log.h"
 #include "util.h"
 
 static void output_seize_containers_from(struct sway_output *absorber,
     struct sway_output *giver)
 {
-    if (!sway_assert(absorber->active_workspace,
-            "Expected output with an active workspace")) {
+    if (!sway_assert(absorber->active, "Expected active output")) {
         assert(false);
     }
     while (giver->tiling->length) {
@@ -27,7 +25,7 @@ static void output_seize_containers_from(struct sway_output *absorber,
 }
 
 static void seize_containers_from_noop_output(struct sway_output *output) {
-    if (root->noop_output->active_workspace) {
+    if (root->noop_output->active) {
         output_seize_containers_from(output, root->noop_output);
     }
 }
@@ -44,7 +42,7 @@ struct sway_output *output_create(struct wlr_output *wlr_output) {
 
     wl_list_insert(&root->all_outputs, &output->link);
 
-    output->active_workspace = NULL;
+    output->active = false;
 
     size_t len = sizeof(output->layers) / sizeof(output->layers[0]);
     for (size_t i = 0; i < len; ++i) {
@@ -64,10 +62,10 @@ void output_enable(struct sway_output *output) {
 
     seize_containers_from_noop_output(output);
 
-    if (!output->active_workspace) {
-        // Create workspace
-        sway_log(SWAY_DEBUG, "Creating default workspace");
-        workspace_create(output);
+    if (!output->active) {
+        sway_log(SWAY_DEBUG, "Activating output '%s'", output->wlr_output->name);
+        output->active = true;
+
         // Set each seat's focus if not already set
         struct sway_seat *seat = NULL;
         wl_list_for_each(seat, &server.input->seats, link) {
@@ -86,7 +84,7 @@ void output_enable(struct sway_output *output) {
 }
 
 static void output_evacuate(struct sway_output *output) {
-    if (!output->active_workspace) {
+    if (!output->active) {
         return;
     }
     struct sway_output *fallback_output = NULL;
@@ -97,8 +95,7 @@ static void output_evacuate(struct sway_output *output) {
         }
     }
 
-    if (output->active_workspace) {
-        struct sway_workspace *workspace = output->active_workspace;
+    if (output->active) {
         struct sway_output *new_output = fallback_output;
         if (!new_output) {
             new_output = root->noop_output;
@@ -107,8 +104,7 @@ static void output_evacuate(struct sway_output *output) {
         if (output_has_containers(output)) {
             output_seize_containers_from(new_output, output);
         }
-        output->active_workspace = NULL;
-        workspace->output = NULL;
+        output->active = false;
         node_set_dirty(&output->node);
     }
 }
@@ -125,9 +121,6 @@ void output_destroy(struct sway_output *output) {
     if (!sway_assert(output->node.ntxnrefs == 0, "Tried to free output "
                 "which is still referenced by transactions")) {
         return;
-    }
-    if (output->active_workspace) {
-        workspace_begin_destroy(output->active_workspace);
     }
     wl_event_source_remove(output->repaint_timer);
     list_free(output->tiling);
@@ -217,7 +210,7 @@ struct sway_output *output_get_in_direction(struct sway_output *reference,
 
 void output_for_each_container(struct sway_output *output,
         void (*f)(struct sway_container *con, void *data), void *data) {
-    if (output->active_workspace) {
+    if (output->active) {
         for (int i = 0; i < output->tiling->length; ++i) {
             struct sway_container *container = output->tiling->items[i];
             f(container, data);

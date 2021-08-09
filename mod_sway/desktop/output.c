@@ -28,7 +28,6 @@
 #include "sway/tree/container.h"
 #include "sway/tree/root.h"
 #include "sway/tree/view.h"
-#include "sway/tree/workspace.h"
 
 struct sway_output *output_by_name_or_id(const char *name_or_id) {
     for (int i = 0; i < root->outputs->length; ++i) {
@@ -355,8 +354,7 @@ static void output_for_each_surface(struct sway_output *output,
         .view = NULL,
     };
 
-    struct sway_workspace *workspace = output->active_workspace;
-    if (!workspace) {
+    if (!output->active) {
         return;
     }
 
@@ -460,8 +458,7 @@ static int output_repaint_timer_handler(void *data) {
 
     output->wlr_output->frame_pending = false;
 
-    struct sway_workspace *workspace = output->current.active_workspace;
-    if (workspace == NULL) {
+    if (!output->current.active) {
         return 0;
     }
 

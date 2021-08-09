@@ -23,7 +23,7 @@ struct sway_workspace *workspace_create(struct sway_output *output) {
     if (!sway_assert(output != NULL, "Tried to create workspace for NULL output")) {
         abort();
     }
-    if (!sway_assert(!output->active_workspace,
+    if (!sway_assert(!output->active,
             "Tried to create workspace to output which already has one")) {
         abort();
     }
@@ -37,7 +37,6 @@ struct sway_workspace *workspace_create(struct sway_output *output) {
         return NULL;
     }
 
-    output->active_workspace = ws;
     ws->output = output;
     node_set_dirty(&output->node);
 
@@ -55,9 +54,6 @@ void workspace_begin_destroy(struct sway_workspace *workspace) {
 
 void workspace_detach(struct sway_workspace *workspace) {
     struct sway_output *output = workspace->output;
-    if (output->active_workspace == workspace) {
-        output->active_workspace = NULL;
-    }
     workspace->output = NULL;
 
     node_set_dirty(&output->node);

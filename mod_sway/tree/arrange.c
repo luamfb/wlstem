@@ -79,7 +79,7 @@ void arrange_output(struct sway_output *output) {
     sway_log(SWAY_DEBUG, "Arranging renderview of output %s at %d, %d",
         output->wlr_output->name, output->render_lx, output->render_ly);
 
-    if (output->active_workspace) {
+    if (output->active) {
         struct wlr_box box;
 
         output_get_render_box(output, &box);
