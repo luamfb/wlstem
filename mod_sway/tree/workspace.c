@@ -44,17 +44,13 @@ struct sway_workspace *workspace_create(struct sway_output *output) {
     return ws;
 }
 
-void workspace_destroy(struct sway_workspace *workspace) {
-    free(workspace);
-}
-
 void workspace_begin_destroy(struct sway_workspace *workspace) {
     sway_log(SWAY_DEBUG, "Destroying workspace %p", workspace);
 
     if (workspace->output) {
         workspace_detach(workspace);
     }
-    workspace_destroy(workspace);
+    free(workspace);
 }
 
 bool workspace_is_visible(struct sway_workspace *ws) {
