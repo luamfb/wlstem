@@ -231,7 +231,10 @@ void output_for_each_workspace(struct sway_output *output,
 void output_for_each_container(struct sway_output *output,
         void (*f)(struct sway_container *con, void *data), void *data) {
     if (output->active_workspace) {
-        workspace_for_each_container(output->active_workspace, f, data);
+        for (int i = 0; i < output->tiling->length; ++i) {
+            struct sway_container *container = output->tiling->items[i];
+            f(container, data);
+        }
     }
 }
 
