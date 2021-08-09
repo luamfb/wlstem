@@ -58,14 +58,6 @@ void root_for_each_output(void (*f)(struct sway_output *output, void *data),
     }
 }
 
-void root_for_each_workspace(void (*f)(struct sway_workspace *ws, void *data),
-        void *data) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
-        output_for_each_workspace(output, f, data);
-    }
-}
-
 void root_for_each_container(void (*f)(struct sway_container *con, void *data),
         void *data) {
     for (int i = 0; i < root->outputs->length; ++i) {
