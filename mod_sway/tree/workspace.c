@@ -61,17 +61,6 @@ bool workspace_is_visible(struct sway_workspace *ws) {
     return ws->output->active_workspace == ws;
 }
 
-bool workspace_is_empty(struct sway_workspace *ws) {
-    if (!ws->output) {
-        sway_log(SWAY_DEBUG, "workspace has no output!");
-        return false;
-    }
-    if (ws->output->tiling->length) {
-        return false;
-    }
-    return true;
-}
-
 void workspace_for_each_container(struct sway_workspace *ws,
         void (*f)(struct sway_container *con, void *data), void *data) {
     struct sway_output *output = ws->output;
