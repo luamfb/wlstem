@@ -5,18 +5,8 @@
 #include "sway/tree/container.h"
 #include "sway/tree/node.h"
 
-struct sway_view;
-
-struct sway_workspace_state {
-    struct sway_output *output;
-
-    bool focused;
-};
-
 struct sway_workspace {
     struct sway_output *output; // NULL if no outputs are connected
-
-    struct sway_workspace_state current;
 };
 
 struct sway_workspace *workspace_create(struct sway_output *output);
