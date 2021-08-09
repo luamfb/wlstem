@@ -107,7 +107,9 @@ static void output_evacuate(struct sway_output *output) {
         if (output_has_containers(output)) {
             output_seize_containers_from(new_output, output);
         }
-        workspace_detach(workspace);
+        output->active_workspace = NULL;
+        workspace->output = NULL;
+        node_set_dirty(&output->node);
     }
 }
 
