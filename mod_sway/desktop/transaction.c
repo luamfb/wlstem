@@ -31,7 +31,6 @@ struct sway_transaction_instruction {
     struct sway_node *node;
     union {
         struct sway_output_state output_state;
-        struct sway_workspace_state workspace_state;
         struct sway_container_state container_state;
     };
     uint32_t serial;
