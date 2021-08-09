@@ -929,10 +929,6 @@ bool view_is_visible(struct sway_view *view) {
     if (!output) {
         return false;
     }
-
-    if (output && output->active_workspace && !workspace_is_visible(output->active_workspace)) {
-        return false;
-    }
     return true;
 }
 

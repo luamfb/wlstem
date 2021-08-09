@@ -53,10 +53,6 @@ void workspace_begin_destroy(struct sway_workspace *workspace) {
     free(workspace);
 }
 
-bool workspace_is_visible(struct sway_workspace *ws) {
-    return ws->output->active_workspace == ws;
-}
-
 void workspace_detach(struct sway_workspace *workspace) {
     struct sway_output *output = workspace->output;
     if (output->active_workspace == workspace) {
