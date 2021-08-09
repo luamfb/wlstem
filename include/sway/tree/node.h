@@ -7,7 +7,6 @@
 #define MIN_SANE_H 60
 
 struct sway_output;
-struct sway_workspace;
 struct sway_container;
 struct sway_transaction_instruction;
 struct wlr_box;

@@ -192,8 +192,7 @@ struct sway_container *container_at(struct sway_output *output,
 
     struct sway_seat *seat = input_manager_current_seat();
     struct sway_container *focus = seat_get_focused_container(seat);
-    struct sway_workspace *workspace = output->active_workspace;
-    if (!sway_assert(workspace, "Output has no active workspace")) {
+    if (!sway_assert(output->active, "Output is not active")) {
         return NULL;
     }
 
