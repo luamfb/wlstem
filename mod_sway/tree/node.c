@@ -4,7 +4,6 @@
 #include "sway/tree/container.h"
 #include "sway/tree/node.h"
 #include "sway/tree/root.h"
-#include "sway/tree/workspace.h"
 #include "log.h"
 
 void node_init(struct sway_node *node, enum sway_node_type type, void *thing) {

@@ -29,7 +29,6 @@
 #include "sway/tree/container.h"
 #include "sway/tree/root.h"
 #include "sway/tree/view.h"
-#include "sway/tree/workspace.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 
 static struct wlr_surface *layer_surface_at(struct sway_output *output,

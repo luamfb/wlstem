@@ -30,7 +30,6 @@
 #include "sway/tree/container.h"
 #include "sway/tree/root.h"
 #include "sway/tree/view.h"
-#include "sway/tree/workspace.h"
 
 static void seat_device_destroy(struct sway_seat_device *seat_device) {
     if (!seat_device) {

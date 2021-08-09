@@ -14,7 +14,6 @@
 #include "sway/tree/container.h"
 #include "sway/tree/node.h"
 #include "sway/tree/view.h"
-#include "sway/tree/workspace.h"
 #include "list.h"
 #include "log.h"
 
