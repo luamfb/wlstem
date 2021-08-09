@@ -36,7 +36,6 @@ sway_sources = files(
     'tree/node.c',
     'tree/root.c',
     'tree/view.c',
-    'tree/workspace.c',
     'tree/output.c',
 )
 
