@@ -107,13 +107,12 @@ static void output_evacuate(struct sway_output *output) {
 
     if (output->active_workspace) {
         struct sway_workspace *workspace = output->active_workspace;
-
         struct sway_output *new_output = fallback_output;
         if (!new_output) {
             new_output = root->noop_output;
         }
 
-        if (!workspace_is_empty(workspace)) {
+        if (output_has_containers(output)) {
             output_seize_containers_from_workspace(new_output, workspace);
         }
         workspace_detach(workspace);
@@ -259,4 +258,8 @@ struct sway_container *output_add_container(struct sway_output *output,
     con->output = output;
     node_set_dirty(&con->node);
     return con;
+}
+
+bool output_has_containers(struct sway_output *output) {
+    return output->tiling->length;
 }

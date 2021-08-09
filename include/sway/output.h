@@ -1,5 +1,6 @@
 #ifndef _SWAY_OUTPUT_H
 #define _SWAY_OUTPUT_H
+#include <stdbool.h>
 #include <time.h>
 #include <unistd.h>
 #include <wayland-server-core.h>
@@ -168,5 +169,7 @@ void handle_output_power_manager_set_mode(struct wl_listener *listener,
 
 struct sway_container *output_add_container(struct sway_output *output,
         struct sway_container *con);
+
+bool output_has_containers(struct sway_output *output);
 
 #endif
