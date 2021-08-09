@@ -367,7 +367,7 @@ static void output_for_each_surface(struct sway_output *output,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM],
         iterator, user_data);
 
-    workspace_for_each_container(workspace,
+    output_for_each_container(output,
         for_each_surface_container_iterator, &data);
 
 #if HAVE_XWAYLAND
