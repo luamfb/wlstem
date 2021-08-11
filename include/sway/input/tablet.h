@@ -45,6 +45,11 @@ struct sway_tablet_pad {
     struct wl_listener tablet_destroy;
 };
 
+struct input_config_tool {
+    enum wlr_tablet_tool_type type;
+    enum sway_tablet_tool_mode mode;
+};
+
 struct sway_tablet *sway_tablet_create(struct sway_seat *seat,
         struct sway_seat_device *device);
 

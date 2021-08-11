@@ -70,11 +70,6 @@ enum input_config_mapped_to {
     MAPPED_TO_REGION,
 };
 
-struct input_config_tool {
-    enum wlr_tablet_tool_type type;
-    enum sway_tablet_tool_mode mode;
-};
-
 /**
  * options for input devices
  */
