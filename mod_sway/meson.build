@@ -30,6 +30,7 @@ sway_sources = files(
     'config/input.c',
 
     'bindkey.c',
+    'container.c',
 
     'tree/arrange.c',
     'tree/container.c',

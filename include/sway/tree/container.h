@@ -158,4 +158,9 @@ void container_detach(struct sway_container *child);
 void container_replace(struct sway_container *container,
         struct sway_container *replacement);
 
+bool surface_is_popup(struct wlr_surface *surface);
+
+struct sway_container *surface_at_view(struct sway_container *con, double lx, double ly,
+        struct wlr_surface **surface, double *sx, double *sy);
+
 #endif
