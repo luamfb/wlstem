@@ -9,17 +9,9 @@
 #include "cairo.h"
 #include "pango.h"
 #include "sway/config.h"
-#include "sway/desktop.h"
-#include "sway/desktop/transaction.h"
-#include "sway/input/input-manager.h"
-#include "sway/input/seat.h"
 #include "sway/output.h"
-#include "sway/server.h"
-#include "sway/tree/arrange.h"
-#include "sway/tree/view.h"
 #include "list.h"
 #include "log.h"
-#include "stringop.h"
 
 struct sway_container *container_create(struct sway_view *view) {
     struct sway_container *c = calloc(1, sizeof(struct sway_container));
