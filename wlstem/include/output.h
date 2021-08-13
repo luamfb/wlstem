@@ -8,8 +8,8 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
 #include "config.h"
-#include "sway/output_config.h"
-#include "sway/tree/node.h"
+#include "output_config.h"
+#include "node.h"
 
 struct sway_server;
 struct sway_container;

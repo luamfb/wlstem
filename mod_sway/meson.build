@@ -34,12 +34,9 @@ sway_sources = files(
 
     'tree/arrange.c',
     'tree/container.c',
-    'tree/node.c',
     'tree/root.c',
     'tree/view.c',
     'tree/output.c',
-
-    'wlstem.c',
 )
 
 sway_deps = [

@@ -10,8 +10,8 @@
 #include <wlr/types/wlr_output.h>
 #include "sway/sway_config.h"
 #include "sway/input/cursor.h"
-#include "sway/output.h"
-#include "sway/tree/root.h"
+#include "output.h"
+#include "root.h"
 #include "log.h"
 #include "util.h"
 

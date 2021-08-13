@@ -2,7 +2,7 @@
 #define WLSTEM_WLSTEM_H
 
 #include <stdbool.h>
-#include "sway/tree/node.h"
+#include "node.h"
 
 struct wls_context {
     struct wls_node_manager *node_manager;

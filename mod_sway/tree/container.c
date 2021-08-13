@@ -9,7 +9,7 @@
 #include "cairo.h"
 #include "pango.h"
 #include "sway/sway_config.h"
-#include "sway/output.h"
+#include "output.h"
 #include "list.h"
 #include "log.h"
 #include "sway/tree/view.h"

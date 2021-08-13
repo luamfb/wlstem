@@ -6,8 +6,8 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
 #include "sway/tree/arrange.h"
-#include "sway/tree/container.h"
-#include "sway/output.h"
+#include "container.h"
+#include "output.h"
 #include "sway/tree/view.h"
 #include "list.h"
 #include "log.h"

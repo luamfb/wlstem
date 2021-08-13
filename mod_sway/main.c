@@ -16,7 +16,7 @@
 #include "sway/sway_config.h"
 #include "sway/server.h"
 #include "sway/desktop/transaction.h"
-#include "sway/tree/root.h"
+#include "root.h"
 #include "log.h"
 #include "stringop.h"
 #include "util.h"

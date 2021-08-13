@@ -4,7 +4,7 @@
 #include <wlr/backend/libinput.h>
 #include "log.h"
 #include "sway/sway_config.h"
-#include "sway/output.h"
+#include "output.h"
 #include "sway/input/input-manager.h"
 
 static void log_status(enum libinput_config_status status) {

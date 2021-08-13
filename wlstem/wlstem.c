@@ -1,9 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 #include <wayland-server-core.h>
-#include "sway/tree/node.h"
-#include "wlstem.h"
 #include "log.h"
+#include "node.h"
+#include "wlstem.h"
 
 struct wls_context *wls = NULL;
 

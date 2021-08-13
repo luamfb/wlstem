@@ -1,9 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
-#include "sway/output.h"
-#include "sway/tree/container.h"
-#include "sway/tree/node.h"
-#include "sway/tree/root.h"
+#include "output.h"
+#include "container.h"
+#include "node.h"
+#include "root.h"
 #include "list.h"
 #include "log.h"
 #include "wlstem.h"

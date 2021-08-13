@@ -5,7 +5,7 @@
 #include <wlr/types/wlr_box.h>
 #include <wlr/types/wlr_surface.h>
 #include "list.h"
-#include "sway/tree/node.h"
+#include "node.h"
 
 struct sway_view;
 struct sway_seat;
