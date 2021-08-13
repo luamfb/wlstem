@@ -7,7 +7,7 @@
 #include <xkbcommon/xkbcommon-names.h>
 #include <wlr/types/wlr_cursor.h>
 #include "sway/commands.h"
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/input/cursor.h"
 #include "sway/input/keyboard.h"
 #include "list.h"

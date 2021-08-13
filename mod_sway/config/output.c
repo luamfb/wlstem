@@ -8,7 +8,7 @@
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_output.h>
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/input/cursor.h"
 #include "sway/output.h"
 #include "sway/tree/root.h"

@@ -5,7 +5,7 @@
 #include <wlr/types/wlr_layer_shell_v1.h>
 #include <wlr/types/wlr_seat.h>
 #include <wlr/util/edges.h>
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/input/input-manager.h"
 #include "sway/input/tablet.h"
 #include "sway/input/text_input.h"

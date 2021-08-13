@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <wlr/util/log.h>
 #include "sway/commands.h"
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/server.h"
 #include "sway/desktop/transaction.h"
 #include "sway/tree/root.h"
