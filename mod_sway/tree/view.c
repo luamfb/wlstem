@@ -24,7 +24,7 @@
 #include "sway/tree/arrange.h"
 #include "sway/tree/container.h"
 #include "sway/tree/view.h"
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/xdg_decoration.h"
 #include "pango.h"
 #include "stringop.h"

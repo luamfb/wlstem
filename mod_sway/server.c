@@ -29,7 +29,7 @@
 #include "config.h"
 #include "list.h"
 #include "log.h"
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/desktop/idle_inhibit_v1.h"
 #include "sway/input/input-manager.h"
 #include "sway/output.h"

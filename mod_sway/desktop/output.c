@@ -16,7 +16,7 @@
 #include <wlr/util/region.h>
 #include "config.h"
 #include "log.h"
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/desktop/transaction.h"
 #include "sway/input/input-manager.h"
 #include "sway/input/seat.h"

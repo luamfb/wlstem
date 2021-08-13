@@ -8,7 +8,7 @@
 #include <wlr/types/wlr_output_layout.h>
 #include "cairo.h"
 #include "pango.h"
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/output.h"
 #include "list.h"
 #include "log.h"

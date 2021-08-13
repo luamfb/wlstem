@@ -21,7 +21,7 @@
 #include "sway/input/seat.h"
 #include "sway/input/switch.h"
 #include "sway/commands.h"
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "sway/desktop/transaction.h"
 #include "sway/tree/arrange.h"
 #include "sway/tree/root.h"

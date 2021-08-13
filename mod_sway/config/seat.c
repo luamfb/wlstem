@@ -2,7 +2,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sway/config.h"
+#include "sway/sway_config.h"
 #include "log.h"
 
 struct seat_config *new_seat_config(const char* name) {
