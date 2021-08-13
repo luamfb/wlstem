@@ -12,6 +12,7 @@
 #include "sway/output.h"
 #include "list.h"
 #include "log.h"
+#include "sway/tree/view.h"
 
 struct sway_container *container_create(struct sway_view *view) {
     struct sway_container *c = calloc(1, sizeof(struct sway_container));
