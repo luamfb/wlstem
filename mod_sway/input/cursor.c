@@ -25,9 +25,9 @@
 #include "sway/input/keyboard.h"
 #include "sway/input/tablet.h"
 #include "sway/layers.h"
-#include "sway/output.h"
-#include "sway/tree/container.h"
-#include "sway/tree/root.h"
+#include "output.h"
+#include "container.h"
+#include "root.h"
 #include "sway/tree/view.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 

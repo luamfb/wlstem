@@ -10,10 +10,10 @@
 #include <xkbcommon/xkbcommon.h>
 #include "../include/config.h"
 #include "list.h"
-#include "tree/container.h"
-#include "sway/output_config.h"
+#include "container.h"
+#include "output_config.h"
 #include "sway/input/tablet.h"
-#include "sway/tree/root.h"
+#include "root.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 
 enum binding_input_type {

@@ -7,7 +7,7 @@
 #include "sway/input/cursor.h"
 #include "sway/input/seat.h"
 #include "sway/input/tablet.h"
-#include "sway/output.h"
+#include "output.h"
 #include "sway/tree/view.h"
 #include "log.h"
 #if HAVE_XWAYLAND

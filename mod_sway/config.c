@@ -24,7 +24,7 @@
 #include "sway/sway_config.h"
 #include "sway/desktop/transaction.h"
 #include "sway/tree/arrange.h"
-#include "sway/tree/root.h"
+#include "root.h"
 #include "cairo.h"
 #include "pango.h"
 #include "stringop.h"

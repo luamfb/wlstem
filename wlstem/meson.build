@@ -28,7 +28,9 @@ lib_wlstem = shared_library(
         'loop.c',
         'pango.c',
         'stringop.c',
-        'util.c'
+        'util.c',
+        'node.c',
+        'wlstem.c',
     ),
     dependencies: wlstem_deps,
     include_directories: include_directories('include', '../include')

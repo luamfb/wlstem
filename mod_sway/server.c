@@ -32,9 +32,9 @@
 #include "sway/sway_config.h"
 #include "sway/desktop/idle_inhibit_v1.h"
 #include "sway/input/input-manager.h"
-#include "sway/output.h"
+#include "output.h"
 #include "sway/server.h"
-#include "sway/tree/root.h"
+#include "root.h"
 #if HAVE_XWAYLAND
 #include "sway/xwayland.h"
 #endif

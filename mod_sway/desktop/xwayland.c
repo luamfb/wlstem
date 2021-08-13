@@ -12,9 +12,9 @@
 #include "sway/input/cursor.h"
 #include "sway/input/input-manager.h"
 #include "sway/input/seat.h"
-#include "sway/output.h"
+#include "output.h"
 #include "sway/tree/arrange.h"
-#include "sway/tree/container.h"
+#include "container.h"
 #include "sway/tree/view.h"
 
 static const char *atom_map[ATOM_LAST] = {

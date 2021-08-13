@@ -24,11 +24,11 @@
 #include "sway/input/switch.h"
 #include "sway/input/tablet.h"
 #include "sway/layers.h"
-#include "sway/output.h"
+#include "output.h"
 #include "sway/server.h"
 #include "sway/tree/arrange.h"
-#include "sway/tree/container.h"
-#include "sway/tree/root.h"
+#include "container.h"
+#include "root.h"
 #include "sway/tree/view.h"
 
 static void seat_device_destroy(struct sway_seat_device *seat_device) {

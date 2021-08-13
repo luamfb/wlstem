@@ -5,7 +5,7 @@
 #include <strings.h>
 #include <wlr/types/wlr_output_damage.h>
 #include "sway/layers.h"
-#include "sway/output.h"
+#include "output.h"
 #include "sway/tree/arrange.h"
 #include "sway/input/seat.h"
 #include "log.h"

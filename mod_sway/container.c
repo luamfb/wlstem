@@ -3,8 +3,8 @@
 #include "sway/desktop/transaction.h"
 #include "sway/input/input-manager.h"
 #include "sway/input/seat.h"
-#include "sway/output.h"
-#include "sway/tree/container.h"
+#include "output.h"
+#include "container.h"
 #include "log.h"
 
 struct sway_container *container_at(struct sway_output *output,
