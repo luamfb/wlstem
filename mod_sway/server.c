@@ -185,7 +185,6 @@ bool server_init(struct sway_server *server) {
         server->txn_timeout_ms = 200;
     }
 
-    server->dirty_nodes = create_list();
     server->transactions = create_list();
 
     server->input = input_manager_create(server);
@@ -201,7 +200,6 @@ void server_fini(struct sway_server *server) {
 #endif
     wl_display_destroy_clients(server->wl_display);
     wl_display_destroy(server->wl_display);
-    list_free(server->dirty_nodes);
     list_free(server->transactions);
 }
 

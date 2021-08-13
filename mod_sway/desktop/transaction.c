@@ -16,6 +16,7 @@
 #include "sway/tree/view.h"
 #include "list.h"
 #include "log.h"
+#include "wlstem.h"
 
 struct sway_transaction {
     struct wl_event_source *timer;
@@ -461,19 +462,20 @@ void transaction_notify_view_ready_immediately(struct sway_view *view) {
 }
 
 void transaction_commit_dirty(void) {
-    if (!server.dirty_nodes->length) {
+    list_t *dirty_nodes = wls->node_manager->dirty_nodes;
+    if (!dirty_nodes) {
         return;
     }
     struct sway_transaction *transaction = transaction_create();
     if (!transaction) {
         return;
     }
-    for (int i = 0; i < server.dirty_nodes->length; ++i) {
-        struct sway_node *node = server.dirty_nodes->items[i];
+    for (int i = 0; i < dirty_nodes->length; ++i) {
+        struct sway_node *node = dirty_nodes->items[i];
         transaction_add_node(transaction, node);
         node->dirty = false;
     }
-    server.dirty_nodes->length = 0;
+    dirty_nodes->length = 0;
 
     list_add(server.transactions, transaction);
 

@@ -20,6 +20,7 @@
 #include "log.h"
 #include "stringop.h"
 #include "util.h"
+#include "wlstem.h"
 
 static bool terminate_request = false;
 static int exit_value = 0;
@@ -351,6 +352,7 @@ int main(int argc, char **argv) {
 
     sway_log(SWAY_INFO, "Starting sway version " SWAY_VERSION);
 
+    wls_init();
     root = root_create();
 
     if (!server_init(&server)) {
