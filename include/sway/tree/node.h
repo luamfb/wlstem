@@ -15,7 +15,6 @@ enum sway_node_type {
     N_OUTPUT,
     N_CONTAINER,
 };
-
 struct sway_node {
     enum sway_node_type type;
     union {
@@ -42,6 +41,10 @@ struct sway_node {
     } events;
 };
 
+struct wls_node_manager {
+    list_t *dirty_nodes;
+};
+
 void node_init(struct sway_node *node, enum sway_node_type type, void *thing);
 
 /**
@@ -61,5 +64,9 @@ struct sway_node *node_get_parent(struct sway_node *node);
 list_t *node_get_children(struct sway_node *node);
 
 bool node_has_ancestor(struct sway_node *node, struct sway_node *ancestor);
+
+struct wls_node_manager * node_manager_create(void);
+
+void node_manager_destroy(struct wls_node_manager *node_manager);
 
 #endif

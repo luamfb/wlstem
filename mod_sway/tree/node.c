@@ -1,10 +1,31 @@
 #define _POSIX_C_SOURCE 200809L
+#include <stdlib.h>
 #include "sway/output.h"
-#include "sway/server.h"
 #include "sway/tree/container.h"
 #include "sway/tree/node.h"
 #include "sway/tree/root.h"
+#include "list.h"
 #include "log.h"
+#include "wlstem.h"
+
+struct wls_node_manager * node_manager_create(void) {
+    struct wls_node_manager *node_manager =
+        calloc(1, sizeof(struct wls_node_manager));
+    if (!node_manager) {
+        sway_log(SWAY_ERROR, "node manager creation failed");
+        return NULL;
+    }
+    node_manager->dirty_nodes = create_list();
+    return node_manager;
+}
+
+void node_manager_destroy(struct wls_node_manager *node_manager) {
+    if (!node_manager) {
+        return;
+    }
+    list_free(node_manager->dirty_nodes);
+    free(node_manager);
+}
 
 void node_init(struct sway_node *node, enum sway_node_type type, void *thing) {
     static size_t next_id = 1;
@@ -22,7 +43,7 @@ void node_set_dirty(struct sway_node *node) {
         return;
     }
     node->dirty = true;
-    list_add(server.dirty_nodes, node);
+    list_add(wls->node_manager->dirty_nodes, node);
 }
 
 bool node_is_view(struct sway_node *node) {
