@@ -1,9 +1,10 @@
 wlstem_deps = [
     cairo,
+    pango,
+    pangocairo,
     libevdev,
     libinput,
     math,
-    pango,
     pcre,
     glesv2,
     pixman,
@@ -23,7 +24,12 @@ lib_wlstem = shared_library(
         'exec.c',
         'list.c',
         'log.c',
+        'cairo.c',
+        'loop.c',
+        'pango.c',
+        'stringop.c',
+        'util.c'
     ),
     dependencies: wlstem_deps,
-    include_directories: include_directories('include')
+    include_directories: include_directories('include', '../include')
 )
