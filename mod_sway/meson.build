@@ -46,6 +46,7 @@ sway_deps = [
     libinput,
     math,
     pango,
+    pangocairo,
     pcre,
     glesv2,
     pixman,
@@ -65,6 +66,6 @@ executable(
     sway_sources,
     include_directories: [sway_inc],
     dependencies: sway_deps,
-    link_with: [lib_sway_common, lib_wlstem],
+    link_with: [lib_wlstem],
     install: true
 )
