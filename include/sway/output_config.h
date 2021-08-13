@@ -1,6 +1,8 @@
 #ifndef _SWAY_OUTPUT_CONFIG_H
 #define _SWAY_OUTPUT_CONFIG_H
 
+struct sway_output;
+
 enum config_dpms {
     DPMS_IGNORE,
     DPMS_ON,

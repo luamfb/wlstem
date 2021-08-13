@@ -6,12 +6,14 @@
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_box.h>
 #include <wlr/types/wlr_output.h>
+#include <wlr/types/wlr_output_layout.h>
 #include "config.h"
+#include "sway/output_config.h"
 #include "sway/tree/node.h"
-#include "sway/tree/view.h"
 
 struct sway_server;
 struct sway_container;
+struct sway_view;
 
 struct sway_output_state {
     bool active;

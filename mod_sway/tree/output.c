@@ -7,6 +7,7 @@
 #include "sway/layers.h"
 #include "sway/output.h"
 #include "sway/tree/arrange.h"
+#include "sway/input/seat.h"
 #include "log.h"
 #include "util.h"
 
