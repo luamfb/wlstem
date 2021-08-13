@@ -176,7 +176,6 @@ subdir('protocols')
 subdir('common')
 subdir('wlstem')
 subdir('mod_sway')
-subdir('client')
 
 summary({
     'xwayland': have_xwayland,
