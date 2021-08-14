@@ -22,7 +22,7 @@ struct sway_output_state {
 };
 
 struct sway_output {
-    struct sway_node node;
+    struct wls_transaction_node node;
     struct wlr_output *wlr_output;
     struct sway_server *server;
     struct wl_list link;

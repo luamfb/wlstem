@@ -106,7 +106,7 @@ struct sway_container *surface_at_view(struct sway_container *con, double lx, do
     return NULL;
 }
 
-static struct sway_container *container_at_linear(struct sway_node *parent,
+static struct sway_container *container_at_linear(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     list_t *children = node_get_children(parent);
@@ -123,7 +123,7 @@ static struct sway_container *container_at_linear(struct sway_node *parent,
     return NULL;
 }
 
-struct sway_container *view_container_at(struct sway_node *parent,
+struct sway_container *view_container_at(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     if (!sway_assert(node_is_view(parent), "Expected a view")) {
@@ -146,7 +146,7 @@ struct sway_container *view_container_at(struct sway_node *parent,
     return NULL;
 }
 
-struct sway_container *tiling_container_at(struct sway_node *parent,
+struct sway_container *tiling_container_at(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     if (node_is_view(parent)) {

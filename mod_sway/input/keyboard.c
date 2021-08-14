@@ -543,7 +543,7 @@ static void handle_keyboard_group_leave(struct wl_listener *listener,
     // Refocus the focused node, layer surface, or unmanaged surface so that
     // it picks up the current keyboard state.
     struct sway_seat *seat = keyboard->seat_device->sway_seat;
-    struct sway_node *focus = seat_get_focus(seat);
+    struct wls_transaction_node *focus = seat_get_focus(seat);
     if (focus) {
         seat_set_focus(seat, NULL);
         seat_set_focus(seat, focus);

@@ -286,7 +286,7 @@ static void handle_inhibit_deactivate(struct wl_listener *listener, void *data) 
     struct sway_seat *seat;
     wl_list_for_each(seat, &input_manager->seats, link) {
         seat_set_exclusive_client(seat, NULL);
-        struct sway_node *previous = seat_get_focus(seat);
+        struct wls_transaction_node *previous = seat_get_focus(seat);
         if (previous) {
             // Hack to get seat to re-focus the return value of get_focus
             seat_set_focus(seat, NULL);
@@ -481,7 +481,7 @@ struct sway_input_manager *input_manager_create(struct sway_server *server) {
     return input;
 }
 
-bool input_manager_has_focus(struct sway_node *node) {
+bool input_manager_has_focus(struct wls_transaction_node *node) {
     struct sway_seat *seat = NULL;
     wl_list_for_each(seat, &server.input->seats, link) {
         if (seat_get_focus(seat) == node) {
@@ -492,7 +492,7 @@ bool input_manager_has_focus(struct sway_node *node) {
     return false;
 }
 
-void input_manager_set_focus(struct sway_node *node) {
+void input_manager_set_focus(struct wls_transaction_node *node) {
     struct sway_seat *seat;
     wl_list_for_each(seat, &server.input->seats, link) {
         seat_set_focus(seat, node);

@@ -115,7 +115,7 @@ static void unmanaged_handle_unmap(struct wl_listener *listener, void *data) {
         }
 
         // Restore focus
-        struct sway_node *previous = seat_get_next_in_focus_stack(seat);
+        struct wls_transaction_node *previous = seat_get_next_in_focus_stack(seat);
         if (previous) {
             // Hack to get seat to re-focus the return value of get_focus
             seat_set_focus(seat, NULL);

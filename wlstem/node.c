@@ -27,7 +27,7 @@ void node_manager_destroy(struct wls_node_manager *node_manager) {
     free(node_manager);
 }
 
-void node_init(struct sway_node *node, enum sway_node_type type, void *thing) {
+void node_init(struct wls_transaction_node *node, enum wls_transaction_node_type type, void *thing) {
     static size_t next_id = 1;
     if (type != N_OUTPUT && type != N_CONTAINER) {
         sway_log(SWAY_ERROR, "node_init: invalid node type %d (%x)", type, type);
@@ -38,7 +38,7 @@ void node_init(struct sway_node *node, enum sway_node_type type, void *thing) {
     wl_signal_init(&node->events.destroy);
 }
 
-void node_set_dirty(struct sway_node *node) {
+void node_set_dirty(struct wls_transaction_node *node) {
     if (node->dirty) {
         return;
     }
@@ -46,11 +46,11 @@ void node_set_dirty(struct sway_node *node) {
     list_add(wls->node_manager->dirty_nodes, node);
 }
 
-bool node_is_view(struct sway_node *node) {
+bool node_is_view(struct wls_transaction_node *node) {
     return node->type == N_CONTAINER && node->sway_container->view;
 }
 
-struct sway_output *node_get_output(struct sway_node *node) {
+struct sway_output *node_get_output(struct wls_transaction_node *node) {
     switch (node->type) {
     case N_CONTAINER:
         return node->sway_container->output;
@@ -60,7 +60,7 @@ struct sway_output *node_get_output(struct sway_node *node) {
     return NULL;
 }
 
-bool node_may_have_container_children(struct sway_node *node) {
+bool node_may_have_container_children(struct wls_transaction_node *node) {
     switch (node->type) {
     case N_CONTAINER:
     case N_OUTPUT:
@@ -69,7 +69,7 @@ bool node_may_have_container_children(struct sway_node *node) {
     return false;
 }
 
-struct sway_node *node_get_parent(struct sway_node *node) {
+struct wls_transaction_node *node_get_parent(struct wls_transaction_node *node) {
     switch (node->type) {
     case N_CONTAINER:
         if (node->sway_container->output) {
@@ -84,7 +84,7 @@ struct sway_node *node_get_parent(struct sway_node *node) {
     return NULL;
 }
 
-list_t *node_get_children(struct sway_node *node) {
+list_t *node_get_children(struct wls_transaction_node *node) {
     switch (node->type) {
     case N_OUTPUT:
         return node->sway_output->tiling;
@@ -94,9 +94,9 @@ list_t *node_get_children(struct sway_node *node) {
     return NULL;
 }
 
-bool node_has_ancestor(struct sway_node *node, struct sway_node *ancestor) {
-    struct sway_node *prev = node;
-    struct sway_node *parent = node_get_parent(node);
+bool node_has_ancestor(struct wls_transaction_node *node, struct wls_transaction_node *ancestor) {
+    struct wls_transaction_node *prev = node;
+    struct wls_transaction_node *parent = node_get_parent(node);
     while (parent && prev != parent) {
         if (parent == ancestor) {
             return true;

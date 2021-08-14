@@ -43,7 +43,7 @@ struct sway_seat_device {
 
 struct sway_seat_node {
     struct sway_seat *seat;
-    struct sway_node *node;
+    struct wls_transaction_node *node;
 
     struct wl_list link; // sway_seat::focus_stack
 
@@ -145,7 +145,7 @@ void seat_remove_device(struct sway_seat *seat,
 
 void seat_configure_xcursor(struct sway_seat *seat);
 
-void seat_set_focus(struct sway_seat *seat, struct sway_node *node);
+void seat_set_focus(struct sway_seat *seat, struct wls_transaction_node *node);
 
 void seat_set_focus_container(struct sway_seat *seat,
         struct sway_container *con);
@@ -159,7 +159,7 @@ void seat_set_focus_output(struct sway_seat *seat,
  * This can be used to set focus_inactive by calling the function a second time
  * with the real focus.
  */
-void seat_set_raw_focus(struct sway_seat *seat, struct sway_node *node);
+void seat_set_raw_focus(struct sway_seat *seat, struct wls_transaction_node *node);
 
 void seat_set_focus_surface(struct sway_seat *seat,
         struct wlr_surface *surface, bool unfocus);
@@ -168,18 +168,18 @@ void seat_set_focus_layer(struct sway_seat *seat,
         struct wlr_layer_surface_v1 *layer);
 
 void remove_node_from_focus_stack(struct sway_seat *seat,
-        struct sway_node *node);
+        struct wls_transaction_node *node);
 
 void seat_set_exclusive_client(struct sway_seat *seat,
         struct wl_client *client);
 
-struct sway_node *seat_get_focus(struct sway_seat *seat);
+struct wls_transaction_node *seat_get_focus(struct sway_seat *seat);
 
 struct sway_output *seat_get_focused_output(struct sway_seat *seat);
 
 struct sway_container *seat_get_focused_container(struct sway_seat *seat);
 
-struct sway_node *seat_get_next_in_focus_stack(struct sway_seat *seat);
+struct wls_transaction_node *seat_get_next_in_focus_stack(struct sway_seat *seat);
 /**
  * Return the last container to be focused for the seat (or the most recently
  * opened if no container has received focused) that is a child of the given
@@ -189,28 +189,28 @@ struct sway_node *seat_get_next_in_focus_stack(struct sway_seat *seat);
  * is destroyed, or focus moves to a container with children and we need to
  * descend into the next leaf in focus order.
  */
-struct sway_node *seat_get_focus_inactive(struct sway_seat *seat,
-        struct sway_node *node);
+struct wls_transaction_node *seat_get_focus_inactive(struct sway_seat *seat,
+        struct wls_transaction_node *node);
 
 /**
  * Descend into the focus stack to find the focus-inactive view. Useful for
  * container placement when they change position in the tree.
  */
 struct sway_container *seat_get_focus_inactive_view(struct sway_seat *seat,
-        struct sway_node *ancestor);
+        struct wls_transaction_node *ancestor);
 
 /**
  * Return the immediate child of container which was most recently focused.
  */
-struct sway_node *seat_get_active_tiling_child(struct sway_seat *seat,
-        struct sway_node *parent);
+struct wls_transaction_node *seat_get_active_tiling_child(struct sway_seat *seat,
+        struct wls_transaction_node *parent);
 
 /**
  * Iterate over the focus-inactive children of the container calling the
  * function on each.
  */
 void seat_for_each_node(struct sway_seat *seat,
-        void (*f)(struct sway_node *node, void *data), void *data);
+        void (*f)(struct wls_transaction_node *node, void *data), void *data);
 
 void seat_apply_config(struct sway_seat *seat, struct seat_config *seat_config);
 

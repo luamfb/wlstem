@@ -11,12 +11,12 @@ struct sway_container;
 struct sway_transaction_instruction;
 struct wlr_box;
 
-enum sway_node_type {
+enum wls_transaction_node_type {
     N_OUTPUT,
     N_CONTAINER,
 };
-struct sway_node {
-    enum sway_node_type type;
+struct wls_transaction_node {
+    enum wls_transaction_node_type type;
     union {
         struct sway_output *sway_output;
         struct sway_container *sway_container;
@@ -45,25 +45,25 @@ struct wls_node_manager {
     list_t *dirty_nodes;
 };
 
-void node_init(struct sway_node *node, enum sway_node_type type, void *thing);
+void node_init(struct wls_transaction_node *node, enum wls_transaction_node_type type, void *thing);
 
 /**
  * Mark a node as dirty if it isn't already. Dirty nodes will be included in the
  * next transaction then unmarked as dirty.
  */
-void node_set_dirty(struct sway_node *node);
+void node_set_dirty(struct wls_transaction_node *node);
 
-bool node_is_view(struct sway_node *node);
+bool node_is_view(struct wls_transaction_node *node);
 
-struct sway_output *node_get_output(struct sway_node *node);
+struct sway_output *node_get_output(struct wls_transaction_node *node);
 
-bool node_may_have_container_children(struct sway_node *node);
+bool node_may_have_container_children(struct wls_transaction_node *node);
 
-struct sway_node *node_get_parent(struct sway_node *node);
+struct wls_transaction_node *node_get_parent(struct wls_transaction_node *node);
 
-list_t *node_get_children(struct sway_node *node);
+list_t *node_get_children(struct wls_transaction_node *node);
 
-bool node_has_ancestor(struct sway_node *node, struct sway_node *ancestor);
+bool node_has_ancestor(struct wls_transaction_node *node, struct wls_transaction_node *ancestor);
 
 struct wls_node_manager * node_manager_create(void);
 
