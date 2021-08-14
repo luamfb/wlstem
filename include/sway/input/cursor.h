@@ -20,7 +20,7 @@ struct sway_cursor {
     struct wlr_cursor *cursor;
     struct {
         double x, y;
-        struct sway_node *node;
+        struct wls_transaction_node *node;
     } previous;
     struct wlr_xcursor_manager *xcursor_manager;
     struct wl_list tablets;
@@ -77,9 +77,9 @@ struct sway_cursor {
     size_t pressed_button_count;
 };
 
-struct sway_node;
+struct wls_transaction_node;
 
-struct sway_node *node_at_coords(
+struct wls_transaction_node *node_at_coords(
         struct sway_seat *seat, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
@@ -93,7 +93,7 @@ struct sway_cursor *sway_cursor_create(struct sway_seat *seat);
  */
 void cursor_rebase(struct sway_cursor *cursor);
 void cursor_rebase_all(void);
-void cursor_update_image(struct sway_cursor *cursor, struct sway_node *node);
+void cursor_update_image(struct sway_cursor *cursor, struct wls_transaction_node *node);
 
 void cursor_handle_activity_from_idle_source(struct sway_cursor *cursor,
         enum sway_input_idle_source idle_source);

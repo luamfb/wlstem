@@ -74,7 +74,7 @@ static struct wlr_surface *layer_surface_popup_at(struct sway_output *output,
  * Returns the node at the cursor's position. If there is a surface at that
  * location, it is stored in **surface (it may not be a view).
  */
-struct sway_node *node_at_coords(
+struct wls_transaction_node *node_at_coords(
         struct sway_seat *seat, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     // check for unmanaged views first
@@ -175,7 +175,7 @@ void cursor_rebase_all(void) {
 }
 
 void cursor_update_image(struct sway_cursor *cursor,
-        struct sway_node *node) {
+        struct wls_transaction_node *node) {
     cursor_set_image(cursor, "left_ptr", NULL);
 }
 
@@ -417,7 +417,7 @@ static void handle_touch_down(struct wl_listener *listener, void *data) {
     wlr_cursor_absolute_to_layout_coords(cursor->cursor, event->device,
             event->x, event->y, &lx, &ly);
     double sx, sy;
-    struct sway_node *focused_node = node_at_coords(seat, lx, ly, &surface, &sx, &sy);
+    struct wls_transaction_node *focused_node = node_at_coords(seat, lx, ly, &surface, &sx, &sy);
 
     seat->touch_id = event->touch_id;
     seat->touch_x = lx;
@@ -1204,7 +1204,7 @@ void handle_pointer_constraint(struct wl_listener *listener, void *data) {
     sway_constraint->destroy.notify = handle_constraint_destroy;
     wl_signal_add(&constraint->events.destroy, &sway_constraint->destroy);
 
-    struct sway_node *focus = seat_get_focus(seat);
+    struct wls_transaction_node *focus = seat_get_focus(seat);
     if (focus && focus->type == N_CONTAINER && focus->sway_container->view) {
         struct wlr_surface *surface = focus->sway_container->view->surface;
         if (surface == constraint->surface) {

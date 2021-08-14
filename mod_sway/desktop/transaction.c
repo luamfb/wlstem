@@ -28,7 +28,7 @@ struct sway_transaction {
 
 struct sway_transaction_instruction {
     struct sway_transaction *transaction;
-    struct sway_node *node;
+    struct wls_transaction_node *node;
     union {
         struct sway_output_state output_state;
         struct sway_container_state container_state;
@@ -51,7 +51,7 @@ static void transaction_destroy(struct sway_transaction *transaction) {
     for (int i = 0; i < transaction->instructions->length; ++i) {
         struct sway_transaction_instruction *instruction =
             transaction->instructions->items[i];
-        struct sway_node *node = instruction->node;
+        struct wls_transaction_node *node = instruction->node;
         node->ntxnrefs--;
         if (node->instruction == instruction) {
             node->instruction = NULL;
@@ -109,7 +109,7 @@ static void copy_container_state(struct sway_container *container,
 }
 
 static void transaction_add_node(struct sway_transaction *transaction,
-        struct sway_node *node) {
+        struct wls_transaction_node *node) {
     struct sway_transaction_instruction *instruction =
         calloc(1, sizeof(struct sway_transaction_instruction));
     if (!sway_assert(instruction, "Unable to allocate instruction")) {
@@ -220,7 +220,7 @@ static void transaction_apply(struct sway_transaction *transaction) {
     for (int i = 0; i < transaction->instructions->length; ++i) {
         struct sway_transaction_instruction *instruction =
             transaction->instructions->items[i];
-        struct sway_node *node = instruction->node;
+        struct wls_transaction_node *node = instruction->node;
 
         switch (node->type) {
         case N_OUTPUT:
@@ -313,7 +313,7 @@ static int handle_timeout(void *data) {
     return 0;
 }
 
-static bool should_configure(struct sway_node *node,
+static bool should_configure(struct wls_transaction_node *node,
         struct sway_transaction_instruction *instruction) {
     if (!node_is_view(node)) {
         return false;
@@ -351,7 +351,7 @@ static void transaction_commit(struct sway_transaction *transaction) {
     for (int i = 0; i < transaction->instructions->length; ++i) {
         struct sway_transaction_instruction *instruction =
             transaction->instructions->items[i];
-        struct sway_node *node = instruction->node;
+        struct wls_transaction_node *node = instruction->node;
         if (should_configure(node, instruction)) {
             instruction->serial = view_configure(node->sway_container->view,
                     instruction->container_state.content_x,
@@ -471,7 +471,7 @@ void transaction_commit_dirty(void) {
         return;
     }
     for (int i = 0; i < dirty_nodes->length; ++i) {
-        struct sway_node *node = dirty_nodes->items[i];
+        struct wls_transaction_node *node = dirty_nodes->items[i];
         transaction_add_node(transaction, node);
         node->dirty = false;
     }

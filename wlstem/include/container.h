@@ -36,7 +36,7 @@ struct sway_container_state {
 };
 
 struct sway_container {
-    struct sway_node node;
+    struct wls_transaction_node node;
     struct sway_view *view;
 
     // The pending state is the main container properties, and the current state is in the below struct.
@@ -103,7 +103,7 @@ struct sway_container *container_at(struct sway_output *output,
         double *sx, double *sy);
 
 struct sway_container *tiling_container_at(
-        struct sway_node *parent, double lx, double ly,
+        struct wls_transaction_node *parent, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
 void container_damage_whole(struct sway_container *container);

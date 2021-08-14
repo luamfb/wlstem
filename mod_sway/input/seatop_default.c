@@ -15,7 +15,7 @@
 #endif
 
 struct seatop_default_event {
-    struct sway_node *previous_node;
+    struct wls_transaction_node *previous_node;
     uint32_t pressed_buttons[SWAY_CURSOR_PRESSED_BUTTONS_CAP];
     size_t pressed_button_count;
 };
@@ -77,7 +77,7 @@ static void handle_tablet_tool_tip(struct sway_seat *seat,
     struct sway_cursor *cursor = seat->cursor;
     struct wlr_surface *surface = NULL;
     double sx, sy;
-    struct sway_node *node = node_at_coords(seat,
+    struct wls_transaction_node *node = node_at_coords(seat,
         cursor->cursor->x, cursor->cursor->y, &surface, &sx, &sy);
 
     if (!sway_assert(surface,
@@ -148,7 +148,7 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
     // Determine what's under the cursor
     struct wlr_surface *surface = NULL;
     double sx, sy;
-    struct sway_node *node = node_at_coords(seat,
+    struct wls_transaction_node *node = node_at_coords(seat,
             cursor->cursor->x, cursor->cursor->y, &surface, &sx, &sy);
 
     struct sway_container *cont = node && node->type == N_CONTAINER ?
@@ -216,8 +216,8 @@ static void handle_button(struct sway_seat *seat, uint32_t time_msec,
  *----------------------------------------*/
 
 static void check_focus_follows_mouse(struct sway_seat *seat,
-        struct seatop_default_event *e, struct sway_node *hovered_node) {
-    struct sway_node *focus = seat_get_focus(seat);
+        struct seatop_default_event *e, struct wls_transaction_node *hovered_node) {
+    struct wls_transaction_node *focus = seat_get_focus(seat);
 
     // This is the case if a layer-shell surface is hovered.
     // If it's on another output, focus the active workspace there.
@@ -266,7 +266,7 @@ static void handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
 
     struct wlr_surface *surface = NULL;
     double sx, sy;
-    struct sway_node *node = node_at_coords(seat,
+    struct wls_transaction_node *node = node_at_coords(seat,
             cursor->cursor->x, cursor->cursor->y, &surface, &sx, &sy);
 
     if (config->focus_follows_mouse != FOLLOWS_NO) {
@@ -300,7 +300,7 @@ static void handle_tablet_tool_motion(struct sway_seat *seat,
 
     struct wlr_surface *surface = NULL;
     double sx, sy;
-    struct sway_node *node = node_at_coords(seat,
+    struct wls_transaction_node *node = node_at_coords(seat,
             cursor->cursor->x, cursor->cursor->y, &surface, &sx, &sy);
 
     if (config->focus_follows_mouse != FOLLOWS_NO) {
