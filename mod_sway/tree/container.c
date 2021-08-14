@@ -13,6 +13,7 @@
 #include "list.h"
 #include "log.h"
 #include "sway/tree/view.h"
+#include "wlstem.h"
 
 struct sway_container *container_create(struct sway_view *view) {
     struct sway_container *c = calloc(1, sizeof(struct sway_container));
@@ -27,7 +28,7 @@ struct sway_container *container_create(struct sway_view *view) {
     c->outputs = create_list();
 
     wl_signal_init(&c->events.destroy);
-    wl_signal_emit(&root->events.new_node, &c->node);
+    wl_signal_emit(&wls->node_manager->events.new_node, &c->node);
 
     return c;
 }

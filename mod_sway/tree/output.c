@@ -10,6 +10,7 @@
 #include "sway/input/seat.h"
 #include "log.h"
 #include "util.h"
+#include "wlstem.h"
 
 static void output_seize_containers_from(struct sway_output *absorber,
     struct sway_output *giver)
@@ -78,7 +79,7 @@ void output_enable(struct sway_output *output) {
 
     input_manager_configure_xcursor();
 
-    wl_signal_emit(&root->events.new_node, &output->node);
+    wl_signal_emit(&wls->node_manager->events.new_node, &output->node);
 
     arrange_layers(output);
     arrange_root();
