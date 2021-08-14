@@ -16,6 +16,7 @@ struct wls_node_manager * node_manager_create(void) {
         return NULL;
     }
     node_manager->dirty_nodes = create_list();
+    wl_signal_init(&node_manager->events.new_node);
     return node_manager;
 }
 

@@ -30,6 +30,7 @@
 #include "container.h"
 #include "root.h"
 #include "sway/tree/view.h"
+#include "wlstem.h"
 
 static void seat_device_destroy(struct sway_seat_device *seat_device) {
     if (!seat_device) {
@@ -563,7 +564,7 @@ struct sway_seat *seat_create(const char *seat_name) {
     root_for_each_output(collect_focus_output_iter, seat);
     root_for_each_container(collect_focus_container_iter, seat);
 
-    wl_signal_add(&root->events.new_node, &seat->new_node);
+    wl_signal_add(&wls->node_manager->events.new_node, &seat->new_node);
     seat->new_node.notify = handle_new_node;
 
     wl_signal_add(&seat->wlr_seat->events.request_start_drag,

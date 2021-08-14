@@ -43,6 +43,9 @@ struct wls_transaction_node {
 
 struct wls_node_manager {
     list_t *dirty_nodes;
+    struct {
+        struct wl_signal new_node;
+    } events;
 };
 
 void node_init(struct wls_transaction_node *node, enum wls_transaction_node_type type, void *thing);
