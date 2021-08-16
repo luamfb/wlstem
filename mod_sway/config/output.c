@@ -14,6 +14,7 @@
 #include "root.h"
 #include "log.h"
 #include "util.h"
+#include "wlstem.h"
 
 int output_name_cmp(const void *item, const void *data) {
     const struct output_config *output = item;
@@ -140,7 +141,7 @@ static void merge_id_on_name(struct output_config *oc) {
     char id[128];
     char *name = NULL;
     struct sway_output *output;
-    wl_list_for_each(output, &root->all_outputs, link) {
+    wl_list_for_each(output, &wls->root->all_outputs, link) {
         name = output->wlr_output->name;
         output_get_identifier(id, sizeof(id), output);
         if (strcmp(name, oc->name) == 0 || strcmp(id, oc->name) == 0) {
@@ -336,7 +337,7 @@ static int compute_default_scale(struct wlr_output *output) {
 
 static void queue_output_config(struct output_config *oc,
         struct sway_output *output) {
-    if (output == root->noop_output) {
+    if (output == wls->root->noop_output) {
         return;
     }
 
@@ -394,7 +395,7 @@ static void queue_output_config(struct output_config *oc,
 }
 
 bool apply_output_config(struct output_config *oc, struct sway_output *output) {
-    if (output == root->noop_output) {
+    if (output == wls->root->noop_output) {
         return false;
     }
 
@@ -425,7 +426,7 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
         sway_log(SWAY_DEBUG, "Disabling output %s", oc->name);
         if (output->enabled) {
             output_disable(output);
-            wlr_output_layout_remove(root->output_layout, wlr_output);
+            wlr_output_layout_remove(wls->root->output_layout, wlr_output);
         }
         return true;
     }
@@ -452,14 +453,14 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
     // Find position for it
     if (oc && (oc->x != -1 || oc->y != -1)) {
         sway_log(SWAY_DEBUG, "Set %s position to %d, %d", oc->name, oc->x, oc->y);
-        wlr_output_layout_add(root->output_layout, wlr_output, oc->x, oc->y);
+        wlr_output_layout_add(wls->root->output_layout, wlr_output, oc->x, oc->y);
     } else {
-        wlr_output_layout_add_auto(root->output_layout, wlr_output);
+        wlr_output_layout_add_auto(wls->root->output_layout, wlr_output);
     }
 
     // Update output->{lx, ly, width, height}
     struct wlr_box *output_box =
-        wlr_output_layout_get_box(root->output_layout, wlr_output);
+        wlr_output_layout_get_box(wls->root->output_layout, wlr_output);
     output->lx = output_box->x;
     output->ly = output_box->y;
     output->width = output_box->width;
@@ -483,7 +484,7 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
 }
 
 bool test_output_config(struct output_config *oc, struct sway_output *output) {
-    if (output == root->noop_output) {
+    if (output == wls->root->noop_output) {
         return false;
     }
 
@@ -589,7 +590,7 @@ void apply_output_config_to_outputs(struct output_config *oc) {
     bool wildcard = strcmp(oc->name, "*") == 0;
     char id[128];
     struct sway_output *sway_output, *tmp;
-    wl_list_for_each_safe(sway_output, tmp, &root->all_outputs, link) {
+    wl_list_for_each_safe(sway_output, tmp, &wls->root->all_outputs, link) {
         char *name = sway_output->wlr_output->name;
         output_get_identifier(id, sizeof(id), sway_output);
         if (wildcard || !strcmp(name, oc->name) || !strcmp(id, oc->name)) {

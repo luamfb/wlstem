@@ -9,8 +9,7 @@
 #include "list.h"
 #include "log.h"
 #include "util.h"
-
-struct sway_root *root;
+#include "wlstem.h"
 
 struct sway_root *root_create(void) {
     struct sway_root *root = calloc(1, sizeof(struct sway_root));
@@ -37,8 +36,8 @@ void root_destroy(struct sway_root *root) {
 
 void root_for_each_output(void (*f)(struct sway_output *output, void *data),
         void *data) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
+    for (int i = 0; i < wls->root->outputs->length; ++i) {
+        struct sway_output *output = wls->root->outputs->items[i];
         f(output, data);
     }
 }

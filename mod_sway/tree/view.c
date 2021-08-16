@@ -28,6 +28,7 @@
 #include "sway/xdg_decoration.h"
 #include "pango.h"
 #include "stringop.h"
+#include "wlstem.h"
 
 void view_init(struct sway_view *view, enum sway_view_type type,
         const struct sway_view_impl *impl) {
@@ -278,8 +279,8 @@ void view_close_popups(struct sway_view *view) {
 }
 
 void view_damage_from(struct sway_view *view) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
+    for (int i = 0; i < wls->root->outputs->length; ++i) {
+        struct sway_output *output = wls->root->outputs->items[i];
         output_damage_from_view(output, view);
     }
 }

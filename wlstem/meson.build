@@ -29,6 +29,7 @@ lib_wlstem = shared_library(
         'pango.c',
         'stringop.c',
         'util.c',
+        'root.c',
         'node.c',
         'wlstem.c',
     ),

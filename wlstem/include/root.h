@@ -8,8 +8,6 @@
 #include "config.h"
 #include "list.h"
 
-extern struct sway_root *root;
-
 struct sway_root {
     struct wlr_output_layout *output_layout;
 
