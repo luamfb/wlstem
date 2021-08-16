@@ -248,3 +248,15 @@ struct sway_container *output_add_container(struct sway_output *output,
 bool output_has_containers(struct sway_output *output) {
     return output->tiling->length;
 }
+
+void root_for_each_container(void (*f)(struct sway_container *con, void *data),
+        void *data) {
+    for (int i = 0; i < root->outputs->length; ++i) {
+        struct sway_output *output = root->outputs->items[i];
+        output_for_each_container(output, f, data);
+    }
+
+    if (root->noop_output->active) {
+        output_for_each_container(root->noop_output, f, data);
+    }
+}
