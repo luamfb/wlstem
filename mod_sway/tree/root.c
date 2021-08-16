@@ -3,10 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wlr/types/wlr_output_layout.h>
-#include "sway/desktop/transaction.h"
-#include "sway/input/seat.h"
 #include "output.h"
-#include "sway/tree/arrange.h"
 #include "container.h"
 #include "root.h"
 #include "list.h"
