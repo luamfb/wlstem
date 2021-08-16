@@ -13,7 +13,6 @@ extern struct sway_root *root;
 struct sway_root {
     struct wlr_output_layout *output_layout;
 
-    struct wl_listener output_layout_change;
 #if HAVE_XWAYLAND
     struct wl_list xwayland_unmanaged; // sway_xwayland_unmanaged::link
 #endif
