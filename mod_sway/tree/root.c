@@ -15,12 +15,6 @@
 
 struct sway_root *root;
 
-static void output_layout_handle_change(struct wl_listener *listener,
-        void *data) {
-    arrange_root();
-    transaction_commit_dirty();
-}
-
 struct sway_root *root_create(void) {
     struct sway_root *root = calloc(1, sizeof(struct sway_root));
     if (!root) {
@@ -35,14 +29,10 @@ struct sway_root *root_create(void) {
     wl_list_init(&root->drag_icons);
     root->outputs = create_list();
 
-    root->output_layout_change.notify = output_layout_handle_change;
-    wl_signal_add(&root->output_layout->events.change,
-        &root->output_layout_change);
     return root;
 }
 
 void root_destroy(struct sway_root *root) {
-    wl_list_remove(&root->output_layout_change.link);
     list_free(root->outputs);
     wlr_output_layout_destroy(root->output_layout);
     free(root);

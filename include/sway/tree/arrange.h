@@ -10,4 +10,6 @@ void arrange_output(struct sway_output *output);
 
 void arrange_root(void);
 
+void arrange_output_layout(void);
+
 #endif

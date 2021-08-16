@@ -813,6 +813,7 @@ void handle_output_layout_change(struct wl_listener *listener,
     struct sway_server *server =
         wl_container_of(listener, server, output_layout_change);
     update_output_manager_config(server);
+    arrange_output_layout();
 }
 
 static void output_manager_apply(struct sway_server *server,

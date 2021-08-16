@@ -5,6 +5,7 @@
 #include <string.h>
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
+#include "sway/desktop/transaction.h"
 #include "sway/tree/arrange.h"
 #include "container.h"
 #include "output.h"
@@ -101,4 +102,9 @@ void arrange_root(void) {
         struct sway_output *output = root->outputs->items[i];
         arrange_output(output);
     }
+}
+
+void arrange_output_layout(void) {
+    arrange_root();
+    transaction_commit_dirty();
 }
