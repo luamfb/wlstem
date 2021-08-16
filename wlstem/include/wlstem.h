@@ -3,9 +3,11 @@
 
 #include <stdbool.h>
 #include "node.h"
+#include "root.h"
 
 struct wls_context {
     struct wls_node_manager *node_manager;
+    struct sway_root *root;
 };
 
 // The context for wlstem.

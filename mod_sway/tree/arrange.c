@@ -12,6 +12,7 @@
 #include "sway/tree/view.h"
 #include "list.h"
 #include "log.h"
+#include "wlstem.h"
 
 static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
     if (!children->length) {
@@ -63,7 +64,7 @@ void arrange_container(struct sway_container *container) {
 
 void arrange_output(struct sway_output *output) {
     const struct wlr_box *output_box = wlr_output_layout_get_box(
-            root->output_layout, output->wlr_output);
+            wls->root->output_layout, output->wlr_output);
     output->lx = output_box->x;
     output->ly = output_box->y;
     output->width = output_box->width;
@@ -92,14 +93,14 @@ void arrange_output(struct sway_output *output) {
 
 void arrange_root(void) {
     const struct wlr_box *layout_box =
-        wlr_output_layout_get_box(root->output_layout, NULL);
-    root->x = layout_box->x;
-    root->y = layout_box->y;
-    root->width = layout_box->width;
-    root->height = layout_box->height;
+        wlr_output_layout_get_box(wls->root->output_layout, NULL);
+    wls->root->x = layout_box->x;
+    wls->root->y = layout_box->y;
+    wls->root->width = layout_box->width;
+    wls->root->height = layout_box->height;
 
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
+    for (int i = 0; i < wls->root->outputs->length; ++i) {
+        struct sway_output *output = wls->root->outputs->items[i];
         arrange_output(output);
     }
 }

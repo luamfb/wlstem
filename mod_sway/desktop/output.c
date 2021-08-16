@@ -28,10 +28,11 @@
 #include "container.h"
 #include "root.h"
 #include "sway/tree/view.h"
+#include "wlstem.h"
 
 struct sway_output *output_by_name_or_id(const char *name_or_id) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
+    for (int i = 0; i < wls->root->outputs->length; ++i) {
+        struct sway_output *output = wls->root->outputs->items[i];
         char identifier[128];
         output_get_identifier(identifier, sizeof(identifier), output);
         if (strcasecmp(identifier, name_or_id) == 0
@@ -44,7 +45,7 @@ struct sway_output *output_by_name_or_id(const char *name_or_id) {
 
 struct sway_output *all_output_by_name_or_id(const char *name_or_id) {
     struct sway_output *output;
-    wl_list_for_each(output, &root->all_outputs, link) {
+    wl_list_for_each(output, &wls->root->all_outputs, link) {
         char identifier[128];
         output_get_identifier(identifier, sizeof(identifier), output);
         if (strcasecmp(identifier, name_or_id) == 0
@@ -369,7 +370,7 @@ static void output_for_each_surface(struct sway_output *output,
         for_each_surface_container_iterator, &data);
 
 #if HAVE_XWAYLAND
-    output_unmanaged_for_each_surface(output, &root->xwayland_unmanaged,
+    output_unmanaged_for_each_surface(output, &wls->root->xwayland_unmanaged,
         iterator, user_data);
 #endif
     output_layer_for_each_surface(output,
@@ -380,7 +381,7 @@ overlay:
     output_layer_for_each_surface(output,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY],
         iterator, user_data);
-    output_drag_icons_for_each_surface(output, &root->drag_icons,
+    output_drag_icons_for_each_surface(output, &wls->root->drag_icons,
         iterator, user_data);
 }
 
@@ -669,14 +670,14 @@ static void update_output_manager_config(struct sway_server *server) {
         wlr_output_configuration_v1_create();
 
     struct sway_output *output;
-    wl_list_for_each(output, &root->all_outputs, link) {
-        if (output == root->noop_output) {
+    wl_list_for_each(output, &wls->root->all_outputs, link) {
+        if (output == wls->root->noop_output) {
             continue;
         }
         struct wlr_output_configuration_head_v1 *config_head =
             wlr_output_configuration_head_v1_create(config, output->wlr_output);
         struct wlr_box *output_box = wlr_output_layout_get_box(
-            root->output_layout, output->wlr_output);
+            wls->root->output_layout, output->wlr_output);
         // We mark the output enabled even if it is switched off by DPMS
         config_head->state.enabled = output->enabled;
         config_head->state.mode = output->current_mode;

@@ -30,6 +30,7 @@
 #include "root.h"
 #include "sway/tree/view.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
+#include "wlstem.h"
 
 static struct wlr_surface *layer_surface_at(struct sway_output *output,
         struct wl_list *layer, double ox, double oy, double *sx, double *sy) {
@@ -79,7 +80,7 @@ struct wls_transaction_node *node_at_coords(
         struct wlr_surface **surface, double *sx, double *sy) {
     // check for unmanaged views first
 #if HAVE_XWAYLAND
-    struct wl_list *unmanaged = &root->xwayland_unmanaged;
+    struct wl_list *unmanaged = &wls->root->xwayland_unmanaged;
     struct sway_xwayland_unmanaged *unmanaged_surface;
     wl_list_for_each_reverse(unmanaged_surface, unmanaged, link) {
         struct wlr_xwayland_surface *xsurface =
@@ -97,7 +98,7 @@ struct wls_transaction_node *node_at_coords(
 #endif
     // find the output the cursor is on
     struct wlr_output *wlr_output = wlr_output_layout_output_at(
-            root->output_layout, lx, ly);
+            wls->root->output_layout, lx, ly);
     if (wlr_output == NULL) {
         return NULL;
     }
@@ -107,7 +108,7 @@ struct wls_transaction_node *node_at_coords(
         return NULL;
     }
     double ox = lx, oy = ly;
-    wlr_output_layout_output_coords(root->output_layout, wlr_output, &ox, &oy);
+    wlr_output_layout_output_coords(wls->root->output_layout, wlr_output, &ox, &oy);
 
     if (!output->active) {
         return NULL;
@@ -164,7 +165,7 @@ void cursor_rebase(struct sway_cursor *cursor) {
 }
 
 void cursor_rebase_all(void) {
-    if (!root->outputs->length) {
+    if (!wls->root->outputs->length) {
         return;
     }
 
@@ -491,7 +492,7 @@ static void handle_touch_motion(struct wl_listener *listener, void *data) {
         seat->touch_y = ly;
 
         struct sway_drag_icon *drag_icon;
-        wl_list_for_each(drag_icon, &root->drag_icons, link) {
+        wl_list_for_each(drag_icon, &wls->root->drag_icons, link) {
             if (drag_icon->seat == seat) {
                 drag_icon_update_position(drag_icon);
             }
@@ -1028,7 +1029,7 @@ struct sway_cursor *sway_cursor_create(struct sway_seat *seat) {
     cursor->previous.y = wlr_cursor->y;
 
     cursor->seat = seat;
-    wlr_cursor_attach_output_layout(wlr_cursor, root->output_layout);
+    wlr_cursor_attach_output_layout(wlr_cursor, wls->root->output_layout);
 
     cursor->hide_source = wl_event_loop_add_timer(server.wl_event_loop,
             hide_notify, cursor);

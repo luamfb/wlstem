@@ -16,6 +16,7 @@
 #include "sway/tree/arrange.h"
 #include "container.h"
 #include "sway/tree/view.h"
+#include "wlstem.h"
 
 static const char *atom_map[ATOM_LAST] = {
     [NET_WM_WINDOW_TYPE_NORMAL] = "_NET_WM_WINDOW_TYPE_NORMAL",
@@ -71,7 +72,7 @@ static void unmanaged_handle_map(struct wl_listener *listener, void *data) {
         wl_container_of(listener, surface, map);
     struct wlr_xwayland_surface *xsurface = surface->wlr_xwayland_surface;
 
-    wl_list_insert(root->xwayland_unmanaged.prev, &surface->link);
+    wl_list_insert(wls->root->xwayland_unmanaged.prev, &surface->link);
 
     wl_signal_add(&xsurface->events.set_geometry, &surface->set_geometry);
     surface->set_geometry.notify = unmanaged_handle_set_geometry;

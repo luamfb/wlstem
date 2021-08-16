@@ -15,6 +15,7 @@
 #include "output.h"
 #include "sway/server.h"
 #include "sway/tree/arrange.h"
+#include "wlstem.h"
 
 static void apply_exclusive(struct wlr_box *usable_area,
         uint32_t anchor, int32_t exclusive,
@@ -234,8 +235,8 @@ void arrange_layers(struct sway_output *output) {
 
 static struct sway_layer_surface *find_mapped_layer_by_client(
         struct wl_client *client, struct wlr_output *ignore_output) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
+    for (int i = 0; i < wls->root->outputs->length; ++i) {
+        struct sway_output *output = wls->root->outputs->items[i];
         if (output->wlr_output == ignore_output) {
             continue;
         }
@@ -605,15 +606,15 @@ void handle_layer_shell_surface(struct wl_listener *listener, void *data) {
         if (seat) {
             output = seat_get_focused_output(seat);
         }
-        if (!output || output == root->noop_output) {
-            if (!root->outputs->length) {
+        if (!output || output == wls->root->noop_output) {
+            if (!wls->root->outputs->length) {
                 sway_log(SWAY_ERROR,
                         "no output to auto-assign layer surface '%s' to",
                         layer_surface->namespace);
                 wlr_layer_surface_v1_close(layer_surface);
                 return;
             }
-            output = root->outputs->items[0];
+            output = wls->root->outputs->items[0];
         }
         layer_surface->output = output->wlr_output;
     }

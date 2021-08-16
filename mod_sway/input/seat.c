@@ -485,7 +485,7 @@ static void handle_start_drag(struct wl_listener *listener, void *data) {
         icon->destroy.notify = drag_icon_handle_destroy;
         wl_signal_add(&wlr_drag_icon->events.destroy, &icon->destroy);
 
-        wl_list_insert(&root->drag_icons, &icon->link);
+        wl_list_insert(&wls->root->drag_icons, &icon->link);
 
         drag_icon_update_position(icon);
     }
@@ -960,8 +960,8 @@ void seat_configure_xcursor(struct sway_seat *seat) {
         }
     }
 
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *sway_output = root->outputs->items[i];
+    for (int i = 0; i < wls->root->outputs->length; ++i) {
+        struct sway_output *sway_output = wls->root->outputs->items[i];
         struct wlr_output *output = sway_output->wlr_output;
         bool result =
             wlr_xcursor_manager_load(seat->cursor->xcursor_manager,
@@ -1215,8 +1215,8 @@ void seat_set_exclusive_client(struct sway_seat *seat,
         seat->exclusive_client = client;
         // Triggers a refocus of the topmost surface layer if necessary
         // TODO: Make layer surface focus per-output based on cursor position
-        for (int i = 0; i < root->outputs->length; ++i) {
-            struct sway_output *output = root->outputs->items[i];
+        for (int i = 0; i < wls->root->outputs->length; ++i) {
+            struct sway_output *output = wls->root->outputs->items[i];
             arrange_layers(output);
         }
         return;

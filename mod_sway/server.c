@@ -38,6 +38,7 @@
 #if HAVE_XWAYLAND
 #include "sway/xwayland.h"
 #endif
+#include "wlstem.h"
 
 bool server_privileged_prepare(struct sway_server *server) {
     sway_log(SWAY_DEBUG, "Preparing Wayland server initialization");
@@ -73,10 +74,10 @@ bool server_init(struct sway_server *server) {
     server->new_output.notify = handle_new_output;
     wl_signal_add(&server->backend->events.new_output, &server->new_output);
     server->output_layout_change.notify = handle_output_layout_change;
-    wl_signal_add(&root->output_layout->events.change,
+    wl_signal_add(&wls->root->output_layout->events.change,
         &server->output_layout_change);
 
-    wlr_xdg_output_manager_v1_create(server->wl_display, root->output_layout);
+    wlr_xdg_output_manager_v1_create(server->wl_display, wls->root->output_layout);
 
     server->idle = wlr_idle_create(server->wl_display);
     server->idle_inhibit_manager_v1 =
@@ -169,7 +170,7 @@ bool server_init(struct sway_server *server) {
     server->noop_backend = wlr_noop_backend_create(server->wl_display);
 
     struct wlr_output *wlr_output = wlr_noop_add_output(server->noop_backend);
-    root->noop_output = output_create(wlr_output);
+    wls->root->noop_output = output_create(wlr_output);
 
     server->headless_backend =
         wlr_headless_backend_create_with_renderer(server->wl_display, renderer);

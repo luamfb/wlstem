@@ -352,8 +352,9 @@ int main(int argc, char **argv) {
 
     sway_log(SWAY_INFO, "Starting sway version " SWAY_VERSION);
 
-    wls_init();
-    root = root_create();
+    if (!wls_init()) {
+        return 1;
+    }
 
     if (!server_init(&server)) {
         return 1;
@@ -379,8 +380,6 @@ shutdown:
     sway_log(SWAY_INFO, "Shutting down sway");
 
     server_fini(&server);
-    root_destroy(root);
-    root = NULL;
 
     free_config(config);
 

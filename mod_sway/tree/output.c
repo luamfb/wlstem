@@ -27,8 +27,8 @@ static void output_seize_containers_from(struct sway_output *absorber,
 }
 
 static void seize_containers_from_noop_output(struct sway_output *output) {
-    if (root->noop_output->active) {
-        output_seize_containers_from(output, root->noop_output);
+    if (wls->root->noop_output->active) {
+        output_seize_containers_from(output, wls->root->noop_output);
     }
 }
 
@@ -42,7 +42,7 @@ struct sway_output *output_create(struct wlr_output *wlr_output) {
 
     wl_signal_init(&output->events.destroy);
 
-    wl_list_insert(&root->all_outputs, &output->link);
+    wl_list_insert(&wls->root->all_outputs, &output->link);
 
     output->active = false;
 
@@ -60,7 +60,7 @@ void output_enable(struct sway_output *output) {
     }
     output->tiling = create_list();
     output->enabled = true;
-    list_add(root->outputs, output);
+    list_add(wls->root->outputs, output);
 
     seize_containers_from_noop_output(output);
 
@@ -90,17 +90,17 @@ static void output_evacuate(struct sway_output *output) {
         return;
     }
     struct sway_output *fallback_output = NULL;
-    if (root->outputs->length > 1) {
-        fallback_output = root->outputs->items[0];
+    if (wls->root->outputs->length > 1) {
+        fallback_output = wls->root->outputs->items[0];
         if (fallback_output == output) {
-            fallback_output = root->outputs->items[1];
+            fallback_output = wls->root->outputs->items[1];
         }
     }
 
     if (output->active) {
         struct sway_output *new_output = fallback_output;
         if (!new_output) {
-            new_output = root->noop_output;
+            new_output = wls->root->noop_output;
         }
 
         if (output_has_containers(output)) {
@@ -149,7 +149,7 @@ void output_disable(struct sway_output *output) {
     if (!sway_assert(output->enabled, "Expected an enabled output")) {
         return;
     }
-    int index = list_find(root->outputs, output);
+    int index = list_find(wls->root->outputs, output);
     if (!sway_assert(index >= 0, "Output not found in root node")) {
         return;
     }
@@ -162,7 +162,7 @@ void output_disable(struct sway_output *output) {
 
     root_for_each_container(untrack_output, output);
 
-    list_del(root->outputs, index);
+    list_del(wls->root->outputs, index);
 
     output->enabled = false;
     output->current_mode = NULL;
@@ -199,11 +199,11 @@ struct sway_output *output_get_in_direction(struct sway_output *reference,
         return NULL;
     }
     struct wlr_box *output_box =
-        wlr_output_layout_get_box(root->output_layout, reference->wlr_output);
+        wlr_output_layout_get_box(wls->root->output_layout, reference->wlr_output);
     int lx = output_box->x + output_box->width / 2;
     int ly = output_box->y + output_box->height / 2;
     struct wlr_output *wlr_adjacent = wlr_output_layout_adjacent_output(
-            root->output_layout, direction, reference->wlr_output, lx, ly);
+            wls->root->output_layout, direction, reference->wlr_output, lx, ly);
     if (!wlr_adjacent) {
         return NULL;
     }
@@ -251,12 +251,12 @@ bool output_has_containers(struct sway_output *output) {
 
 void root_for_each_container(void (*f)(struct sway_container *con, void *data),
         void *data) {
-    for (int i = 0; i < root->outputs->length; ++i) {
-        struct sway_output *output = root->outputs->items[i];
+    for (int i = 0; i < wls->root->outputs->length; ++i) {
+        struct sway_output *output = wls->root->outputs->items[i];
         output_for_each_container(output, f, data);
     }
 
-    if (root->noop_output->active) {
-        output_for_each_container(root->noop_output, f, data);
+    if (wls->root->noop_output->active) {
+        output_for_each_container(wls->root->noop_output, f, data);
     }
 }
