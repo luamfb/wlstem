@@ -21,6 +21,7 @@
 #include "stringop.h"
 #include "util.h"
 #include "wlstem.h"
+#include "wls_server.h"
 
 static bool terminate_request = false;
 static int exit_value = 0;
@@ -28,14 +29,14 @@ struct sway_server server = {0};
 struct sway_debug debug = {0};
 
 void sway_terminate(int exit_code) {
-    if (!server.wl_display) {
+    if (!wls->server->wl_display) {
         // Running as IPC client
         exit(exit_code);
     } else {
         // Running as server
         terminate_request = true;
         exit_value = exit_code;
-        wl_display_terminate(server.wl_display);
+        wls_server_terminate(wls->server);
     }
 }
 
@@ -172,26 +173,6 @@ static void log_kernel(void) {
     pclose(f);
 }
 
-
-static bool drop_permissions(void) {
-    if (getuid() != geteuid() || getgid() != getegid()) {
-        // Set the gid and uid in the correct order.
-        if (setgid(getgid()) != 0) {
-            sway_log(SWAY_ERROR, "Unable to drop root group, refusing to start");
-            return false;
-        }
-        if (setuid(getuid()) != 0) {
-            sway_log(SWAY_ERROR, "Unable to drop root user, refusing to start");
-            return false;
-        }
-    }
-    if (setgid(0) != -1 || setuid(0) != -1) {
-        sway_log(SWAY_ERROR, "Unable to drop root (we shouldn't be able to "
-            "restore it after setuid), refusing to start");
-        return false;
-    }
-    return true;
-}
 
 void enable_debug_flag(const char *flag) {
     if (strcmp(flag, "damage=highlight") == 0) {
@@ -334,15 +315,6 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (!server_privileged_prepare(&server)) {
-        return 1;
-    }
-
-    if (!drop_permissions()) {
-        server_fini(&server);
-        exit(EXIT_FAILURE);
-    }
-
     // handle SIGTERM signals
     signal(SIGTERM, sig_handler);
     signal(SIGINT, sig_handler);
@@ -374,12 +346,18 @@ int main(int argc, char **argv) {
     config->active = true;
     transaction_commit_dirty();
 
-    server_run(&server);
+    wls_server_run(wls->server, server.socket);
 
 shutdown:
     sway_log(SWAY_INFO, "Shutting down sway");
 
-    server_fini(&server);
+    // TODO: free sway-specific resources
+#if HAVE_XWAYLAND
+    wlr_xwayland_destroy(server.xwayland.wlr_xwayland);
+#endif
+    wls_fini();
+    // only free this list after finalizing wls_fini() because it needs it.
+    list_free(server.transactions);
 
     free_config(config);
 

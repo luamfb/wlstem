@@ -17,6 +17,7 @@
 #include "list.h"
 #include "log.h"
 #include "wlstem.h"
+#include "wls_server.h"
 
 struct sway_transaction {
     struct wl_event_source *timer;
@@ -391,7 +392,7 @@ static void transaction_commit(struct sway_transaction *transaction) {
 
     if (transaction->num_waiting) {
         // Set up a timer which the views must respond within
-        transaction->timer = wl_event_loop_add_timer(server.wl_event_loop,
+        transaction->timer = wl_event_loop_add_timer(wls->server->wl_event_loop,
                 handle_timeout, transaction);
         if (transaction->timer) {
             wl_event_source_timer_update(transaction->timer,

@@ -31,6 +31,7 @@
 #include "sway/tree/view.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 #include "wlstem.h"
+#include "wls_server.h"
 
 static struct wlr_surface *layer_surface_at(struct sway_output *output,
         struct wl_list *layer, double ox, double oy, double *sx, double *sy) {
@@ -1031,13 +1032,13 @@ struct sway_cursor *sway_cursor_create(struct sway_seat *seat) {
     cursor->seat = seat;
     wlr_cursor_attach_output_layout(wlr_cursor, wls->root->output_layout);
 
-    cursor->hide_source = wl_event_loop_add_timer(server.wl_event_loop,
+    cursor->hide_source = wl_event_loop_add_timer(wls->server->wl_event_loop,
             hide_notify, cursor);
 
     wl_list_init(&cursor->image_surface_destroy.link);
     cursor->image_surface_destroy.notify = handle_image_surface_destroy;
 
-    cursor->pointer_gestures = wlr_pointer_gestures_v1_create(server.wl_display);
+    cursor->pointer_gestures = wlr_pointer_gestures_v1_create(wls->server->wl_display);
     cursor->pinch_begin.notify = handle_pointer_pinch_begin;
     wl_signal_add(&wlr_cursor->events.pinch_begin, &cursor->pinch_begin);
     cursor->pinch_update.notify = handle_pointer_pinch_update;

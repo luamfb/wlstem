@@ -6,6 +6,7 @@
 #include "root.h"
 
 struct wls_context {
+    struct wls_server *server;
     struct wls_node_manager *node_manager;
     struct sway_root *root;
 };

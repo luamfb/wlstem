@@ -31,6 +31,7 @@
 #include "root.h"
 #include "sway/tree/view.h"
 #include "wlstem.h"
+#include "wls_server.h"
 
 static void seat_device_destroy(struct sway_seat_device *seat_device) {
     if (!seat_device) {
@@ -534,7 +535,7 @@ struct sway_seat *seat_create(const char *seat_name) {
         return NULL;
     }
 
-    seat->wlr_seat = wlr_seat_create(server.wl_display, seat_name);
+    seat->wlr_seat = wlr_seat_create(wls->server->wl_display, seat_name);
     if (!sway_assert(seat->wlr_seat, "could not allocate seat")) {
         free(seat);
         return NULL;
@@ -1124,7 +1125,7 @@ void seat_set_focus(struct sway_seat *seat, struct wls_transaction_node *node) {
         struct sway_view *view = container->view;
         if (last_output && last_output != new_output &&
                 config->urgent_timeout > 0) {
-            view->urgent_timer = wl_event_loop_add_timer(server.wl_event_loop,
+            view->urgent_timer = wl_event_loop_add_timer(wls->server->wl_event_loop,
                     handle_urgent_timeout, view);
             if (view->urgent_timer) {
                 wl_event_source_timer_update(view->urgent_timer,

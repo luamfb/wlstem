@@ -15,6 +15,8 @@
 #include "sway/input/seat.h"
 #include "sway/input/cursor.h"
 #include "log.h"
+#include "wlstem.h"
+#include "wls_server.h"
 
 static struct modifier_key {
     char *name;
@@ -252,9 +254,9 @@ static bool keyboard_execute_compositor_binding(struct sway_keyboard *keyboard,
         xkb_keysym_t keysym = pressed_keysyms[i];
         if (keysym >= XKB_KEY_XF86Switch_VT_1 &&
                 keysym <= XKB_KEY_XF86Switch_VT_12) {
-            if (wlr_backend_is_multi(server.backend)) {
+            if (wlr_backend_is_multi(wls->server->backend)) {
                 struct wlr_session *session =
-                    wlr_backend_get_session(server.backend);
+                    wlr_backend_get_session(wls->server->backend);
                 if (session) {
                     unsigned vt = keysym - XKB_KEY_XF86Switch_VT_1 + 1;
                     wlr_session_change_vt(session, vt);
@@ -621,7 +623,7 @@ struct sway_keyboard *sway_keyboard_create(struct sway_seat *seat,
     wl_list_init(&keyboard->keyboard_key.link);
     wl_list_init(&keyboard->keyboard_modifiers.link);
 
-    keyboard->key_repeat_source = wl_event_loop_add_timer(server.wl_event_loop,
+    keyboard->key_repeat_source = wl_event_loop_add_timer(wls->server->wl_event_loop,
             handle_keyboard_repeat, keyboard);
 
     return keyboard;
@@ -749,7 +751,7 @@ static void sway_keyboard_group_remove(struct sway_keyboard *keyboard) {
 
         // To prevent use-after-free conditions when handling key events, defer
         // freeing the wlr_keyboard_group until idle
-        wl_event_loop_add_idle(server.wl_event_loop,
+        wl_event_loop_add_idle(wls->server->wl_event_loop,
                 destroy_empty_wlr_keyboard_group, wlr_group);
     }
 }
