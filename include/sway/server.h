@@ -24,11 +24,8 @@
 #endif
 
 struct sway_server {
-    struct wl_display *wl_display;
-    struct wl_event_loop *wl_event_loop;
     const char *socket;
 
-    struct wlr_backend *backend;
     struct wlr_backend *noop_backend;
     // secondary headless backend used for creating virtual outputs on-the-fly
     struct wlr_backend *headless_backend;
@@ -108,9 +105,7 @@ extern struct sway_debug debug;
 /* Prepares an unprivileged server_init by performing all privileged operations in advance */
 bool server_privileged_prepare(struct sway_server *server);
 bool server_init(struct sway_server *server);
-void server_fini(struct sway_server *server);
 bool server_start(struct sway_server *server);
-void server_run(struct sway_server *server);
 
 void handle_compositor_new_surface(struct wl_listener *listener, void *data);
 void handle_new_output(struct wl_listener *listener, void *data);

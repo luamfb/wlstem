@@ -31,6 +31,7 @@ lib_wlstem = shared_library(
         'util.c',
         'root.c',
         'node.c',
+        'server.c',
         'wlstem.c',
     ),
     dependencies: wlstem_deps,

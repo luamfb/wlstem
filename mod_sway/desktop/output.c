@@ -29,6 +29,7 @@
 #include "root.h"
 #include "sway/tree/view.h"
 #include "wlstem.h"
+#include "wls_server.h"
 
 struct sway_output *output_by_name_or_id(const char *name_or_id) {
     for (int i = 0; i < wls->root->outputs->length; ++i) {
@@ -499,7 +500,7 @@ static void damage_handle_frame(struct wl_listener *listener, void *user_data) {
     if (output->max_render_time != 0) {
         struct timespec now;
         clockid_t presentation_clock
-            = wlr_backend_get_presentation_clock(server.backend);
+            = wlr_backend_get_presentation_clock(wls->server->backend);
         clock_gettime(presentation_clock, &now);
 
         const long NSEC_IN_SECONDS = 1000000000;
@@ -797,7 +798,7 @@ void handle_new_output(struct wl_listener *listener, void *data) {
     wl_signal_add(&output->damage->events.destroy, &output->damage_destroy);
     output->damage_destroy.notify = damage_handle_destroy;
 
-    output->repaint_timer = wl_event_loop_add_timer(server->wl_event_loop,
+    output->repaint_timer = wl_event_loop_add_timer(wls->server->wl_event_loop,
         output_repaint_timer_handler, output);
 
     struct output_config *oc = find_output_config(output);
