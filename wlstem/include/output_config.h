@@ -1,6 +1,8 @@
 #ifndef _SWAY_OUTPUT_CONFIG_H
 #define _SWAY_OUTPUT_CONFIG_H
 
+#include <wayland-server.h>
+
 struct sway_output;
 
 enum config_dpms {
