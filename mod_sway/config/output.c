@@ -475,11 +475,6 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
             oc->name, oc->max_render_time);
         output->max_render_time = oc->max_render_time;
     }
-
-    // Reconfigure all devices, since input config may have been applied before
-    // this output came online, and some config items (like map_to_output) are
-    // dependent on an output being present.
-    input_manager_configure_all_inputs();
     return true;
 }
 
