@@ -59,12 +59,6 @@ void free_config(struct sway_config *config) {
 
     config->current_seat = NULL;
 
-    if (config->output_configs) {
-        for (int i = 0; i < config->output_configs->length; i++) {
-            free_output_config(config->output_configs->items[i]);
-        }
-        list_free(config->output_configs);
-    }
     if (config->input_configs) {
         for (int i = 0; i < config->input_configs->length; i++) {
             free_input_config(config->input_configs->items[i]);
@@ -109,7 +103,6 @@ static void insert_default_keybindings() {
 
 static void config_defaults(struct sway_config *config) {
     if (!(config->seat_configs = create_list())) goto cleanup;
-    if (!(config->output_configs = create_list())) goto cleanup;
 
     if (!(config->input_type_configs = create_list())) goto cleanup;
     if (!(config->input_configs = create_list())) goto cleanup;

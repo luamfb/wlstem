@@ -2,6 +2,7 @@
 #define WLSTEM_WLSTEM_H
 
 #include <stdbool.h>
+#include "list.h"
 #include "node.h"
 #include "root.h"
 
@@ -9,6 +10,7 @@ struct wls_context {
     struct wls_server *server;
     struct wls_node_manager *node_manager;
     struct sway_root *root;
+    list_t *output_configs;
 };
 
 // The context for wlstem.
