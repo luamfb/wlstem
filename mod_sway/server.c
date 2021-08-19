@@ -32,6 +32,7 @@
 #include "sway/sway_config.h"
 #include "sway/desktop/idle_inhibit_v1.h"
 #include "sway/input/input-manager.h"
+#include "sway/tree/arrange.h"
 #include "output.h"
 #include "sway/server.h"
 #include "root.h"
@@ -178,6 +179,8 @@ bool server_init(struct sway_server *server) {
 
     server->input = input_manager_create(server);
     input_manager_get_default_seat(); // create seat0
+
+    server->wm = server_wm_create();
 
     return true;
 }

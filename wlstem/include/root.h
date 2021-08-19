@@ -26,6 +26,10 @@ struct sway_root {
 
     // For when there's no connected outputs
     struct sway_output *noop_output;
+
+    struct {
+        struct wl_signal output_layout_changed;
+    } events;
 };
 
 struct sway_root *root_create(void);

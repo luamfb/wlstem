@@ -14,6 +14,29 @@
 #include "log.h"
 #include "wlstem.h"
 
+static void wm_handle_output_layout_change(
+        struct wl_listener *listener, void *data) {
+    arrange_output_layout();
+}
+
+struct server_wm * server_wm_create(void) {
+    struct server_wm *wm = calloc(1, sizeof(struct server_wm));
+    if (!wm) {
+        return NULL;
+    }
+    wl_signal_add(&wls->root->events.output_layout_changed,
+        &wm->output_layout_change);
+    wm->output_layout_change.notify = wm_handle_output_layout_change;
+    return wm;
+}
+
+void server_wm_destroy(struct server_wm *wm) {
+    if (!wm) {
+        return;
+    }
+    free(wm);
+}
+
 static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
     if (!children->length) {
         return;
