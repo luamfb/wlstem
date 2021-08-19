@@ -815,7 +815,7 @@ void handle_output_layout_change(struct wl_listener *listener,
     struct sway_server *server =
         wl_container_of(listener, server, output_layout_change);
     update_output_manager_config(server);
-    arrange_output_layout();
+    wl_signal_emit(&wls->root->events.output_layout_changed, wls->root);
 }
 
 static void output_manager_apply(struct sway_server *server,

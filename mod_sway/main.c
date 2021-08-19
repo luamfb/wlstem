@@ -16,6 +16,7 @@
 #include "sway/sway_config.h"
 #include "sway/server.h"
 #include "sway/desktop/transaction.h"
+#include "sway/tree/arrange.h"
 #include "root.h"
 #include "log.h"
 #include "stringop.h"
@@ -358,6 +359,8 @@ shutdown:
     wls_fini();
     // only free this list after finalizing wls_fini() because it needs it.
     list_free(server.transactions);
+
+    server_wm_destroy(server.wm);
 
     free_config(config);
 

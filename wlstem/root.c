@@ -25,6 +25,8 @@ struct sway_root *root_create(void) {
     wl_list_init(&root->drag_icons);
     root->outputs = create_list();
 
+    wl_signal_init(&root->events.output_layout_changed);
+
     return root;
 }
 
