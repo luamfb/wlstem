@@ -6,7 +6,6 @@
 #include <wlr/types/wlr_output_damage.h>
 #include "sway/layers.h"
 #include "output.h"
-#include "sway/tree/arrange.h"
 #include "sway/input/seat.h"
 #include "log.h"
 #include "util.h"
@@ -82,7 +81,7 @@ void output_enable(struct sway_output *output) {
     wl_signal_emit(&wls->node_manager->events.new_node, &output->node);
 
     arrange_layers(output);
-    arrange_root();
+    wl_signal_emit(&wls->root->events.output_connected, output);
 }
 
 static void output_evacuate(struct sway_output *output) {
@@ -167,7 +166,7 @@ void output_disable(struct sway_output *output) {
     output->enabled = false;
     output->current_mode = NULL;
 
-    arrange_root();
+    wl_signal_emit(&wls->root->events.output_disconnected, output);
 }
 
 void output_begin_destroy(struct sway_output *output) {

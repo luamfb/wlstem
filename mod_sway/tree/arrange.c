@@ -19,6 +19,16 @@ static void wm_handle_output_layout_change(
     arrange_output_layout();
 }
 
+static void wm_handle_output_connected(
+        struct wl_listener *listener, void *data) {
+    arrange_root();
+}
+
+static void wm_handle_output_disconnected(
+        struct wl_listener *listener, void *data) {
+    arrange_root();
+}
+
 struct server_wm * server_wm_create(void) {
     struct server_wm *wm = calloc(1, sizeof(struct server_wm));
     if (!wm) {
@@ -27,6 +37,15 @@ struct server_wm * server_wm_create(void) {
     wl_signal_add(&wls->root->events.output_layout_changed,
         &wm->output_layout_change);
     wm->output_layout_change.notify = wm_handle_output_layout_change;
+
+    wl_signal_add(&wls->root->events.output_connected,
+        &wm->output_connected);
+    wm->output_connected.notify = wm_handle_output_connected;
+
+    wl_signal_add(&wls->root->events.output_disconnected,
+        &wm->output_disconnected);
+    wm->output_disconnected.notify = wm_handle_output_disconnected;
+
     return wm;
 }
 

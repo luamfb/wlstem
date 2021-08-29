@@ -8,6 +8,8 @@ struct sway_container;
 
 struct server_wm {
     struct wl_listener output_layout_change;
+    struct wl_listener output_connected;
+    struct wl_listener output_disconnected;
 };
 
 struct server_wm * server_wm_create(void);
