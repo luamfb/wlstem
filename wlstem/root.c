@@ -26,6 +26,8 @@ struct sway_root *root_create(void) {
     root->outputs = create_list();
 
     wl_signal_init(&root->events.output_layout_changed);
+    wl_signal_init(&root->events.output_connected);
+    wl_signal_init(&root->events.output_disconnected);
 
     return root;
 }

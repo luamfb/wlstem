@@ -29,6 +29,8 @@ struct sway_root {
 
     struct {
         struct wl_signal output_layout_changed;
+        struct wl_signal output_connected;
+        struct wl_signal output_disconnected;
     } events;
 };
 
