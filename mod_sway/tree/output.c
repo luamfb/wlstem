@@ -11,7 +11,7 @@
 #include "util.h"
 #include "wlstem.h"
 
-static void output_seize_containers_from(struct sway_output *absorber,
+void output_seize_containers_from(struct sway_output *absorber,
     struct sway_output *giver)
 {
     if (!sway_assert(absorber->active, "Expected active output")) {
@@ -25,7 +25,7 @@ static void output_seize_containers_from(struct sway_output *absorber,
     node_set_dirty(&absorber->node);
 }
 
-static void seize_containers_from_noop_output(struct sway_output *output) {
+void seize_containers_from_noop_output(struct sway_output *output) {
     if (wls->root->noop_output->active) {
         output_seize_containers_from(output, wls->root->noop_output);
     }
@@ -60,8 +60,6 @@ void output_enable(struct sway_output *output) {
     output->tiling = create_list();
     output->enabled = true;
     list_add(wls->root->outputs, output);
-
-    seize_containers_from_noop_output(output);
 
     if (!output->active) {
         sway_log(SWAY_DEBUG, "Activating output '%s'", output->wlr_output->name);

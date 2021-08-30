@@ -171,4 +171,8 @@ struct sway_container *output_add_container(struct sway_output *output,
 
 bool output_has_containers(struct sway_output *output);
 
+void output_seize_containers_from(struct sway_output *absorber,
+    struct sway_output *giver);
+
+void seize_containers_from_noop_output(struct sway_output *output);
 #endif
