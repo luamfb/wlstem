@@ -6,6 +6,7 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
 #include "sway/desktop/transaction.h"
+#include "sway/input/seat.h"
 #include "sway/tree/arrange.h"
 #include "container.h"
 #include "output.h"
@@ -23,6 +24,15 @@ static void wm_handle_output_connected(
         struct wl_listener *listener, void *data) {
     struct sway_output *output = data;
     seize_containers_from_noop_output(output);
+
+    // Set each seat's focus if not already set
+    struct sway_seat *seat = NULL;
+    wl_list_for_each(seat, &server.input->seats, link) {
+        if (!seat->has_focus) {
+            seat_set_focus_output(seat, output);
+        }
+    }
+
     arrange_root();
 }
 
