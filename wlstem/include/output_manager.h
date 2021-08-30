@@ -1,5 +1,5 @@
-#ifndef _SWAY_ROOT_H
-#define _SWAY_ROOT_H
+#ifndef WLS_OUTPUT_MANAGER_H_
+#define WLS_OUTPUT_MANAGER_H_
 #include <wayland-server-core.h>
 #include <wayland-util.h>
 #include <wlr/types/wlr_output_layout.h>
@@ -10,7 +10,7 @@
 
 struct wls_server;
 
-struct sway_root {
+struct wls_output_manager {
     struct wlr_output_layout *output_layout;
 
 #if HAVE_XWAYLAND
@@ -40,18 +40,18 @@ struct sway_root {
     } events;
 };
 
-struct sway_root *root_create(struct wls_server *server);
+struct wls_output_manager *wls_output_manager_create(struct wls_server *server);
 
-void root_destroy(struct sway_root *root);
+void wls_output_manager_destroy(struct wls_output_manager *output_manager);
 
-void root_for_each_output(void (*f)(struct sway_output *output, void *data),
+void wls_output_layout_for_each_output(void (*f)(struct sway_output *output, void *data),
         void *data);
 
-void root_for_each_container(void (*f)(struct sway_container *con, void *data),
+void wls_output_layout_for_each_container(void (*f)(struct sway_container *con, void *data),
         void *data);
 
-void root_get_box(struct sway_root *root, struct wlr_box *box);
+void wls_output_layout_get_box(struct wls_output_manager *output_manager, struct wlr_box *box);
 
-void update_output_manager_config(struct sway_root *root);
+void wls_update_output_manager_config(struct wls_output_manager *output_manager);
 
 #endif

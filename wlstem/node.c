@@ -3,7 +3,7 @@
 #include "output.h"
 #include "container.h"
 #include "node.h"
-#include "root.h"
+#include "output_manager.h"
 #include "list.h"
 #include "log.h"
 #include "wlstem.h"

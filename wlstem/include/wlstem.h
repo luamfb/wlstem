@@ -4,12 +4,12 @@
 #include <stdbool.h>
 #include "list.h"
 #include "node.h"
-#include "root.h"
+#include "output_manager.h"
 
 struct wls_context {
     struct wls_server *server;
     struct wls_node_manager *node_manager;
-    struct sway_root *root;
+    struct wls_output_manager *output_manager;
     list_t *output_configs;
 };
 

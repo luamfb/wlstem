@@ -49,15 +49,15 @@ struct server_wm * server_wm_create(void) {
     if (!wm) {
         return NULL;
     }
-    wl_signal_add(&wls->root->events.output_layout_changed,
+    wl_signal_add(&wls->output_manager->events.output_layout_changed,
         &wm->output_layout_change);
     wm->output_layout_change.notify = wm_handle_output_layout_change;
 
-    wl_signal_add(&wls->root->events.output_connected,
+    wl_signal_add(&wls->output_manager->events.output_connected,
         &wm->output_connected);
     wm->output_connected.notify = wm_handle_output_connected;
 
-    wl_signal_add(&wls->root->events.output_disconnected,
+    wl_signal_add(&wls->output_manager->events.output_disconnected,
         &wm->output_disconnected);
     wm->output_disconnected.notify = wm_handle_output_disconnected;
 
@@ -121,7 +121,7 @@ void arrange_container(struct sway_container *container) {
 
 void arrange_output(struct sway_output *output) {
     const struct wlr_box *output_box = wlr_output_layout_get_box(
-            wls->root->output_layout, output->wlr_output);
+            wls->output_manager->output_layout, output->wlr_output);
     output->lx = output_box->x;
     output->ly = output_box->y;
     output->width = output_box->width;
@@ -150,14 +150,14 @@ void arrange_output(struct sway_output *output) {
 
 void arrange_root(void) {
     const struct wlr_box *layout_box =
-        wlr_output_layout_get_box(wls->root->output_layout, NULL);
-    wls->root->x = layout_box->x;
-    wls->root->y = layout_box->y;
-    wls->root->width = layout_box->width;
-    wls->root->height = layout_box->height;
+        wlr_output_layout_get_box(wls->output_manager->output_layout, NULL);
+    wls->output_manager->x = layout_box->x;
+    wls->output_manager->y = layout_box->y;
+    wls->output_manager->width = layout_box->width;
+    wls->output_manager->height = layout_box->height;
 
-    for (int i = 0; i < wls->root->outputs->length; ++i) {
-        struct sway_output *output = wls->root->outputs->items[i];
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *output = wls->output_manager->outputs->items[i];
         arrange_output(output);
     }
 }

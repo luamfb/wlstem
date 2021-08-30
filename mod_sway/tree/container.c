@@ -179,8 +179,8 @@ bool surface_is_popup(struct wlr_surface *surface) {
 }
 
 void container_damage_whole(struct sway_container *container) {
-    for (int i = 0; i < wls->root->outputs->length; ++i) {
-        struct sway_output *output = wls->root->outputs->items[i];
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *output = wls->output_manager->outputs->items[i];
         output_damage_whole_container(output, container);
     }
 }
@@ -338,8 +338,8 @@ void container_discover_outputs(struct sway_container *con) {
     };
     struct sway_output *old_output = container_get_effective_output(con);
 
-    for (int i = 0; i < wls->root->outputs->length; ++i) {
-        struct sway_output *output = wls->root->outputs->items[i];
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *output = wls->output_manager->outputs->items[i];
         struct wlr_box output_box;
         output_get_box(output, &output_box);
         struct wlr_box intersection;

@@ -8,26 +8,26 @@
 #include <wlr/types/wlr_output_management_v1.h>
 #include "output.h"
 #include "container.h"
-#include "root.h"
+#include "output_manager.h"
 #include "list.h"
 #include "log.h"
 #include "util.h"
 #include "wlstem.h"
 #include "wls_server.h"
 
-void update_output_manager_config(struct sway_root *root) {
+void wls_update_output_manager_config(struct wls_output_manager *output_manager) {
     struct wlr_output_configuration_v1 *config =
         wlr_output_configuration_v1_create();
 
     struct sway_output *output;
-    wl_list_for_each(output, &root->all_outputs, link) {
-        if (output == root->noop_output) {
+    wl_list_for_each(output, &output_manager->all_outputs, link) {
+        if (output == output_manager->noop_output) {
             continue;
         }
         struct wlr_output_configuration_head_v1 *config_head =
             wlr_output_configuration_head_v1_create(config, output->wlr_output);
         struct wlr_box *output_box = wlr_output_layout_get_box(
-            root->output_layout, output->wlr_output);
+            output_manager->output_layout, output->wlr_output);
         // We mark the output enabled even if it is switched off by DPMS
         config_head->state.enabled = output->enabled;
         config_head->state.mode = output->current_mode;
@@ -37,10 +37,10 @@ void update_output_manager_config(struct sway_root *root) {
         }
     }
 
-    wlr_output_manager_v1_set_configuration(root->output_manager_v1, config);
+    wlr_output_manager_v1_set_configuration(output_manager->output_manager_v1, config);
 }
 
-static void output_manager_apply(struct sway_root *root,
+static void output_manager_apply(struct wls_output_manager *output_manager,
         struct wlr_output_configuration_v1 *config, bool test_only) {
     // TODO: perform atomic tests on the whole backend atomically
 
@@ -105,71 +105,72 @@ static void output_manager_apply(struct sway_root *root,
     wlr_output_configuration_v1_destroy(config);
 
     if (!test_only) {
-        update_output_manager_config(wls->root);
+        wls_update_output_manager_config(wls->output_manager);
     }
 }
 
 static void handle_output_manager_apply(struct wl_listener *listener, void *data) {
-    struct sway_root *root =
-        wl_container_of(listener, root, output_manager_apply);
+    struct wls_output_manager *output_manager =
+        wl_container_of(listener, output_manager, output_manager_apply);
     struct wlr_output_configuration_v1 *config = data;
 
-    output_manager_apply(root, config, false);
+    output_manager_apply(output_manager, config, false);
 }
 
 static void handle_output_manager_test(struct wl_listener *listener, void *data) {
-    struct sway_root *root =
-        wl_container_of(listener, root, output_manager_test);
+    struct wls_output_manager *output_manager =
+        wl_container_of(listener, output_manager, output_manager_test);
     struct wlr_output_configuration_v1 *config = data;
 
-    output_manager_apply(root, config, true);
+    output_manager_apply(output_manager, config, true);
 }
 
-struct sway_root *root_create(struct wls_server *server) {
-    struct sway_root *root = calloc(1, sizeof(struct sway_root));
-    if (!root) {
-        sway_log(SWAY_ERROR, "Unable to allocate sway_root");
+struct wls_output_manager *wls_output_manager_create(struct wls_server *server) {
+    struct wls_output_manager *output_manager = calloc(1, sizeof(struct wls_output_manager));
+    if (!output_manager) {
+        sway_log(SWAY_ERROR, "Unable to allocate wls_output_manager");
         return NULL;
     }
-    root->output_layout = wlr_output_layout_create();
-    wl_list_init(&root->all_outputs);
+    output_manager->output_layout = wlr_output_layout_create();
+    wl_list_init(&output_manager->all_outputs);
 #if HAVE_XWAYLAND
-    wl_list_init(&root->xwayland_unmanaged);
+    wl_list_init(&output_manager->xwayland_unmanaged);
 #endif
-    wl_list_init(&root->drag_icons);
-    root->outputs = create_list();
+    wl_list_init(&output_manager->drag_icons);
+    output_manager->outputs = create_list();
 
-    root->output_manager_v1 =
+    output_manager->output_manager_v1 =
         wlr_output_manager_v1_create(server->wl_display);
-    root->output_manager_apply.notify = handle_output_manager_apply;
-    wl_signal_add(&root->output_manager_v1->events.apply,
-        &root->output_manager_apply);
-    root->output_manager_test.notify = handle_output_manager_test;
-    wl_signal_add(&root->output_manager_v1->events.test,
-        &root->output_manager_test);
 
-    wl_signal_init(&root->events.output_layout_changed);
-    wl_signal_init(&root->events.output_connected);
-    wl_signal_init(&root->events.output_disconnected);
+    output_manager->output_manager_apply.notify = handle_output_manager_apply;
+    wl_signal_add(&output_manager->output_manager_v1->events.apply,
+        &output_manager->output_manager_apply);
+    output_manager->output_manager_test.notify = handle_output_manager_test;
+    wl_signal_add(&output_manager->output_manager_v1->events.test,
+        &output_manager->output_manager_test);
 
-    return root;
+    wl_signal_init(&output_manager->events.output_layout_changed);
+    wl_signal_init(&output_manager->events.output_connected);
+    wl_signal_init(&output_manager->events.output_disconnected);
+
+    return output_manager;
 }
 
-void root_destroy(struct sway_root *root) {
-    list_free(root->outputs);
-    wlr_output_layout_destroy(root->output_layout);
-    free(root);
+void wls_output_manager_destroy(struct wls_output_manager *output_manager) {
+    list_free(output_manager->outputs);
+    wlr_output_layout_destroy(output_manager->output_layout);
+    free(output_manager);
 }
 
-void root_for_each_output(void (*f)(struct sway_output *output, void *data),
+void wls_output_layout_for_each_output(void (*f)(struct sway_output *output, void *data),
         void *data) {
-    for (int i = 0; i < wls->root->outputs->length; ++i) {
-        struct sway_output *output = wls->root->outputs->items[i];
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *output = wls->output_manager->outputs->items[i];
         f(output, data);
     }
 }
 
-void root_get_box(struct sway_root *root, struct wlr_box *box) {
+void wls_output_layout_get_box(struct wls_output_manager *root, struct wlr_box *box) {
     box->x = root->x;
     box->y = root->y;
     box->width = root->width;

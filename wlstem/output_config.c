@@ -10,8 +10,8 @@
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_output.h>
 #include "output_config.h"
+#include "output_manager.h"
 #include "output.h"
-#include "root.h"
 #include "log.h"
 #include "util.h"
 #include "wlstem.h"
@@ -151,7 +151,7 @@ static void merge_id_on_name(struct output_config *oc) {
     char id[128];
     char *name = NULL;
     struct sway_output *output;
-    wl_list_for_each(output, &wls->root->all_outputs, link) {
+    wl_list_for_each(output, &wls->output_manager->all_outputs, link) {
         name = output->wlr_output->name;
         output_get_identifier(id, sizeof(id), output);
         if (strcmp(name, oc->name) == 0 || strcmp(id, oc->name) == 0) {
@@ -347,7 +347,7 @@ static int compute_default_scale(struct wlr_output *output) {
 
 static void queue_output_config(struct output_config *oc,
         struct sway_output *output) {
-    if (output == wls->root->noop_output) {
+    if (output == wls->output_manager->noop_output) {
         return;
     }
 
@@ -405,7 +405,7 @@ static void queue_output_config(struct output_config *oc,
 }
 
 bool apply_output_config(struct output_config *oc, struct sway_output *output) {
-    if (output == wls->root->noop_output) {
+    if (output == wls->output_manager->noop_output) {
         return false;
     }
 
@@ -465,14 +465,14 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
     // Find position for it
     if (oc && (oc->x != -1 || oc->y != -1)) {
         sway_log(SWAY_DEBUG, "Set %s position to %d, %d", oc->name, oc->x, oc->y);
-        wlr_output_layout_add(wls->root->output_layout, wlr_output, oc->x, oc->y);
+        wlr_output_layout_add(wls->output_manager->output_layout, wlr_output, oc->x, oc->y);
     } else {
-        wlr_output_layout_add_auto(wls->root->output_layout, wlr_output);
+        wlr_output_layout_add_auto(wls->output_manager->output_layout, wlr_output);
     }
 
     // Update output->{lx, ly, width, height}
     struct wlr_box *output_box =
-        wlr_output_layout_get_box(wls->root->output_layout, wlr_output);
+        wlr_output_layout_get_box(wls->output_manager->output_layout, wlr_output);
     output->lx = output_box->x;
     output->ly = output_box->y;
     output->width = output_box->width;
@@ -494,7 +494,7 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
 }
 
 bool test_output_config(struct output_config *oc, struct sway_output *output) {
-    if (output == wls->root->noop_output) {
+    if (output == wls->output_manager->noop_output) {
         return false;
     }
 
