@@ -12,7 +12,7 @@ void output_enable(struct sway_output *output) {
     }
     output->tiling = create_list();
     output->enabled = true;
-    list_add(wls->root->outputs, output);
+    list_add(wls->output_manager->outputs, output);
 
     if (!output->active) {
         sway_log(SWAY_DEBUG, "Activating output '%s'", output->wlr_output->name);
@@ -20,5 +20,5 @@ void output_enable(struct sway_output *output) {
     }
 
     wl_signal_emit(&wls->node_manager->events.new_node, &output->node);
-    wl_signal_emit(&wls->root->events.output_connected, output);
+    wl_signal_emit(&wls->output_manager->events.output_connected, output);
 }

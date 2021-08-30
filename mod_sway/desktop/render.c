@@ -25,7 +25,7 @@
 #include "sway/server.h"
 #include "sway/tree/arrange.h"
 #include "container.h"
-#include "root.h"
+#include "output_manager.h"
 #include "sway/tree/view.h"
 #include "wlstem.h"
 
@@ -692,7 +692,7 @@ void output_render(struct sway_output *output, struct timespec *when,
 
     render_output(output, damage);
 #if HAVE_XWAYLAND
-    render_unmanaged(output, damage, &wls->root->xwayland_unmanaged);
+    render_unmanaged(output, damage, &wls->output_manager->xwayland_unmanaged);
 #endif
     render_layer_toplevel(output, damage,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP]);
@@ -717,7 +717,7 @@ render_overlay:
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY]);
     render_layer_popups(output, damage,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY]);
-    render_drag_icons(output, damage, &wls->root->drag_icons);
+    render_drag_icons(output, damage, &wls->output_manager->drag_icons);
 
 renderer_end:
     wlr_renderer_scissor(renderer, NULL);

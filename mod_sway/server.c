@@ -35,7 +35,7 @@
 #include "sway/tree/arrange.h"
 #include "output.h"
 #include "sway/server.h"
-#include "root.h"
+#include "output_manager.h"
 #if HAVE_XWAYLAND
 #include "sway/xwayland.h"
 #endif
@@ -63,10 +63,10 @@ bool server_init(struct sway_server *server) {
     server->new_output.notify = handle_new_output;
     wl_signal_add(&wls->server->backend->events.new_output, &server->new_output);
     server->output_layout_change.notify = handle_output_layout_change;
-    wl_signal_add(&wls->root->output_layout->events.change,
+    wl_signal_add(&wls->output_manager->output_layout->events.change,
         &server->output_layout_change);
 
-    wlr_xdg_output_manager_v1_create(wls->server->wl_display, wls->root->output_layout);
+    wlr_xdg_output_manager_v1_create(wls->server->wl_display, wls->output_manager->output_layout);
 
     server->idle = wlr_idle_create(wls->server->wl_display);
     server->idle_inhibit_manager_v1 =
@@ -150,7 +150,7 @@ bool server_init(struct sway_server *server) {
     server->noop_backend = wlr_noop_backend_create(wls->server->wl_display);
 
     struct wlr_output *wlr_output = wlr_noop_add_output(server->noop_backend);
-    wls->root->noop_output = output_create(wlr_output);
+    wls->output_manager->noop_output = output_create(wlr_output);
 
     server->headless_backend =
         wlr_headless_backend_create_with_renderer(wls->server->wl_display, renderer);

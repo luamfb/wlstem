@@ -25,8 +25,8 @@ void output_seize_containers_from(struct sway_output *absorber,
 }
 
 void seize_containers_from_noop_output(struct sway_output *output) {
-    if (wls->root->noop_output->active) {
-        output_seize_containers_from(output, wls->root->noop_output);
+    if (wls->output_manager->noop_output->active) {
+        output_seize_containers_from(output, wls->output_manager->noop_output);
     }
 }
 
@@ -40,7 +40,7 @@ struct sway_output *output_create(struct wlr_output *wlr_output) {
 
     wl_signal_init(&output->events.destroy);
 
-    wl_list_insert(&wls->root->all_outputs, &output->link);
+    wl_list_insert(&wls->output_manager->all_outputs, &output->link);
 
     output->active = false;
 
@@ -57,17 +57,17 @@ static void output_evacuate(struct sway_output *output) {
         return;
     }
     struct sway_output *fallback_output = NULL;
-    if (wls->root->outputs->length > 1) {
-        fallback_output = wls->root->outputs->items[0];
+    if (wls->output_manager->outputs->length > 1) {
+        fallback_output = wls->output_manager->outputs->items[0];
         if (fallback_output == output) {
-            fallback_output = wls->root->outputs->items[1];
+            fallback_output = wls->output_manager->outputs->items[1];
         }
     }
 
     if (output->active) {
         struct sway_output *new_output = fallback_output;
         if (!new_output) {
-            new_output = wls->root->noop_output;
+            new_output = wls->output_manager->noop_output;
         }
 
         if (output_has_containers(output)) {
@@ -116,7 +116,7 @@ void output_disable(struct sway_output *output) {
     if (!sway_assert(output->enabled, "Expected an enabled output")) {
         return;
     }
-    int index = list_find(wls->root->outputs, output);
+    int index = list_find(wls->output_manager->outputs, output);
     if (!sway_assert(index >= 0, "Output not found in root node")) {
         return;
     }
@@ -127,14 +127,14 @@ void output_disable(struct sway_output *output) {
     output_evacuate(output);
     remove_output_from_all_focus_stacks(output);
 
-    root_for_each_container(untrack_output, output);
+    wls_output_layout_for_each_container(untrack_output, output);
 
-    list_del(wls->root->outputs, index);
+    list_del(wls->output_manager->outputs, index);
 
     output->enabled = false;
     output->current_mode = NULL;
 
-    wl_signal_emit(&wls->root->events.output_disconnected, output);
+    wl_signal_emit(&wls->output_manager->events.output_disconnected, output);
 }
 
 void output_begin_destroy(struct sway_output *output) {
@@ -161,11 +161,11 @@ struct sway_output *output_get_in_direction(struct sway_output *reference,
         return NULL;
     }
     struct wlr_box *output_box =
-        wlr_output_layout_get_box(wls->root->output_layout, reference->wlr_output);
+        wlr_output_layout_get_box(wls->output_manager->output_layout, reference->wlr_output);
     int lx = output_box->x + output_box->width / 2;
     int ly = output_box->y + output_box->height / 2;
     struct wlr_output *wlr_adjacent = wlr_output_layout_adjacent_output(
-            wls->root->output_layout, direction, reference->wlr_output, lx, ly);
+            wls->output_manager->output_layout, direction, reference->wlr_output, lx, ly);
     if (!wlr_adjacent) {
         return NULL;
     }
@@ -211,14 +211,14 @@ bool output_has_containers(struct sway_output *output) {
     return output->tiling->length;
 }
 
-void root_for_each_container(void (*f)(struct sway_container *con, void *data),
+void wls_output_layout_for_each_container(void (*f)(struct sway_container *con, void *data),
         void *data) {
-    for (int i = 0; i < wls->root->outputs->length; ++i) {
-        struct sway_output *output = wls->root->outputs->items[i];
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *output = wls->output_manager->outputs->items[i];
         output_for_each_container(output, f, data);
     }
 
-    if (wls->root->noop_output->active) {
-        output_for_each_container(wls->root->noop_output, f, data);
+    if (wls->output_manager->noop_output->active) {
+        output_for_each_container(wls->output_manager->noop_output, f, data);
     }
 }

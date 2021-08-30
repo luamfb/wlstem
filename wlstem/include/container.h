@@ -10,7 +10,6 @@
 struct sway_view;
 struct sway_seat;
 
-struct sway_root;
 struct sway_output;
 struct sway_view;
 

@@ -24,7 +24,7 @@
 #include "sway/sway_config.h"
 #include "sway/desktop/transaction.h"
 #include "sway/tree/arrange.h"
-#include "root.h"
+#include "output_manager.h"
 #include "cairo.h"
 #include "pango.h"
 #include "stringop.h"
@@ -203,8 +203,8 @@ void config_update_font_height(bool recalculate) {
     config->font_height = 0;
     config->font_baseline = 0;
 
-    root_for_each_container(find_baseline_iterator, &recalculate);
-    root_for_each_container(find_font_height_iterator, NULL);
+    wls_output_layout_for_each_container(find_baseline_iterator, &recalculate);
+    wls_output_layout_for_each_container(find_font_height_iterator, NULL);
 
     if (config->font_height != prev_max_height) {
         arrange_root();

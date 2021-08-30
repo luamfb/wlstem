@@ -5,7 +5,7 @@
 #include "log.h"
 #include "node.h"
 #include "output_config.h"
-#include "root.h"
+#include "output_manager.h"
 #include "wls_server.h"
 #include "wlstem.h"
 
@@ -28,11 +28,11 @@ bool wls_init(void) {
     struct wls_node_manager *_node_manager =
         node_manager_create();
 
-    struct sway_root *_root = root_create(_server);
+    struct wls_output_manager *_output_manager = wls_output_manager_create(_server);
 
     list_t *_output_configs = create_list();
 
-    if (!_node_manager || !_root || !_output_configs) {
+    if (!_node_manager || !_output_manager || !_output_configs) {
         sway_log(SWAY_ERROR, "wlstem initialization (2nd stage) failed!");
         return false;
     }
@@ -40,7 +40,7 @@ bool wls_init(void) {
     wls = _wls;
     wls->server = _server;
     wls->node_manager = _node_manager;
-    wls->root = _root;
+    wls->output_manager = _output_manager;
     wls->output_configs = _output_configs;
 
     return true;
@@ -50,11 +50,11 @@ void wls_fini(void) {
     if (!wls) {
         return; // nothing to do.
     }
-    // This needs uses root node and the the dirty_nodes list,
+    // This needs the output_manager and the the dirty_nodes list,
     // so call it before destroying them
     wls_server_destroy(wls->server);
 
-    root_destroy(wls->root);
+    wls_output_manager_destroy(wls->output_manager);
     node_manager_destroy(wls->node_manager);
 
     if (wls->output_configs) {

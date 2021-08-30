@@ -224,7 +224,7 @@ static void check_focus_follows_mouse(struct sway_seat *seat,
     // If it's on another output, focus the active workspace there.
     if (!hovered_node) {
         struct wlr_output *wlr_output = wlr_output_layout_output_at(
-                wls->root->output_layout, seat->cursor->cursor->x, seat->cursor->cursor->y);
+                wls->output_manager->output_layout, seat->cursor->cursor->x, seat->cursor->cursor->y);
         if (wlr_output == NULL) {
             return;
         }
@@ -285,7 +285,7 @@ static void handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
     }
 
     struct sway_drag_icon *drag_icon;
-    wl_list_for_each(drag_icon, &wls->root->drag_icons, link) {
+    wl_list_for_each(drag_icon, &wls->output_manager->drag_icons, link) {
         if (drag_icon->seat == seat) {
             drag_icon_update_position(drag_icon);
         }
@@ -320,7 +320,7 @@ static void handle_tablet_tool_motion(struct sway_seat *seat,
     }
 
     struct sway_drag_icon *drag_icon;
-    wl_list_for_each(drag_icon, &wls->root->drag_icons, link) {
+    wl_list_for_each(drag_icon, &wls->output_manager->drag_icons, link) {
         if (drag_icon->seat == seat) {
             drag_icon_update_position(drag_icon);
         }

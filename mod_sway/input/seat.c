@@ -28,7 +28,7 @@
 #include "sway/server.h"
 #include "sway/tree/arrange.h"
 #include "container.h"
-#include "root.h"
+#include "output_manager.h"
 #include "sway/tree/view.h"
 #include "wlstem.h"
 #include "wls_server.h"
@@ -492,7 +492,7 @@ static void handle_start_drag(struct wl_listener *listener, void *data) {
         icon->destroy.notify = drag_icon_handle_destroy;
         wl_signal_add(&wlr_drag_icon->events.destroy, &icon->destroy);
 
-        wl_list_insert(&wls->root->drag_icons, &icon->link);
+        wl_list_insert(&wls->output_manager->drag_icons, &icon->link);
 
         drag_icon_update_position(icon);
     }
@@ -568,8 +568,8 @@ struct sway_seat *seat_create(const char *seat_name) {
 
     wl_list_init(&seat->devices);
 
-    root_for_each_output(collect_focus_output_iter, seat);
-    root_for_each_container(collect_focus_container_iter, seat);
+    wls_output_layout_for_each_output(collect_focus_output_iter, seat);
+    wls_output_layout_for_each_container(collect_focus_container_iter, seat);
 
     wl_signal_add(&wls->node_manager->events.new_node, &seat->new_node);
     seat->new_node.notify = handle_new_node;
@@ -967,8 +967,8 @@ void seat_configure_xcursor(struct sway_seat *seat) {
         }
     }
 
-    for (int i = 0; i < wls->root->outputs->length; ++i) {
-        struct sway_output *sway_output = wls->root->outputs->items[i];
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *sway_output = wls->output_manager->outputs->items[i];
         struct wlr_output *output = sway_output->wlr_output;
         bool result =
             wlr_xcursor_manager_load(seat->cursor->xcursor_manager,
@@ -1222,8 +1222,8 @@ void seat_set_exclusive_client(struct sway_seat *seat,
         seat->exclusive_client = client;
         // Triggers a refocus of the topmost surface layer if necessary
         // TODO: Make layer surface focus per-output based on cursor position
-        for (int i = 0; i < wls->root->outputs->length; ++i) {
-            struct sway_output *output = wls->root->outputs->items[i];
+        for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+            struct sway_output *output = wls->output_manager->outputs->items[i];
             arrange_layers(output);
         }
         return;

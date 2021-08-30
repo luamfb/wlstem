@@ -13,7 +13,7 @@
 #include "container.h"
 #include "output_config.h"
 #include "sway/input/tablet.h"
-#include "root.h"
+#include "output_manager.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 
 enum binding_input_type {

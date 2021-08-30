@@ -26,14 +26,14 @@
 #include "sway/surface.h"
 #include "sway/tree/arrange.h"
 #include "container.h"
-#include "root.h"
+#include "output_manager.h"
 #include "sway/tree/view.h"
 #include "wlstem.h"
 #include "wls_server.h"
 
 struct sway_output *output_by_name_or_id(const char *name_or_id) {
-    for (int i = 0; i < wls->root->outputs->length; ++i) {
-        struct sway_output *output = wls->root->outputs->items[i];
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *output = wls->output_manager->outputs->items[i];
         char identifier[128];
         output_get_identifier(identifier, sizeof(identifier), output);
         if (strcasecmp(identifier, name_or_id) == 0
@@ -46,7 +46,7 @@ struct sway_output *output_by_name_or_id(const char *name_or_id) {
 
 struct sway_output *all_output_by_name_or_id(const char *name_or_id) {
     struct sway_output *output;
-    wl_list_for_each(output, &wls->root->all_outputs, link) {
+    wl_list_for_each(output, &wls->output_manager->all_outputs, link) {
         char identifier[128];
         output_get_identifier(identifier, sizeof(identifier), output);
         if (strcasecmp(identifier, name_or_id) == 0
@@ -371,7 +371,7 @@ static void output_for_each_surface(struct sway_output *output,
         for_each_surface_container_iterator, &data);
 
 #if HAVE_XWAYLAND
-    output_unmanaged_for_each_surface(output, &wls->root->xwayland_unmanaged,
+    output_unmanaged_for_each_surface(output, &wls->output_manager->xwayland_unmanaged,
         iterator, user_data);
 #endif
     output_layer_for_each_surface(output,
@@ -382,7 +382,7 @@ overlay:
     output_layer_for_each_surface(output,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY],
         iterator, user_data);
-    output_drag_icons_for_each_surface(output, &wls->root->drag_icons,
+    output_drag_icons_for_each_surface(output, &wls->output_manager->drag_icons,
         iterator, user_data);
 }
 
@@ -682,7 +682,7 @@ static void handle_destroy(struct wl_listener *listener, void *data) {
 
     transaction_commit_dirty();
 
-    update_output_manager_config(wls->root);
+    wls_update_output_manager_config(wls->output_manager);
 }
 
 static void handle_mode(struct wl_listener *listener, void *data) {
@@ -707,7 +707,7 @@ static void handle_mode(struct wl_listener *listener, void *data) {
     arrange_output(output);
     transaction_commit_dirty();
 
-    update_output_manager_config(wls->root);
+    wls_update_output_manager_config(wls->output_manager);
 }
 
 static void update_textures(struct sway_container *con, void *data) {
@@ -731,7 +731,7 @@ static void handle_commit(struct wl_listener *listener, void *data) {
         arrange_output(output);
         transaction_commit_dirty();
 
-        update_output_manager_config(wls->root);
+        wls_update_output_manager_config(wls->output_manager);
     }
 }
 
@@ -781,15 +781,15 @@ void handle_new_output(struct wl_listener *listener, void *data) {
 
     transaction_commit_dirty();
 
-    update_output_manager_config(wls->root);
+    wls_update_output_manager_config(wls->output_manager);
 }
 
 void handle_output_layout_change(struct wl_listener *listener,
         void *data) {
     struct sway_server *server =
         wl_container_of(listener, server, output_layout_change);
-    update_output_manager_config(wls->root);
-    wl_signal_emit(&wls->root->events.output_layout_changed, wls->root);
+    wls_update_output_manager_config(wls->output_manager);
+    wl_signal_emit(&wls->output_manager->events.output_layout_changed, wls->output_manager);
 }
 
 void handle_output_power_manager_set_mode(struct wl_listener *listener,
