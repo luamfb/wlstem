@@ -1,15 +1,15 @@
 #define _POSIX_C_SOURCE 200809L
 #include <assert.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_output.h>
 #include "output_config.h"
-#include "sway/input/cursor.h"
 #include "output.h"
 #include "root.h"
 #include "log.h"
@@ -581,51 +581,4 @@ struct output_config *find_output_config(struct sway_output *output) {
     char id[128];
     output_get_identifier(id, sizeof(id), output);
     return get_output_config(id, output);
-}
-
-void apply_output_config_to_outputs(struct output_config *oc) {
-    // Try to find the output container and apply configuration now. If
-    // this is during startup then there will be no container and config
-    // will be applied during normal "new output" event from wlroots.
-    bool wildcard = strcmp(oc->name, "*") == 0;
-    char id[128];
-    struct sway_output *sway_output, *tmp;
-    wl_list_for_each_safe(sway_output, tmp, &wls->root->all_outputs, link) {
-        char *name = sway_output->wlr_output->name;
-        output_get_identifier(id, sizeof(id), sway_output);
-        if (wildcard || !strcmp(name, oc->name) || !strcmp(id, oc->name)) {
-            struct output_config *current = get_output_config(id, sway_output);
-            if (!current) {
-                // No stored output config matched, apply oc directly
-                sway_log(SWAY_DEBUG, "Applying oc directly");
-                current = new_output_config(oc->name);
-                merge_output_config(current, oc);
-            }
-            apply_output_config(current, sway_output);
-            free_output_config(current);
-
-            if (!wildcard) {
-                // Stop looking if the output config isn't applicable to all
-                // outputs
-                break;
-            }
-        }
-    }
-
-    struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
-        wlr_seat_pointer_notify_clear_focus(seat->wlr_seat);
-        cursor_rebase(seat->cursor);
-    }
-}
-
-void reset_outputs(void) {
-    struct output_config *oc = NULL;
-    int i = list_seq_find(wls->output_configs, output_name_cmp, "*");
-    if (i >= 0) {
-        oc = wls->output_configs->items[i];
-    } else {
-        oc = store_output_config(new_output_config("*"));
-    }
-    apply_output_config_to_outputs(oc);
 }
