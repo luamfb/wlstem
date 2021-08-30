@@ -423,10 +423,12 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
     output->enabling = false;
 
     if (oc && !oc->enabled) {
-        sway_log(SWAY_DEBUG, "Disabling output %s", oc->name);
+        sway_log(SWAY_DEBUG, "Checking if output %s is disabled", oc->name);
         if (output->enabled) {
-            output_disable(output);
-            wlr_output_layout_remove(wls->root->output_layout, wlr_output);
+            sway_log(SWAY_ERROR,
+                "Refusing to apply configuration that would disable output %s",
+                output->wlr_output->name);
+            abort();
         }
         return true;
     }
@@ -467,6 +469,9 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
     output->height = output_box->height;
 
     if (!output->enabled) {
+        sway_log(SWAY_DEBUG,
+            "output config applied to '%s' which was disabled: enabling it",
+            output->wlr_output->name);
         output_enable(output);
     }
 
