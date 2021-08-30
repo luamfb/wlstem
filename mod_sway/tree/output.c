@@ -64,14 +64,6 @@ void output_enable(struct sway_output *output) {
     if (!output->active) {
         sway_log(SWAY_DEBUG, "Activating output '%s'", output->wlr_output->name);
         output->active = true;
-
-        // Set each seat's focus if not already set
-        struct sway_seat *seat = NULL;
-        wl_list_for_each(seat, &server.input->seats, link) {
-            if (!seat->has_focus) {
-                seat_set_focus_output(seat, output);
-            }
-        }
     }
 
     input_manager_configure_xcursor();
@@ -79,6 +71,7 @@ void output_enable(struct sway_output *output) {
     wl_signal_emit(&wls->node_manager->events.new_node, &output->node);
 
     arrange_layers(output);
+
     wl_signal_emit(&wls->root->events.output_connected, output);
 }
 
