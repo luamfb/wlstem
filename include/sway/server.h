@@ -74,10 +74,6 @@ struct sway_server {
     struct wlr_pointer_constraints_v1 *pointer_constraints;
     struct wl_listener pointer_constraint;
 
-    struct wlr_output_manager_v1 *output_manager_v1;
-    struct wl_listener output_manager_apply;
-    struct wl_listener output_manager_test;
-
     struct wlr_output_power_manager_v1 *output_power_manager_v1;
     struct wl_listener output_power_manager_set_mode;
     struct wlr_input_method_manager_v2 *input_method;
