@@ -30,6 +30,7 @@ lib_wlstem = shared_library(
         'stringop.c',
         'util.c',
         'root.c',
+        'output.c',
         'output_config.c',
         'node.c',
         'server.c',

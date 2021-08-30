@@ -335,6 +335,12 @@ static struct sway_seat_node *seat_node_from_node(
 static void handle_new_node(struct wl_listener *listener, void *data) {
     struct sway_seat *seat = wl_container_of(listener, seat, new_node);
     struct wls_transaction_node *node = data;
+    //XXX not WM related: move back to wlstem later
+    if (node->type == N_OUTPUT) {
+        sway_log(SWAY_DEBUG, "new output nodel: configuring cursor");
+        input_manager_configure_xcursor();
+    }
+    // XXX till here
     seat_node_from_node(seat, node);
 }
 

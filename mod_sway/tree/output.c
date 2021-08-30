@@ -4,7 +4,6 @@
 #include <string.h>
 #include <strings.h>
 #include <wlr/types/wlr_output_damage.h>
-#include "sway/layers.h"
 #include "output.h"
 #include "sway/input/seat.h"
 #include "log.h"
@@ -51,28 +50,6 @@ struct sway_output *output_create(struct wlr_output *wlr_output) {
     }
 
     return output;
-}
-
-void output_enable(struct sway_output *output) {
-    if (!sway_assert(!output->enabled, "output is already enabled")) {
-        return;
-    }
-    output->tiling = create_list();
-    output->enabled = true;
-    list_add(wls->root->outputs, output);
-
-    if (!output->active) {
-        sway_log(SWAY_DEBUG, "Activating output '%s'", output->wlr_output->name);
-        output->active = true;
-    }
-
-    input_manager_configure_xcursor();
-
-    wl_signal_emit(&wls->node_manager->events.new_node, &output->node);
-
-    arrange_layers(output);
-
-    wl_signal_emit(&wls->root->events.output_connected, output);
 }
 
 static void output_evacuate(struct sway_output *output) {

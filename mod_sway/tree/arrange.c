@@ -7,6 +7,7 @@
 #include <wlr/types/wlr_output_layout.h>
 #include "sway/desktop/transaction.h"
 #include "sway/input/seat.h"
+#include "sway/layers.h"
 #include "sway/tree/arrange.h"
 #include "container.h"
 #include "output.h"
@@ -23,6 +24,8 @@ static void wm_handle_output_layout_change(
 static void wm_handle_output_connected(
         struct wl_listener *listener, void *data) {
     struct sway_output *output = data;
+    arrange_layers(output); //XXX not WM related: migrate back to wlstem later
+
     seize_containers_from_noop_output(output);
 
     // Set each seat's focus if not already set
