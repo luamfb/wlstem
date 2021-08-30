@@ -21,6 +21,8 @@ static void wm_handle_output_layout_change(
 
 static void wm_handle_output_connected(
         struct wl_listener *listener, void *data) {
+    struct sway_output *output = data;
+    seize_containers_from_noop_output(output);
     arrange_root();
 }
 
