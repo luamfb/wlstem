@@ -25,7 +25,6 @@ sway_sources = files(
     'input/tablet.c',
     'input/text_input.c',
 
-    'config/output.c',
     'config/seat.c',
     'config/input.c',
 
