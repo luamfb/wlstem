@@ -8,6 +8,8 @@
 #include "config.h"
 #include "list.h"
 
+struct wls_server;
+
 struct sway_root {
     struct wlr_output_layout *output_layout;
 
@@ -22,6 +24,10 @@ struct sway_root {
     double x, y;
     double width, height;
 
+    struct wlr_output_manager_v1 *output_manager_v1;
+    struct wl_listener output_manager_apply;
+    struct wl_listener output_manager_test;
+
     list_t *outputs; // struct sway_output
 
     // For when there's no connected outputs
@@ -34,7 +40,7 @@ struct sway_root {
     } events;
 };
 
-struct sway_root *root_create(void);
+struct sway_root *root_create(struct wls_server *server);
 
 void root_destroy(struct sway_root *root);
 
@@ -45,5 +51,7 @@ void root_for_each_container(void (*f)(struct sway_container *con, void *data),
         void *data);
 
 void root_get_box(struct sway_root *root, struct wlr_box *box);
+
+void update_output_manager_config(struct sway_root *root);
 
 #endif

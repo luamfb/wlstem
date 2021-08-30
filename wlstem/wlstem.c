@@ -20,13 +20,20 @@ bool wls_init(void) {
     struct wls_context *_wls = calloc(1, sizeof(struct wls_context));
     struct wls_server *_server = wls_server_create();
 
+    if (!_wls || !_server) {
+        sway_log(SWAY_ERROR, "wlstem initialization (1st stage) failed!");
+        return false;
+    }
+
     struct wls_node_manager *_node_manager =
         node_manager_create();
-    struct sway_root *_root = root_create();
+
+    struct sway_root *_root = root_create(_server);
+
     list_t *_output_configs = create_list();
 
-    if (!_wls || !_server || !_node_manager || !_root || !_output_configs) {
-        sway_log(SWAY_ERROR, "wlstem initialization failed!");
+    if (!_node_manager || !_root || !_output_configs) {
+        sway_log(SWAY_ERROR, "wlstem initialization (2nd stage) failed!");
         return false;
     }
 
