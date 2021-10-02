@@ -1,8 +1,8 @@
 #include <stdlib.h>
-#include "sway/desktop/transaction.h"
+#include "sway/transaction.h"
 #include "sway/server.h"
-#include "sway/tree/arrange.h"
-#include "sway/tree/view.h"
+#include "sway/arrange.h"
+#include "sway/view.h"
 #include "sway/xdg_decoration.h"
 #include "log.h"
 

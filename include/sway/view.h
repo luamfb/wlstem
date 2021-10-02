@@ -6,8 +6,8 @@
 #if HAVE_XWAYLAND
 #include <wlr/xwayland.h>
 #endif
-#include "sway/input/input-manager.h"
-#include "sway/input/seat.h"
+#include "sway/input-manager.h"
+#include "sway/seat.h"
 
 struct sway_container;
 struct sway_xdg_decoration;

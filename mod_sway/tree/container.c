@@ -12,7 +12,7 @@
 #include "output.h"
 #include "list.h"
 #include "log.h"
-#include "sway/tree/view.h"
+#include "sway/view.h"
 #include "wlstem.h"
 
 struct sway_container *container_create(struct sway_view *view) {

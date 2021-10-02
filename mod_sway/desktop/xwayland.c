@@ -8,14 +8,14 @@
 #include <wlr/xwayland.h>
 #include "log.h"
 #include "sway/desktop.h"
-#include "sway/desktop/transaction.h"
-#include "sway/input/cursor.h"
-#include "sway/input/input-manager.h"
-#include "sway/input/seat.h"
+#include "sway/transaction.h"
+#include "sway/cursor.h"
+#include "sway/input-manager.h"
+#include "sway/seat.h"
 #include "output.h"
-#include "sway/tree/arrange.h"
+#include "sway/arrange.h"
 #include "container.h"
-#include "sway/tree/view.h"
+#include "sway/view.h"
 #include "wlstem.h"
 
 static const char *atom_map[ATOM_LAST] = {

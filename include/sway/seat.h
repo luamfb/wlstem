@@ -6,9 +6,9 @@
 #include <wlr/types/wlr_seat.h>
 #include <wlr/util/edges.h>
 #include "sway/sway_config.h"
-#include "sway/input/input-manager.h"
-#include "sway/input/tablet.h"
-#include "sway/input/text_input.h"
+#include "sway/input-manager.h"
+#include "sway/tablet.h"
+#include "sway/text_input.h"
 
 struct sway_seat;
 

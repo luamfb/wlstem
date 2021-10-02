@@ -1,7 +1,7 @@
 #ifndef _SWAY_INPUT_KEYBOARD_H
 #define _SWAY_INPUT_KEYBOARD_H
 
-#include "sway/input/seat.h"
+#include "sway/seat.h"
 
 #define SWAY_KEYBOARD_PRESSED_KEYS_CAP 32
 

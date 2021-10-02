@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "sway/decoration.h"
-#include "sway/desktop/transaction.h"
+#include "sway/transaction.h"
 #include "sway/server.h"
-#include "sway/tree/arrange.h"
-#include "sway/tree/view.h"
+#include "sway/arrange.h"
+#include "sway/view.h"
 #include "log.h"
 
 static void server_decoration_handle_destroy(struct wl_listener *listener,
