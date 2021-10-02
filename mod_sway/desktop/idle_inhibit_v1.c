@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <wlr/types/wlr_idle.h>
 #include "log.h"
-#include "sway/desktop/idle_inhibit_v1.h"
-#include "sway/input/seat.h"
+#include "sway/idle_inhibit_v1.h"
+#include "sway/seat.h"
 #include "container.h"
-#include "sway/tree/view.h"
+#include "sway/view.h"
 #include "sway/server.h"
 
 

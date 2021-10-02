@@ -5,7 +5,7 @@
 #include <strings.h>
 #include <wlr/types/wlr_output_damage.h>
 #include "output.h"
-#include "sway/input/seat.h"
+#include "sway/seat.h"
 #include "log.h"
 #include "util.h"
 #include "wlstem.h"

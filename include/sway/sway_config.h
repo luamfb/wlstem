@@ -12,7 +12,7 @@
 #include "list.h"
 #include "container.h"
 #include "output_config.h"
-#include "sway/input/tablet.h"
+#include "sway/tablet.h"
 #include "output_manager.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 

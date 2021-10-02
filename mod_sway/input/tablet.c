@@ -5,9 +5,9 @@
 #include <wlr/types/wlr_tablet_tool.h>
 #include <wlr/types/wlr_tablet_pad.h>
 #include "log.h"
-#include "sway/input/cursor.h"
-#include "sway/input/seat.h"
-#include "sway/input/tablet.h"
+#include "sway/cursor.h"
+#include "sway/seat.h"
+#include "sway/tablet.h"
 
 static void handle_pad_tablet_destroy(struct wl_listener *listener, void *data) {
     struct sway_tablet_pad *pad =

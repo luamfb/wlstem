@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <float.h>
 #include "sway/sway_config.h"
-#include "sway/input/keyboard.h"
+#include "sway/keyboard.h"
 #include "log.h"
 
 struct input_config *new_input_config(const char* identifier) {

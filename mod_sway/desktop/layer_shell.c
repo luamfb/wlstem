@@ -7,14 +7,14 @@
 #include <wlr/types/wlr_output_damage.h>
 #include <wlr/types/wlr_output.h>
 #include "log.h"
-#include "sway/desktop/transaction.h"
-#include "sway/input/cursor.h"
-#include "sway/input/input-manager.h"
-#include "sway/input/seat.h"
+#include "sway/transaction.h"
+#include "sway/cursor.h"
+#include "sway/input-manager.h"
+#include "sway/seat.h"
 #include "sway/layers.h"
 #include "output.h"
 #include "sway/server.h"
-#include "sway/tree/arrange.h"
+#include "sway/arrange.h"
 #include "wlstem.h"
 
 static void apply_exclusive(struct wlr_box *usable_area,
