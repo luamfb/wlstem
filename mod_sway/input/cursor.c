@@ -31,7 +31,7 @@
 #include "sway_view.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 static struct wlr_surface *layer_surface_at(struct sway_output *output,
         struct wl_list *layer, double ox, double oy, double *sx, double *sy) {

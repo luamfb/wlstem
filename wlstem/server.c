@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <wayland-server-core.h>
 #include "log.h"
-#include "wls_server.h"
+#include "server.h"
 
 static bool server_privileged_prepare(struct wls_server *server) {
     sway_log(SWAY_DEBUG, "Preparing Wayland server initialization");

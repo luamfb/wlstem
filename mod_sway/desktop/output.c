@@ -29,7 +29,7 @@
 #include "output_manager.h"
 #include "sway_view.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 struct sway_output *output_by_name_or_id(const char *name_or_id) {
     for (int i = 0; i < wls->output_manager->outputs->length; ++i) {

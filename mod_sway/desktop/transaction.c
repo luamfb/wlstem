@@ -17,7 +17,7 @@
 #include "list.h"
 #include "log.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 struct sway_transaction {
     struct wl_event_source *timer;

@@ -31,7 +31,7 @@
 #include "output_manager.h"
 #include "sway_view.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 static void seat_device_destroy(struct sway_seat_device *seat_device) {
     if (!seat_device) {
