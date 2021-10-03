@@ -29,10 +29,10 @@ struct seat_config *new_seat_config(const char* name) {
         return NULL;
     }
     seat->hide_cursor_timeout = -1;
-    seat->hide_cursor_when_typing = HIDE_WHEN_TYPING_DEFAULT;
-    seat->allow_constrain = CONSTRAIN_DEFAULT;
-    seat->shortcuts_inhibit = SHORTCUTS_INHIBIT_DEFAULT;
-    seat->keyboard_grouping = KEYBOARD_GROUP_DEFAULT;
+    seat->hide_cursor_when_typing = OPT_UNSET;
+    seat->allow_constrain = OPT_UNSET;
+    seat->shortcuts_inhibit = OPT_UNSET;
+    seat->keyboard_smart_grouping = OPT_UNSET;
     seat->xcursor_theme.name = NULL;
     seat->xcursor_theme.size = 24;
 
@@ -152,20 +152,20 @@ void merge_seat_config(struct seat_config *dest, struct seat_config *source) {
         dest->hide_cursor_timeout = source->hide_cursor_timeout;
     }
 
-    if (source->hide_cursor_when_typing != HIDE_WHEN_TYPING_DEFAULT) {
+    if (source->hide_cursor_when_typing != OPT_UNSET) {
         dest->hide_cursor_when_typing = source->hide_cursor_when_typing;
     }
 
-    if (source->allow_constrain != CONSTRAIN_DEFAULT) {
+    if (source->allow_constrain != OPT_UNSET) {
         dest->allow_constrain = source->allow_constrain;
     }
 
-    if (source->shortcuts_inhibit != SHORTCUTS_INHIBIT_DEFAULT) {
+    if (source->shortcuts_inhibit != OPT_UNSET) {
         dest->shortcuts_inhibit = source->shortcuts_inhibit;
     }
 
-    if (source->keyboard_grouping != KEYBOARD_GROUP_DEFAULT) {
-        dest->keyboard_grouping = source->keyboard_grouping;
+    if (source->keyboard_smart_grouping != OPT_UNSET) {
+        dest->keyboard_smart_grouping = source->keyboard_smart_grouping;
     }
 
     if (source->xcursor_theme.name != NULL) {

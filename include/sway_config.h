@@ -16,6 +16,12 @@
 #include "output_manager.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 
+enum bool_option {
+    OPT_UNSET,
+    OPT_DISABLED,
+    OPT_ENABLED,
+};
+
 enum binding_input_type {
     BINDING_KEYCODE,
     BINDING_KEYSYM,
@@ -129,30 +135,6 @@ struct seat_attachment_config {
     // TODO other things are configured here for some reason
 };
 
-enum seat_config_hide_cursor_when_typing {
-    HIDE_WHEN_TYPING_DEFAULT, // the default is currently disabled
-    HIDE_WHEN_TYPING_ENABLE,
-    HIDE_WHEN_TYPING_DISABLE,
-};
-
-enum seat_config_allow_constrain {
-    CONSTRAIN_DEFAULT, // the default is currently enabled
-    CONSTRAIN_ENABLE,
-    CONSTRAIN_DISABLE,
-};
-
-enum seat_config_shortcuts_inhibit {
-    SHORTCUTS_INHIBIT_DEFAULT, // the default is currently enabled
-    SHORTCUTS_INHIBIT_ENABLE,
-    SHORTCUTS_INHIBIT_DISABLE,
-};
-
-enum seat_keyboard_grouping {
-    KEYBOARD_GROUP_DEFAULT, // the default is currently smart
-    KEYBOARD_GROUP_NONE,
-    KEYBOARD_GROUP_SMART, // keymap and repeat info
-};
-
 enum sway_input_idle_source {
     IDLE_SOURCE_KEYBOARD = 1 << 0,
     IDLE_SOURCE_POINTER = 1 << 1,
@@ -170,10 +152,10 @@ struct seat_config {
     int fallback; // -1 means not set
     list_t *attachments; // list of seat_attachment configs
     int hide_cursor_timeout;
-    enum seat_config_hide_cursor_when_typing hide_cursor_when_typing;
-    enum seat_config_allow_constrain allow_constrain;
-    enum seat_config_shortcuts_inhibit shortcuts_inhibit;
-    enum seat_keyboard_grouping keyboard_grouping;
+    enum bool_option hide_cursor_when_typing;
+    enum bool_option allow_constrain;
+    enum bool_option shortcuts_inhibit;
+    enum bool_option keyboard_smart_grouping;
     uint32_t idle_inhibit_sources, idle_wake_sources;
     struct {
         char *name;

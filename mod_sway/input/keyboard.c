@@ -769,12 +769,12 @@ static void sway_keyboard_group_remove_invalid(struct sway_keyboard *keyboard) {
         sc = seat_get_config_by_name("*");
     }
 
-    switch (sc ? sc->keyboard_grouping : KEYBOARD_GROUP_DEFAULT) {
-    case KEYBOARD_GROUP_NONE:
+    switch (sc ? sc->keyboard_smart_grouping : OPT_UNSET) {
+    case OPT_DISABLED:
         sway_keyboard_group_remove(keyboard);
         break;
-    case KEYBOARD_GROUP_DEFAULT: /* fallthrough */
-    case KEYBOARD_GROUP_SMART:;
+    case OPT_UNSET: /* fallthrough */
+    case OPT_ENABLED:;
         struct wlr_keyboard_group *group = wlr_keyboard->group;
         if (!wlr_keyboard_keymaps_match(keyboard->keymap, group->keyboard.keymap) ||
                 !repeat_info_match(keyboard, &group->keyboard)) {
@@ -799,19 +799,19 @@ static void sway_keyboard_group_add(struct sway_keyboard *keyboard) {
         sc = seat_get_config_by_name("*");
     }
 
-    if (sc && sc->keyboard_grouping == KEYBOARD_GROUP_NONE) {
+    if (sc && sc->keyboard_smart_grouping == OPT_DISABLED) {
         // Keyboard grouping is disabled for the seat
         return;
     }
 
     struct sway_keyboard_group *group;
     wl_list_for_each(group, &seat->keyboard_groups, link) {
-        switch (sc ? sc->keyboard_grouping : KEYBOARD_GROUP_DEFAULT) {
-        case KEYBOARD_GROUP_NONE:
+        switch (sc ? sc->keyboard_smart_grouping : OPT_UNSET) {
+        case OPT_DISABLED:
             // Nothing to do. This shouldn't even be reached
             return;
-        case KEYBOARD_GROUP_DEFAULT: /* fallthrough */
-        case KEYBOARD_GROUP_SMART:;
+        case OPT_UNSET: /* fallthrough */
+        case OPT_ENABLED:;
             struct wlr_keyboard_group *wlr_group = group->wlr_group;
             if (wlr_keyboard_keymaps_match(keyboard->keymap,
                         wlr_group->keyboard.keymap) &&

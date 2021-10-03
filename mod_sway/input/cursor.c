@@ -215,7 +215,7 @@ void cursor_notify_key_press(struct sway_cursor *cursor) {
         return;
     }
 
-    if (cursor->hide_when_typing == HIDE_WHEN_TYPING_DEFAULT) {
+    if (cursor->hide_when_typing == OPT_UNSET) {
         // No cached value, need to lookup in the seat_config
         const struct seat_config *seat_config = seat_get_config(cursor->seat);
         if (!seat_config) {
@@ -226,12 +226,12 @@ void cursor_notify_key_press(struct sway_cursor *cursor) {
         }
         cursor->hide_when_typing = seat_config->hide_cursor_when_typing;
         // The default is currently disabled
-        if (cursor->hide_when_typing == HIDE_WHEN_TYPING_DEFAULT) {
-            cursor->hide_when_typing = HIDE_WHEN_TYPING_DISABLE;
+        if (cursor->hide_when_typing == OPT_UNSET) {
+            cursor->hide_when_typing = OPT_DISABLED;
         }
     }
 
-    if (cursor->hide_when_typing == HIDE_WHEN_TYPING_ENABLE) {
+    if (cursor->hide_when_typing == OPT_ENABLED) {
         cursor_hide(cursor);
     }
 }
@@ -1222,7 +1222,7 @@ void sway_cursor_constrain(struct sway_cursor *cursor,
         config = seat_get_config_by_name("*");
     }
 
-    if (!config || config->allow_constrain == CONSTRAIN_DISABLE) {
+    if (!config || config->allow_constrain == OPT_DISABLED) {
         return;
     }
 
