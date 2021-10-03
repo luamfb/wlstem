@@ -36,7 +36,7 @@ void view_init(struct sway_view *view, enum sway_view_type type,
     view->impl = impl;
     wl_list_init(&view->saved_buffers);
     view->allow_request_urgent = true;
-    view->shortcuts_inhibit = SHORTCUTS_INHIBIT_DEFAULT;
+    view->shortcuts_inhibit = OPT_UNSET;
     wl_signal_init(&view->events.unmap);
 }
 

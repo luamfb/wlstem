@@ -116,7 +116,7 @@ struct sway_view {
 
     int max_render_time; // In milliseconds
 
-    enum seat_config_shortcuts_inhibit shortcuts_inhibit;
+    enum bool_option shortcuts_inhibit;
 };
 
 struct sway_xdg_shell_view {

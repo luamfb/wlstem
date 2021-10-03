@@ -336,12 +336,12 @@ static void handle_keyboard_shortcuts_inhibit_new_inhibitor(
 
     // per-view, seat-agnostic config
     struct sway_view *view = view_from_wlr_surface(inhibitor->surface);
-    enum seat_config_shortcuts_inhibit inhibit = SHORTCUTS_INHIBIT_DEFAULT;
+    enum bool_option inhibit = OPT_UNSET;
     if (view) {
         inhibit = view->shortcuts_inhibit;
     }
 
-    if (inhibit == SHORTCUTS_INHIBIT_DEFAULT) {
+    if (inhibit == OPT_UNSET) {
         struct seat_config *config = seat_get_config(seat);
         if (!config) {
             config = seat_get_config_by_name("*");
@@ -352,7 +352,7 @@ static void handle_keyboard_shortcuts_inhibit_new_inhibitor(
         }
     }
 
-    if (inhibit == SHORTCUTS_INHIBIT_DISABLE) {
+    if (inhibit == OPT_DISABLED) {
         /**
          * Here we deny to honour the inhibitor by never sending the
          * activate signal. We can not, however, destroy the inhibitor
