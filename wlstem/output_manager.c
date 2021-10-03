@@ -13,7 +13,7 @@
 #include "log.h"
 #include "util.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 void wls_update_output_manager_config(struct wls_output_manager *output_manager) {
     struct wlr_output_configuration_v1 *config =

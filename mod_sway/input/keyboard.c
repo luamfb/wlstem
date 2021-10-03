@@ -16,7 +16,7 @@
 #include "sway_cursor.h"
 #include "log.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 static struct modifier_key {
     char *name;

@@ -6,7 +6,7 @@
 #include "node.h"
 #include "output_config.h"
 #include "output_manager.h"
-#include "wls_server.h"
+#include "server.h"
 #include "wlstem.h"
 
 struct wls_context *wls = NULL;

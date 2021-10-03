@@ -21,7 +21,7 @@
 #include "list.h"
 #include "log.h"
 #include "wlstem.h" 
-#include "wls_server.h"
+#include "server.h"
 
 #define DEFAULT_SEAT "seat0"
 

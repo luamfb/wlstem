@@ -5,7 +5,7 @@
 #include "sway_server.h"
 #include "sway_surface.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 static void handle_destroy(struct wl_listener *listener, void *data) {
     struct sway_surface *surface = wl_container_of(listener, surface, destroy);

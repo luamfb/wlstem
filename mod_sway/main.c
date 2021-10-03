@@ -22,7 +22,7 @@
 #include "stringop.h"
 #include "util.h"
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 static bool terminate_request = false;
 static int exit_value = 0;

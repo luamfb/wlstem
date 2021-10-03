@@ -40,7 +40,7 @@
 #include "sway_xwayland.h"
 #endif
 #include "wlstem.h"
-#include "wls_server.h"
+#include "server.h"
 
 bool server_init(struct sway_server *server) {
     sway_log(SWAY_DEBUG, "Initializing Wayland server");
