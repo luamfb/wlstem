@@ -4,7 +4,7 @@
 #include <wlr/types/wlr_text_input_v3.h>
 #include <wlr/types/wlr_input_method_v2.h>
 #include <wlr/types/wlr_surface.h>
-#include "sway/seat.h"
+#include "sway_seat.h"
 
 /**
  * The relay structure manages the relationship between text-input and

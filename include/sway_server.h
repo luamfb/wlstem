@@ -20,7 +20,7 @@
 #include "config.h"
 #include "list.h"
 #if HAVE_XWAYLAND
-#include "sway/xwayland.h"
+#include "sway_xwayland.h"
 #endif
 
 struct server_wm;

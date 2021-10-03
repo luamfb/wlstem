@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <wlr/types/wlr_idle.h>
 #include "log.h"
-#include "sway/idle_inhibit_v1.h"
-#include "sway/seat.h"
+#include "sway_idle_inhibit_v1.h"
+#include "sway_seat.h"
 #include "container.h"
-#include "sway/view.h"
-#include "sway/server.h"
+#include "sway_view.h"
+#include "sway_server.h"
 
 
 static void destroy_inhibitor(struct sway_idle_inhibitor_v1 *inhibitor) {

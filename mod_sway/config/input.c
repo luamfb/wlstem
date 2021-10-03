@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <float.h>
-#include "sway/sway_config.h"
-#include "sway/keyboard.h"
+#include "sway_config.h"
+#include "sway_keyboard.h"
 #include "log.h"
 
 struct input_config *new_input_config(const char* identifier) {

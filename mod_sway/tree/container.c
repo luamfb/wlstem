@@ -8,11 +8,11 @@
 #include <wlr/types/wlr_output_layout.h>
 #include "cairo.h"
 #include "pango.h"
-#include "sway/sway_config.h"
+#include "sway_config.h"
 #include "output.h"
 #include "list.h"
 #include "log.h"
-#include "sway/view.h"
+#include "sway_view.h"
 #include "wlstem.h"
 
 struct sway_container *container_create(struct sway_view *view) {
