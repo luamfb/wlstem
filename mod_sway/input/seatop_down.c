@@ -2,9 +2,9 @@
 #include <float.h>
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_tablet_v2.h>
-#include "sway/cursor.h"
-#include "sway/seat.h"
-#include "sway/view.h"
+#include "sway_cursor.h"
+#include "sway_seat.h"
+#include "sway_view.h"
 #include "log.h"
 
 struct seatop_down_event {

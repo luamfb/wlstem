@@ -6,17 +6,17 @@
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/util/edges.h>
 #include "log.h"
-#include "sway/decoration.h"
-#include "sway/desktop.h"
-#include "sway/transaction.h"
-#include "sway/cursor.h"
-#include "sway/input-manager.h"
-#include "sway/seat.h"
+#include "sway_decoration.h"
+#include "sway_desktop.h"
+#include "sway_transaction.h"
+#include "sway_cursor.h"
+#include "sway_input-manager.h"
+#include "sway_seat.h"
 #include "output.h"
-#include "sway/arrange.h"
+#include "sway_arrange.h"
 #include "container.h"
-#include "sway/view.h"
-#include "sway/xdg_decoration.h"
+#include "sway_view.h"
+#include "sway_xdg_decoration.h"
 
 static const struct sway_view_child_impl popup_impl;
 

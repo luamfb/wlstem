@@ -17,16 +17,16 @@
 #include <wlr/util/region.h>
 #include "log.h"
 #include "config.h"
-#include "sway/sway_config.h"
-#include "sway/input-manager.h"
-#include "sway/seat.h"
-#include "sway/layers.h"
+#include "sway_config.h"
+#include "sway_input-manager.h"
+#include "sway_seat.h"
+#include "sway_layers.h"
 #include "output.h"
-#include "sway/server.h"
-#include "sway/arrange.h"
+#include "sway_server.h"
+#include "sway_arrange.h"
 #include "container.h"
 #include "output_manager.h"
-#include "sway/view.h"
+#include "sway_view.h"
 #include "wlstem.h"
 
 struct render_data {

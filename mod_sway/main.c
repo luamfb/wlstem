@@ -12,11 +12,11 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include <wlr/util/log.h>
-#include "sway/commands.h"
-#include "sway/sway_config.h"
-#include "sway/server.h"
-#include "sway/transaction.h"
-#include "sway/arrange.h"
+#include "sway_commands.h"
+#include "sway_config.h"
+#include "sway_server.h"
+#include "sway_transaction.h"
+#include "sway_arrange.h"
 #include "output_manager.h"
 #include "log.h"
 #include "stringop.h"

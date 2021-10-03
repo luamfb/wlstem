@@ -7,15 +7,15 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/xwayland.h>
 #include "log.h"
-#include "sway/desktop.h"
-#include "sway/transaction.h"
-#include "sway/cursor.h"
-#include "sway/input-manager.h"
-#include "sway/seat.h"
+#include "sway_desktop.h"
+#include "sway_transaction.h"
+#include "sway_cursor.h"
+#include "sway_input-manager.h"
+#include "sway_seat.h"
 #include "output.h"
-#include "sway/arrange.h"
+#include "sway_arrange.h"
 #include "container.h"
-#include "sway/view.h"
+#include "sway_view.h"
 #include "wlstem.h"
 
 static const char *atom_map[ATOM_LAST] = {

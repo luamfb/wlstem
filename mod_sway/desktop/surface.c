@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <wlr/types/wlr_surface.h>
-#include "sway/server.h"
-#include "sway/surface.h"
+#include "sway_server.h"
+#include "sway_surface.h"
 #include "wlstem.h"
 #include "wls_server.h"
 

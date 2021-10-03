@@ -1,7 +1,7 @@
 #ifndef _SWAY_INPUT_SWITCH_H
 #define _SWAY_INPUT_SWITCH_H
 
-#include "sway/seat.h"
+#include "sway_seat.h"
 
 struct sway_switch {
     struct sway_seat_device *seat_device;

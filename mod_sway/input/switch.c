@@ -1,6 +1,6 @@
-#include "sway/sway_config.h"
-#include "sway/transaction.h"
-#include "sway/switch.h"
+#include "sway_config.h"
+#include "sway_transaction.h"
+#include "sway_switch.h"
 #include <wlr/types/wlr_idle.h>
 #include "log.h"
 

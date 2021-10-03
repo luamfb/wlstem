@@ -6,10 +6,10 @@
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-names.h>
 #include <wlr/types/wlr_cursor.h>
-#include "sway/commands.h"
-#include "sway/sway_config.h"
-#include "sway/cursor.h"
-#include "sway/keyboard.h"
+#include "sway_commands.h"
+#include "sway_config.h"
+#include "sway_cursor.h"
+#include "sway_keyboard.h"
 #include "list.h"
 #include "log.h"
 #include "stringop.h"

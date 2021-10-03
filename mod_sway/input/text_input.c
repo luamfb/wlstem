@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "log.h"
-#include "sway/seat.h"
-#include "sway/text_input.h"
+#include "sway_seat.h"
+#include "sway_text_input.h"
 
 static struct sway_text_input *relay_get_focusable_text_input(
         struct sway_input_method_relay *relay) {

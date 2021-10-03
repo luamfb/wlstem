@@ -4,14 +4,14 @@
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_tablet_v2.h>
 #include <wlr/types/wlr_xcursor_manager.h>
-#include "sway/cursor.h"
-#include "sway/seat.h"
-#include "sway/tablet.h"
+#include "sway_cursor.h"
+#include "sway_seat.h"
+#include "sway_tablet.h"
 #include "output.h"
-#include "sway/view.h"
+#include "sway_view.h"
 #include "log.h"
 #if HAVE_XWAYLAND
-#include "sway/xwayland.h"
+#include "sway_xwayland.h"
 #endif
 #include "wlstem.h"
 
