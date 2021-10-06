@@ -9,6 +9,8 @@
 #include "sway_config.h"
 #include "list.h"
 
+struct wls_server;
+
 struct sway_input_device {
     char *identifier;
     struct wlr_input_device *wlr_device;
@@ -34,7 +36,7 @@ struct sway_input_manager {
     struct wl_listener virtual_pointer_new;
 };
 
-struct sway_input_manager *input_manager_create(struct sway_server *server);
+struct sway_input_manager *input_manager_create(struct wls_server *server);
 
 bool input_manager_has_focus(struct wls_transaction_node *node);
 
