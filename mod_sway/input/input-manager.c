@@ -439,7 +439,7 @@ void handle_virtual_pointer(struct wl_listener *listener, void *data) {
     }
 }
 
-struct sway_input_manager *input_manager_create(struct sway_server *server) {
+struct sway_input_manager *input_manager_create(struct wls_server *server) {
     struct sway_input_manager *input =
         calloc(1, sizeof(struct sway_input_manager));
     if (!input) {
@@ -450,22 +450,21 @@ struct sway_input_manager *input_manager_create(struct sway_server *server) {
     wl_list_init(&input->seats);
 
     input->new_input.notify = handle_new_input;
-    wl_signal_add(&wls->server->backend->events.new_input, &input->new_input);
+    wl_signal_add(&server->backend->events.new_input, &input->new_input);
 
     input->virtual_keyboard = wlr_virtual_keyboard_manager_v1_create(
-        wls->server->wl_display);
+        server->wl_display);
     wl_signal_add(&input->virtual_keyboard->events.new_virtual_keyboard,
         &input->virtual_keyboard_new);
     input->virtual_keyboard_new.notify = handle_virtual_keyboard;
 
     input->virtual_pointer = wlr_virtual_pointer_manager_v1_create(
-        wls->server->wl_display
-    );
+        server->wl_display);
     wl_signal_add(&input->virtual_pointer->events.new_virtual_pointer,
         &input->virtual_pointer_new);
     input->virtual_pointer_new.notify = handle_virtual_pointer;
 
-    input->inhibit = wlr_input_inhibit_manager_create(wls->server->wl_display);
+    input->inhibit = wlr_input_inhibit_manager_create(server->wl_display);
     input->inhibit_activate.notify = handle_inhibit_activate;
     wl_signal_add(&input->inhibit->events.activate,
             &input->inhibit_activate);
@@ -474,7 +473,7 @@ struct sway_input_manager *input_manager_create(struct sway_server *server) {
             &input->inhibit_deactivate);
 
     input->keyboard_shortcuts_inhibit =
-        wlr_keyboard_shortcuts_inhibit_v1_create(wls->server->wl_display);
+        wlr_keyboard_shortcuts_inhibit_v1_create(server->wl_display);
     input->keyboard_shortcuts_inhibit_new_inhibitor.notify =
         handle_keyboard_shortcuts_inhibit_new_inhibitor;
     wl_signal_add(&input->keyboard_shortcuts_inhibit->events.new_inhibitor,
