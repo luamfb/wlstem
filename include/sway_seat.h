@@ -5,11 +5,11 @@
 #include <wlr/types/wlr_layer_shell_v1.h>
 #include <wlr/types/wlr_seat.h>
 #include <wlr/util/edges.h>
-#include "sway_config.h"
 #include "sway_input-manager.h"
 #include "sway_tablet.h"
 #include "sway_text_input.h"
 
+struct seat_config;
 struct sway_seat;
 
 struct sway_seatop_impl {
