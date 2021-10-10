@@ -19,7 +19,7 @@
 #include "sway_idle_inhibit_v1.h"
 #include "sway_cursor.h"
 #include "output.h"
-#include "sway_seat.h"
+#include "seat.h"
 #include "sway_server.h"
 #include "sway_arrange.h"
 #include "container.h"

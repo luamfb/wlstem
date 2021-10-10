@@ -2,7 +2,7 @@
 #include <wlr/types/wlr_idle.h>
 #include "log.h"
 #include "sway_idle_inhibit_v1.h"
-#include "sway_seat.h"
+#include "seat.h"
 #include "container.h"
 #include "sway_view.h"
 #include "sway_server.h"

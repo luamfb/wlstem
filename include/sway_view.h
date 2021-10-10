@@ -7,8 +7,8 @@
 #include <wlr/xwayland.h>
 #endif
 #include "util.h"
-#include "sway_input-manager.h"
-#include "sway_seat.h"
+#include "input_manager.h"
+#include "seat.h"
 
 struct sway_container;
 struct sway_view;

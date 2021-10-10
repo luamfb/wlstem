@@ -6,7 +6,7 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
 #include "sway_transaction.h"
-#include "sway_seat.h"
+#include "seat.h"
 #include "sway_layers.h"
 #include "sway_arrange.h"
 #include "sway_server.h"

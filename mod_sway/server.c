@@ -31,7 +31,7 @@
 #include "log.h"
 #include "sway_config.h"
 #include "sway_idle_inhibit_v1.h"
-#include "sway_input-manager.h"
+#include "input_manager.h"
 #include "sway_arrange.h"
 #include "output.h"
 #include "sway_server.h"

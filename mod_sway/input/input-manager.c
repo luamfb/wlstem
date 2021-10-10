@@ -11,10 +11,10 @@
 #include <wlr/types/wlr_virtual_pointer_v1.h>
 #include "sway_config.h"
 #include "sway_cursor.h"
-#include "sway_input-manager.h"
+#include "input_manager.h"
 #include "sway_keyboard.h"
 #include "sway_libinput.h"
-#include "sway_seat.h"
+#include "seat.h"
 #include "sway_server.h"
 #include "sway_view.h"
 #include "stringop.h"

@@ -9,7 +9,7 @@
 #include "sway_idle_inhibit_v1.h"
 #include "sway_transaction.h"
 #include "sway_cursor.h"
-#include "sway_input-manager.h"
+#include "input_manager.h"
 #include "output.h"
 #include "container.h"
 #include "node.h"
