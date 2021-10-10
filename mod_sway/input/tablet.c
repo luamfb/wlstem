@@ -7,8 +7,8 @@
 #include "log.h"
 #include "sway_config.h"
 #include "sway_cursor.h"
-#include "sway_seat.h"
-#include "sway_tablet.h"
+#include "seat.h"
+#include "tablet.h"
 #include "sway_server.h"
 
 static void handle_pad_tablet_destroy(struct wl_listener *listener, void *data) {

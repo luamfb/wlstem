@@ -1,6 +1,6 @@
 #ifndef _SWAY_INPUT_LIBINPUT_H
 #define _SWAY_INPUT_LIBINPUT_H
-#include "sway_input-manager.h"
+#include "input_manager.h"
 
 void sway_input_configure_libinput_device(struct sway_input_device *device);
 

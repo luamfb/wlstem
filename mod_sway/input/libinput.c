@@ -5,7 +5,7 @@
 #include "log.h"
 #include "sway_config.h"
 #include "output.h"
-#include "sway_input-manager.h"
+#include "input_manager.h"
 
 static void log_status(enum libinput_config_status status) {
     if (status != LIBINPUT_CONFIG_STATUS_SUCCESS) {

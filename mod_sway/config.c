@@ -17,8 +17,8 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_keyboard.h>
 #include <xkbcommon/xkbcommon-keysyms.h>
-#include "sway_input-manager.h"
-#include "sway_seat.h"
+#include "input_manager.h"
+#include "seat.h"
 #include "sway_switch.h"
 #include "sway_commands.h"
 #include "sway_config.h"

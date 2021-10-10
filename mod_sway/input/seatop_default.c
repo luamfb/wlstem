@@ -6,8 +6,8 @@
 #include <wlr/types/wlr_xcursor_manager.h>
 #include "sway_config.h"
 #include "sway_cursor.h"
-#include "sway_seat.h"
-#include "sway_tablet.h"
+#include "seat.h"
+#include "tablet.h"
 #include "output.h"
 #include "sway_view.h"
 #include "sway_server.h"
