@@ -130,15 +130,6 @@ struct seat_attachment_config {
     // TODO other things are configured here for some reason
 };
 
-enum sway_input_idle_source {
-    IDLE_SOURCE_KEYBOARD = 1 << 0,
-    IDLE_SOURCE_POINTER = 1 << 1,
-    IDLE_SOURCE_TOUCH = 1 << 2,
-    IDLE_SOURCE_TABLET_PAD = 1 << 3,
-    IDLE_SOURCE_TABLET_TOOL = 1 << 4,
-    IDLE_SOURCE_SWITCH = 1 << 5,
-};
-
 /**
  * Options for multiseat and other misc device configurations
  */

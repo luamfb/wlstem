@@ -2,6 +2,7 @@
 #define _SWAY_INPUT_SWITCH_H
 
 #include "sway_seat.h"
+#include <wlr/types/wlr_switch.h>
 
 struct sway_switch {
     struct sway_seat_device *seat_device;

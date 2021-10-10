@@ -9,6 +9,7 @@
 #include <wlr/types/wlr_keyboard_group.h>
 #include <xkbcommon/xkbcommon-names.h>
 #include "sway_commands.h"
+#include "sway_config.h"
 #include "sway_transaction.h"
 #include "sway_input-manager.h"
 #include "sway_keyboard.h"

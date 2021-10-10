@@ -6,7 +6,9 @@
 #include <wlr/types/wlr_pointer_gestures_v1.h>
 #include <wlr/types/wlr_surface.h>
 #include "sway_seat.h"
+#include "idle.h"
 #include "config.h"
+#include "util.h"
 
 #define SWAY_CURSOR_PRESSED_BUTTONS_CAP 32
 
