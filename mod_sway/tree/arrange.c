@@ -9,6 +9,7 @@
 #include "sway_seat.h"
 #include "sway_layers.h"
 #include "sway_arrange.h"
+#include "sway_server.h"
 #include "container.h"
 #include "output.h"
 #include "sway_view.h"

@@ -9,6 +9,7 @@
 #include "sway_tablet.h"
 #include "output.h"
 #include "sway_view.h"
+#include "sway_server.h"
 #include "log.h"
 #if HAVE_XWAYLAND
 #include "sway_xwayland.h"

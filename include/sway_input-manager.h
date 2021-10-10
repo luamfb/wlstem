@@ -5,7 +5,6 @@
 #include <wlr/types/wlr_keyboard_shortcuts_inhibit_v1.h>
 #include <wlr/types/wlr_virtual_keyboard_v1.h>
 #include <wlr/types/wlr_virtual_pointer_v1.h>
-#include "sway_server.h"
 #include "sway_config.h"
 #include "list.h"
 

@@ -12,10 +12,12 @@
 #include "sway_cursor.h"
 #include "sway_input-manager.h"
 #include "sway_seat.h"
+#include "sway_server.h"
 #include "output.h"
 #include "sway_arrange.h"
 #include "container.h"
 #include "sway_view.h"
+#include "sway_xwayland.h"
 #include "wlstem.h"
 
 static const char *atom_map[ATOM_LAST] = {

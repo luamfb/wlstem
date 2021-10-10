@@ -3,6 +3,7 @@
 #include "sway_transaction.h"
 #include "sway_input-manager.h"
 #include "sway_seat.h"
+#include "sway_server.h"
 #include "output.h"
 #include "container.h"
 #include "log.h"

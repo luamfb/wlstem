@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "log.h"
 #include "sway_seat.h"
+#include "sway_server.h"
 #include "sway_text_input.h"
 
 static struct sway_text_input *relay_get_focusable_text_input(
