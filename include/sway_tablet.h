@@ -1,6 +1,7 @@
 #ifndef _SWAY_INPUT_TABLET_H
 #define _SWAY_INPUT_TABLET_H
 #include <wlr/types/wlr_layer_shell_v1.h>
+#include <wlr/types/wlr_tablet_tool.h>
 
 struct sway_seat;
 struct wlr_tablet_tool;
