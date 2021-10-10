@@ -5,6 +5,12 @@
 #include <stdbool.h>
 #include <wayland-server-protocol.h>
 
+enum bool_option {
+    OPT_UNSET,
+    OPT_DISABLED,
+    OPT_ENABLED,
+};
+
 enum movement_unit {
     MOVEMENT_UNIT_PX,
     MOVEMENT_UNIT_PPT,

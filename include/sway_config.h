@@ -14,13 +14,8 @@
 #include "output_config.h"
 #include "sway_tablet.h"
 #include "output_manager.h"
+#include "util.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
-
-enum bool_option {
-    OPT_UNSET,
-    OPT_DISABLED,
-    OPT_ENABLED,
-};
 
 enum binding_input_type {
     BINDING_KEYCODE,
