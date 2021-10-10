@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <float.h>
 #include "sway_config.h"
+#include "sway_server.h"
 #include "sway_keyboard.h"
 #include "log.h"
 

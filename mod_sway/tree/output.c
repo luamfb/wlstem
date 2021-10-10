@@ -6,6 +6,7 @@
 #include <wlr/types/wlr_output_damage.h>
 #include "output.h"
 #include "sway_seat.h"
+#include "sway_server.h"
 #include "log.h"
 #include "util.h"
 #include "wlstem.h"
