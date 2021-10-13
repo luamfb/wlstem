@@ -11,6 +11,7 @@ struct wls_context {
     struct wls_node_manager *node_manager;
     struct wls_output_manager *output_manager;
     list_t *output_configs;
+    struct wls_input_method_manager *input_method_manager;
 };
 
 // The context for wlstem.

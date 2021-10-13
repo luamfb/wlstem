@@ -1,9 +1,10 @@
 #include <assert.h>
 #include <stdlib.h>
+#include "input_method.h"
 #include "log.h"
 #include "seat.h"
-#include "sway_server.h"
 #include "text_input.h"
+#include "wlstem.h"
 
 static struct sway_text_input *relay_get_focusable_text_input(
         struct sway_input_method_relay *relay) {
@@ -255,12 +256,12 @@ void sway_input_method_relay_init(struct sway_seat *seat,
     wl_list_init(&relay->text_inputs);
 
     relay->text_input_new.notify = relay_handle_text_input;
-    wl_signal_add(&server.text_input->events.text_input,
+    wl_signal_add(&wls->input_method_manager->text_input->events.text_input,
         &relay->text_input_new);
 
     relay->input_method_new.notify = relay_handle_input_method;
     wl_signal_add(
-        &server.input_method->events.input_method,
+        &wls->input_method_manager->input_method->events.input_method,
         &relay->input_method_new);
 }
 

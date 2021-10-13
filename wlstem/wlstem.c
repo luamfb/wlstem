@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 #include <wayland-server-core.h>
+#include "input_method.h"
 #include "list.h"
 #include "log.h"
 #include "node.h"
@@ -32,7 +33,11 @@ bool wls_init(void) {
 
     list_t *_output_configs = create_list();
 
-    if (!_node_manager || !_output_manager || !_output_configs) {
+    struct wls_input_method_manager *_input_method_manager =
+        wls_input_method_manager_create(_server->wl_display);
+
+    if (!_node_manager || !_output_manager || !_output_configs
+            || !_input_method_manager) {
         sway_log(SWAY_ERROR, "wlstem initialization (2nd stage) failed!");
         return false;
     }
@@ -42,6 +47,7 @@ bool wls_init(void) {
     wls->node_manager = _node_manager;
     wls->output_manager = _output_manager;
     wls->output_configs = _output_configs;
+    wls->input_method_manager = _input_method_manager;
 
     return true;
 }

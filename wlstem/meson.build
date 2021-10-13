@@ -28,6 +28,8 @@ lib_wlstem = shared_library(
         'loop.c',
         'pango.c',
         'stringop.c',
+        'input_method.c',
+        'text_input.c',
         'util.c',
         'output.c',
         'output_config.c',
