@@ -637,7 +637,7 @@ static void render_output(struct sway_output *output,
 static void render_seatops(struct sway_output *output,
         pixman_region32_t *damage) {
     struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         seatop_render(seat, output, damage);
     }
 }

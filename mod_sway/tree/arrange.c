@@ -31,7 +31,7 @@ static void wm_handle_output_connected(
 
     // Set each seat's focus if not already set
     struct sway_seat *seat = NULL;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         if (!seat->has_focus) {
             seat_set_focus_output(seat, output);
         }

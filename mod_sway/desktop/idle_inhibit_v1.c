@@ -6,7 +6,7 @@
 #include "container.h"
 #include "sway_view.h"
 #include "sway_server.h"
-
+#include "wlstem.h"
 
 static void destroy_inhibitor(struct sway_idle_inhibitor_v1 *inhibitor) {
     wl_list_remove(&inhibitor->link);
@@ -110,7 +110,7 @@ bool sway_idle_inhibit_v1_is_active(struct sway_idle_inhibitor_v1 *inhibitor) {
             view_is_visible(inhibitor->view);
     case INHIBIT_IDLE_FOCUS:;
         struct sway_seat *seat = NULL;
-        wl_list_for_each(seat, &server.input->seats, link) {
+        wl_list_for_each(seat, &wls->seats, link) {
             struct sway_container *con = seat_get_focused_container(seat);
             if (con && con->view && con->view == inhibitor->view) {
                 return true;

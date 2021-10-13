@@ -108,7 +108,7 @@ static void untrack_output(struct sway_container *con, void *data) {
 
 static void remove_output_from_all_focus_stacks(struct sway_output *output) {
     struct sway_seat *seat = NULL;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         remove_node_from_focus_stack(seat, &output->node);
     }
 }

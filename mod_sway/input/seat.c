@@ -595,8 +595,8 @@ struct sway_seat *seat_create(const char *seat_name) {
 
     sway_input_method_relay_init(seat, &seat->im_relay);
 
-    bool first = wl_list_empty(&server.input->seats);
-    wl_list_insert(&server.input->seats, &seat->link);
+    bool first = wl_list_empty(&wls->seats);
+    wl_list_insert(&wls->seats, &seat->link);
 
     if (!first) {
         // Since this is not the first seat, attempt to set initial focus

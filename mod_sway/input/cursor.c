@@ -174,7 +174,7 @@ void cursor_rebase_all(void) {
     }
 
     struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         cursor_rebase(seat->cursor);
     }
 }

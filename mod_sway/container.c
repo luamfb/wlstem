@@ -7,6 +7,7 @@
 #include "output.h"
 #include "container.h"
 #include "log.h"
+#include "wlstem.h"
 
 struct sway_container *container_at(struct sway_output *output,
         double lx, double ly,
@@ -42,7 +43,7 @@ struct sway_container *container_at(struct sway_output *output,
 
 void container_end_mouse_operation(struct sway_container *container) {
     struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         seatop_unref(seat, container);
     }
 }
