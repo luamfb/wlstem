@@ -2,6 +2,7 @@
 #define WLSTEM_WLSTEM_H
 
 #include <stdbool.h>
+#include <wlr/types/wlr_tablet_v2.h>
 #include "list.h"
 #include "node.h"
 #include "output_manager.h"
@@ -12,6 +13,7 @@ struct wls_context {
     struct wls_output_manager *output_manager;
     list_t *output_configs;
     struct wls_input_method_manager *input_method_manager;
+    struct wlr_tablet_manager_v2 *tablet_v2;
 };
 
 // The context for wlstem.
