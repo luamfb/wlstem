@@ -30,6 +30,7 @@ lib_wlstem = shared_library(
         'stringop.c',
         'input_method.c',
         'text_input.c',
+        'tablet.c',
         'util.c',
         'output.c',
         'output_config.c',
