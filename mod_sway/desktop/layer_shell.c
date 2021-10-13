@@ -223,7 +223,7 @@ void arrange_layers(struct sway_output *output) {
     }
 
     struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         if (topmost != NULL) {
             seat_set_focus_layer(seat, topmost->layer_surface);
         } else if (seat->focused_layer &&
@@ -317,7 +317,7 @@ static void handle_surface_commit(struct wl_listener *listener, void *data) {
 
 static void unmap(struct sway_layer_surface *sway_layer) {
     struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         if (seat->focused_layer == sway_layer->layer_surface) {
             seat_set_focus_layer(seat, NULL);
         }

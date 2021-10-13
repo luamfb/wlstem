@@ -404,7 +404,7 @@ static void handle_foreign_activate_request(
             listener, view, foreign_activate_request);
     struct wlr_foreign_toplevel_handle_v1_activated_event *event = data;
     struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         if (seat->wlr_seat == event->seat) {
             seat_set_focus_container(seat, view->container);
             seat_consider_warp_to_focus(seat);
@@ -534,7 +534,7 @@ void view_unmap(struct sway_view *view) {
     }
 
     struct sway_seat *seat;
-    wl_list_for_each(seat, &server.input->seats, link) {
+    wl_list_for_each(seat, &wls->seats, link) {
         seat->cursor->image_surface = NULL;
         if (seat->cursor->active_constraint) {
             struct wlr_surface *constrain_surface =

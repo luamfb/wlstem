@@ -39,6 +39,8 @@ bool wls_init(void) {
     struct wlr_tablet_manager_v2 *_tablet_v2 = wlr_tablet_v2_create(
         _server->wl_display);
 
+    wl_list_init(&_wls->seats);
+
     if (!_node_manager || !_output_manager || !_output_configs
             || !_input_method_manager || !_tablet_v2) {
         sway_log(SWAY_ERROR, "wlstem initialization (2nd stage) failed!");

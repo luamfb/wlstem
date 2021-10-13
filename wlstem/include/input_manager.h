@@ -22,7 +22,6 @@ struct sway_input_device {
 
 struct sway_input_manager {
     struct wl_list devices;
-    struct wl_list seats;
 
     struct wlr_input_inhibit_manager *inhibit;
     struct wlr_keyboard_shortcuts_inhibit_manager_v1 *keyboard_shortcuts_inhibit;
