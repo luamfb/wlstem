@@ -7,8 +7,8 @@
 #include <wlr/types/wlr_output_damage.h>
 #include <wlr/types/wlr_output.h>
 #include "log.h"
+#include "cursor.h"
 #include "sway_transaction.h"
-#include "sway_cursor.h"
 #include "input_manager.h"
 #include "seat.h"
 #include "sway_layers.h"

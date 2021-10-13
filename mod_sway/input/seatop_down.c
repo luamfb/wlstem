@@ -3,7 +3,7 @@
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_tablet_v2.h>
 #include "sway_config.h"
-#include "sway_cursor.h"
+#include "cursor.h"
 #include "seat.h"
 #include "sway_view.h"
 #include "log.h"

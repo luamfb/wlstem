@@ -5,7 +5,7 @@
 #include <wlr/types/wlr_tablet_v2.h>
 #include <wlr/types/wlr_xcursor_manager.h>
 #include "sway_config.h"
-#include "sway_cursor.h"
+#include "cursor.h"
 #include "seat.h"
 #include "tablet.h"
 #include "output.h"

@@ -17,7 +17,7 @@
 #include "sway_desktop.h"
 #include "sway_transaction.h"
 #include "sway_idle_inhibit_v1.h"
-#include "sway_cursor.h"
+#include "cursor.h"
 #include "output.h"
 #include "seat.h"
 #include "sway_server.h"
