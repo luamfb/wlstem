@@ -120,8 +120,6 @@ bool server_init(struct sway_server *server) {
         handle_output_power_manager_set_mode;
     wl_signal_add(&server->output_power_manager_v1->events.set_mode,
         &server->output_power_manager_set_mode);
-    server->input_method = wlr_input_method_manager_v2_create(wls->server->wl_display);
-    server->text_input = wlr_text_input_manager_v3_create(wls->server->wl_display);
     server->foreign_toplevel_manager =
         wlr_foreign_toplevel_manager_v1_create(wls->server->wl_display);
 
