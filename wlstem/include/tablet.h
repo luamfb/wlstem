@@ -71,4 +71,7 @@ void sway_tablet_pad_destroy(struct sway_tablet_pad *tablet_pad);
 void sway_tablet_pad_notify_enter(struct sway_tablet_pad *tablet_pad,
         struct wlr_surface *surface);
 
+void attach_tablet_pad(struct sway_tablet_pad *tablet_pad,
+        struct sway_tablet *tablet);
+
 #endif
