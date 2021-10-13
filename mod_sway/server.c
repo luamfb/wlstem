@@ -82,8 +82,6 @@ bool server_init(struct sway_server *server) {
         &server->xdg_shell_surface);
     server->xdg_shell_surface.notify = handle_xdg_shell_surface;
 
-    server->tablet_v2 = wlr_tablet_v2_create(wls->server->wl_display);
-
     server->server_decoration_manager =
         wlr_server_decoration_manager_create(wls->server->wl_display);
     wlr_server_decoration_manager_set_default_mode(

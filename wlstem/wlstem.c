@@ -36,8 +36,11 @@ bool wls_init(void) {
     struct wls_input_method_manager *_input_method_manager =
         wls_input_method_manager_create(_server->wl_display);
 
+    struct wlr_tablet_manager_v2 *_tablet_v2 = wlr_tablet_v2_create(
+        _server->wl_display);
+
     if (!_node_manager || !_output_manager || !_output_configs
-            || !_input_method_manager) {
+            || !_input_method_manager || !_tablet_v2) {
         sway_log(SWAY_ERROR, "wlstem initialization (2nd stage) failed!");
         return false;
     }
@@ -48,6 +51,7 @@ bool wls_init(void) {
     wls->output_manager = _output_manager;
     wls->output_configs = _output_configs;
     wls->input_method_manager = _input_method_manager;
+    wls->tablet_v2 = _tablet_v2;
 
     return true;
 }

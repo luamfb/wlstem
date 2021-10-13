@@ -9,7 +9,7 @@
 #include "sway_cursor.h"
 #include "seat.h"
 #include "tablet.h"
-#include "sway_server.h"
+#include "wlstem.h"
 
 static void handle_pad_tablet_destroy(struct wl_listener *listener, void *data) {
     struct sway_tablet_pad *pad =
@@ -62,7 +62,7 @@ void sway_configure_tablet(struct sway_tablet *tablet) {
 
     if (!tablet->tablet_v2) {
         tablet->tablet_v2 =
-            wlr_tablet_create(server.tablet_v2, seat->wlr_seat, device);
+            wlr_tablet_create(wls->tablet_v2, seat->wlr_seat, device);
     }
 
     /* Search for a sibling tablet pad */
@@ -170,7 +170,7 @@ void sway_tablet_tool_configure(struct sway_tablet *tablet,
     tool->seat = tablet->seat_device->sway_seat;
     tool->tablet = tablet;
     tool->tablet_v2_tool =
-        wlr_tablet_tool_create(server.tablet_v2,
+        wlr_tablet_tool_create(wls->tablet_v2,
             tablet->seat_device->sway_seat->wlr_seat, wlr_tool);
 
     tool->tool_destroy.notify = handle_tablet_tool_destroy;
@@ -268,7 +268,7 @@ void sway_configure_tablet_pad(struct sway_tablet_pad *tablet_pad) {
 
     if (!tablet_pad->tablet_v2_pad) {
         tablet_pad->tablet_v2_pad =
-            wlr_tablet_pad_create(server.tablet_v2, seat->wlr_seat, device);
+            wlr_tablet_pad_create(wls->tablet_v2, seat->wlr_seat, device);
     }
 
     wl_list_remove(&tablet_pad->attach.link);
