@@ -6,7 +6,7 @@
 #include <wlr/types/wlr_tablet_pad.h>
 #include "log.h"
 #include "sway_config.h"
-#include "sway_cursor.h"
+#include "cursor.h"
 #include "seat.h"
 #include "tablet.h"
 #include "wlstem.h"

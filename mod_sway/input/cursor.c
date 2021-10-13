@@ -16,6 +16,7 @@
 #include <wlr/types/wlr_xcursor_manager.h>
 #include <wlr/util/region.h>
 #include "config.h"
+#include "cursor.h"
 #include "idle.h"
 #include "log.h"
 #include "util.h"
@@ -23,7 +24,6 @@
 #include "sway_config.h"
 #include "sway_desktop.h"
 #include "sway_transaction.h"
-#include "sway_cursor.h"
 #include "sway_keyboard.h"
 #include "tablet.h"
 #include "sway_layers.h"

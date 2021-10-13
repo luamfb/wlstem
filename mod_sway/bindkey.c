@@ -8,8 +8,8 @@
 #include <wlr/types/wlr_cursor.h>
 #include "sway_commands.h"
 #include "sway_config.h"
-#include "sway_cursor.h"
 #include "sway_keyboard.h"
+#include "cursor.h"
 #include "list.h"
 #include "log.h"
 #include "stringop.h"
