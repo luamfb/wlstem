@@ -357,8 +357,6 @@ shutdown:
     wlr_xwayland_destroy(server.xwayland.wlr_xwayland);
 #endif
     wls_fini();
-    // only free this list after finalizing wls_fini() because it needs it.
-    list_free(server.transactions);
 
     server_wm_destroy(server.wm);
 

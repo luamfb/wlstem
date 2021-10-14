@@ -258,20 +258,20 @@ static bool transaction_same_nodes(struct sway_transaction *a,
 }
 
 static void transaction_progress_queue(void) {
-    if (!server.transactions->length) {
+    if (!wls->node_manager->transactions->length) {
         return;
     }
     // Only the first transaction in the queue is committed, so that's the one
     // we try to process.
-    struct sway_transaction *transaction = server.transactions->items[0];
+    struct sway_transaction *transaction = wls->node_manager->transactions->items[0];
     if (transaction->num_waiting) {
         return;
     }
     transaction_apply(transaction);
     transaction_destroy(transaction);
-    list_del(server.transactions, 0);
+    list_del(wls->node_manager->transactions, 0);
 
-    if (server.transactions->length == 0) {
+    if (wls->node_manager->transactions->length == 0) {
         // The transaction queue is empty, so we're done.
         sway_idle_inhibit_v1_check_active(server.idle_inhibit_manager_v1);
         return;
@@ -279,12 +279,12 @@ static void transaction_progress_queue(void) {
 
     // If there's a bunch of consecutive transactions which all apply to the
     // same views, skip all except the last one.
-    while (server.transactions->length >= 2) {
-        struct sway_transaction *txn = server.transactions->items[0];
+    while (wls->node_manager->transactions->length >= 2) {
+        struct sway_transaction *txn = wls->node_manager->transactions->items[0];
         struct sway_transaction *dup = NULL;
 
-        for (int i = 1; i < server.transactions->length; i++) {
-            struct sway_transaction *maybe_dup = server.transactions->items[i];
+        for (int i = 1; i < wls->node_manager->transactions->length; i++) {
+            struct sway_transaction *maybe_dup = wls->node_manager->transactions->items[i];
             if (transaction_same_nodes(txn, maybe_dup)) {
                 dup = maybe_dup;
                 break;
@@ -292,7 +292,7 @@ static void transaction_progress_queue(void) {
         }
 
         if (dup) {
-            list_del(server.transactions, 0);
+            list_del(wls->node_manager->transactions, 0);
             transaction_destroy(txn);
         } else {
             break;
@@ -300,7 +300,7 @@ static void transaction_progress_queue(void) {
     }
 
     // We again commit the first transaction in the queue to process it.
-    transaction = server.transactions->items[0];
+    transaction = wls->node_manager->transactions->items[0];
     transaction_commit(transaction);
     transaction_progress_queue();
 }
@@ -478,10 +478,10 @@ void transaction_commit_dirty(void) {
     }
     dirty_nodes->length = 0;
 
-    list_add(server.transactions, transaction);
+    list_add(wls->node_manager->transactions, transaction);
 
     // We only commit the first transaction added to the queue.
-    if (server.transactions->length == 1) {
+    if (wls->node_manager->transactions->length == 1) {
         transaction_commit(transaction);
         // Attempting to progress the queue here is useful
         // if the transaction has nothing to wait for.

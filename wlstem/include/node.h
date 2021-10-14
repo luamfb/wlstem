@@ -42,6 +42,7 @@ struct wls_transaction_node {
 };
 
 struct wls_node_manager {
+    list_t *transactions;
     list_t *dirty_nodes;
     struct {
         struct wl_signal new_node;

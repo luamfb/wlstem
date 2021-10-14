@@ -15,7 +15,9 @@ struct wls_node_manager * node_manager_create(void) {
         sway_log(SWAY_ERROR, "node manager creation failed");
         return NULL;
     }
+    node_manager->transactions = create_list();
     node_manager->dirty_nodes = create_list();
+
     wl_signal_init(&node_manager->events.new_node);
     return node_manager;
 }
@@ -24,6 +26,7 @@ void node_manager_destroy(struct wls_node_manager *node_manager) {
     if (!node_manager) {
         return;
     }
+    list_free(node_manager->transactions);
     list_free(node_manager->dirty_nodes);
     free(node_manager);
 }

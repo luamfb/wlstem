@@ -162,8 +162,6 @@ bool server_init(struct sway_server *server) {
         server->txn_timeout_ms = 200;
     }
 
-    server->transactions = create_list();
-
     server->input = input_manager_create(wls->server);
     input_manager_get_default_seat(); // create seat0
 
