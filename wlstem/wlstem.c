@@ -67,14 +67,16 @@ void wls_fini(void) {
     wls_server_destroy(wls->server);
 
     wls_output_manager_destroy(wls->output_manager);
-    node_manager_destroy(wls->node_manager);
-
     if (wls->output_configs) {
         for (int i = 0; i < wls->output_configs->length; i++) {
             free_output_config(wls->output_configs->items[i]);
         }
         list_free(wls->output_configs);
     }
+
+    // Only destroy the node manager after everything else was destroyed,
+    // because some of that destruction code uses the transaction list it has.
+    node_manager_destroy(wls->node_manager);
 
     free(wls);
     wls = NULL;
