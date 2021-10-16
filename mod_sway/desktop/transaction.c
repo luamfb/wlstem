@@ -397,7 +397,7 @@ static void transaction_commit(struct sway_transaction *transaction) {
                 handle_timeout, transaction);
         if (transaction->timer) {
             wl_event_source_timer_update(transaction->timer,
-                    server.txn_timeout_ms);
+                    server.transaction_timeout_ms);
         } else {
             sway_log_errno(SWAY_ERROR, "Unable to create transaction timer "
                     "(some imperfect frames might be rendered)");
