@@ -4,6 +4,7 @@
 #include "input_method.h"
 #include "list.h"
 #include "log.h"
+#include "misc_protocols.h"
 #include "node.h"
 #include "output_config.h"
 #include "output_manager.h"
@@ -41,8 +42,11 @@ bool wls_init(void) {
 
     wl_list_init(&_wls->seats);
 
+    struct wls_misc_protocols *_misc_protocols =
+        wls_create_misc_protocols(_server->wl_display);
+
     if (!_node_manager || !_output_manager || !_output_configs
-            || !_input_method_manager || !_tablet_v2) {
+            || !_input_method_manager || !_tablet_v2 || !_misc_protocols) {
         sway_log(SWAY_ERROR, "wlstem initialization (2nd stage) failed!");
         return false;
     }
@@ -54,6 +58,7 @@ bool wls_init(void) {
     wls->output_configs = _output_configs;
     wls->input_method_manager = _input_method_manager;
     wls->tablet_v2 = _tablet_v2;
+    wls->misc_protocols = _misc_protocols;
 
     return true;
 }
@@ -73,6 +78,8 @@ void wls_fini(void) {
         }
         list_free(wls->output_configs);
     }
+
+    free(wls->misc_protocols);
 
     // Only destroy the node manager after everything else was destroyed,
     // because some of that destruction code uses the transaction list it has.

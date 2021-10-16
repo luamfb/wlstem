@@ -6,8 +6,8 @@
 #include <wlr/types/wlr_buffer.h>
 #include "sway_config.h"
 #include "sway_desktop.h"
-#include "sway_idle_inhibit_v1.h"
 #include "sway_transaction.h"
+#include "idle_inhibit_v1.h"
 #include "input_manager.h"
 #include "cursor.h"
 #include "output.h"
@@ -274,7 +274,7 @@ static void transaction_progress_queue(void) {
 
     if (wls->node_manager->transactions->length == 0) {
         // The transaction queue is empty, so we're done.
-        sway_idle_inhibit_v1_check_active(server.idle_inhibit_manager_v1);
+        sway_idle_inhibit_v1_check_active(wls->misc_protocols->idle_inhibit_manager_v1);
         return;
     }
 

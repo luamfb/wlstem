@@ -1,11 +1,10 @@
 #include <stdlib.h>
 #include <wlr/types/wlr_idle.h>
 #include "log.h"
-#include "sway_idle_inhibit_v1.h"
+#include "idle_inhibit_v1.h"
 #include "seat.h"
 #include "container.h"
 #include "sway_view.h"
-#include "sway_server.h"
 #include "wlstem.h"
 
 static void destroy_inhibitor(struct sway_idle_inhibitor_v1 *inhibitor) {
@@ -53,7 +52,7 @@ void sway_idle_inhibit_v1_user_inhibitor_register(struct sway_view *view,
         return;
     }
 
-    inhibitor->manager = server.idle_inhibit_manager_v1;
+    inhibitor->manager = wls->misc_protocols->idle_inhibit_manager_v1;
     inhibitor->mode = mode;
     inhibitor->view = view;
     wl_list_insert(&inhibitor->manager->inhibitors, &inhibitor->link);
@@ -67,7 +66,7 @@ void sway_idle_inhibit_v1_user_inhibitor_register(struct sway_view *view,
 struct sway_idle_inhibitor_v1 *sway_idle_inhibit_v1_user_inhibitor_for_view(
         struct sway_view *view) {
     struct sway_idle_inhibitor_v1 *inhibitor;
-    wl_list_for_each(inhibitor, &server.idle_inhibit_manager_v1->inhibitors,
+    wl_list_for_each(inhibitor, &wls->misc_protocols->idle_inhibit_manager_v1->inhibitors,
             link) {
         if (inhibitor->view == view &&
                 inhibitor->mode != INHIBIT_IDLE_APPLICATION) {
@@ -80,7 +79,7 @@ struct sway_idle_inhibitor_v1 *sway_idle_inhibit_v1_user_inhibitor_for_view(
 struct sway_idle_inhibitor_v1 *sway_idle_inhibit_v1_application_inhibitor_for_view(
         struct sway_view *view) {
     struct sway_idle_inhibitor_v1 *inhibitor;
-    wl_list_for_each(inhibitor, &server.idle_inhibit_manager_v1->inhibitors,
+    wl_list_for_each(inhibitor, &wls->misc_protocols->idle_inhibit_manager_v1->inhibitors,
             link) {
         if (inhibitor->view == view &&
                 inhibitor->mode == INHIBIT_IDLE_APPLICATION) {
