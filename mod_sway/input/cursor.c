@@ -31,7 +31,7 @@
 #include "output.h"
 #include "container.h"
 #include "output_manager.h"
-#include "sway_view.h"
+#include "view.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 #include "wlstem.h"
 #include "server.h"

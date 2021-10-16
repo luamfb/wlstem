@@ -16,7 +16,7 @@
 #include "output.h"
 #include "sway_arrange.h"
 #include "container.h"
-#include "sway_view.h"
+#include "view.h"
 #include "sway_xwayland.h"
 #include "wlstem.h"
 

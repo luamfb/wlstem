@@ -5,7 +5,7 @@
 #include "sway_config.h"
 #include "cursor.h"
 #include "seat.h"
-#include "sway_view.h"
+#include "view.h"
 #include "log.h"
 
 struct seatop_down_event {

@@ -26,7 +26,7 @@
 #include "sway_arrange.h"
 #include "container.h"
 #include "output_manager.h"
-#include "sway_view.h"
+#include "view.h"
 #include "wlstem.h"
 
 struct render_data {

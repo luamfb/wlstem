@@ -1,7 +1,7 @@
 #include "container.h"
 #include "sway_desktop.h"
 #include "output.h"
-#include "sway_view.h"
+#include "view.h"
 #include "wlstem.h"
 
 void desktop_damage_surface(struct wlr_surface *surface, double lx, double ly,

@@ -2,9 +2,9 @@
 #include "sway_transaction.h"
 #include "sway_server.h"
 #include "sway_arrange.h"
-#include "sway_view.h"
 #include "sway_xdg_decoration.h"
 #include "log.h"
+#include "view.h"
 
 static void xdg_decoration_handle_destroy(struct wl_listener *listener,
         void *data) {
