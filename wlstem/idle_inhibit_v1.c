@@ -4,7 +4,7 @@
 #include "idle_inhibit_v1.h"
 #include "seat.h"
 #include "container.h"
-#include "sway_view.h"
+#include "view.h"
 #include "wlstem.h"
 
 static void destroy_inhibitor(struct sway_idle_inhibitor_v1 *inhibitor) {

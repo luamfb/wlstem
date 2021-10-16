@@ -12,7 +12,7 @@
 #include "sway_server.h"
 #include "container.h"
 #include "output.h"
-#include "sway_view.h"
+#include "view.h"
 #include "list.h"
 #include "log.h"
 #include "wlstem.h"

@@ -16,7 +16,7 @@
 #include "cursor.h"
 #include "seat.h"
 #include "sway_server.h"
-#include "sway_view.h"
+#include "view.h"
 #include "stringop.h"
 #include "list.h"
 #include "log.h"

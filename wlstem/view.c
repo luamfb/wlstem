@@ -7,7 +7,7 @@
 #endif
 #include "container.h"
 #include "log.h"
-#include "sway_view.h"
+#include "view.h"
 
 bool view_is_visible(struct sway_view *view) {
     if (view->container->node.destroying) {

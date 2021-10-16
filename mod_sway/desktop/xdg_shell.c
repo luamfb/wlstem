@@ -15,7 +15,7 @@
 #include "output.h"
 #include "sway_arrange.h"
 #include "container.h"
-#include "sway_view.h"
+#include "view.h"
 #include "sway_xdg_decoration.h"
 
 static const struct sway_view_child_impl popup_impl;

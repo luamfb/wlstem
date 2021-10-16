@@ -23,7 +23,7 @@
 #include "sway_server.h"
 #include "sway_arrange.h"
 #include "container.h"
-#include "sway_view.h"
+#include "view.h"
 #include "sway_config.h"
 #include "sway_xdg_decoration.h"
 #include "pango.h"

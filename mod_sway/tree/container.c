@@ -14,7 +14,7 @@
 #include "output.h"
 #include "list.h"
 #include "log.h"
-#include "sway_view.h"
+#include "view.h"
 #include "wlstem.h"
 
 struct sway_container *container_create(struct sway_view *view) {
