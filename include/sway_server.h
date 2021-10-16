@@ -75,7 +75,7 @@ struct sway_server {
 
     struct server_wm *wm;
 
-    size_t txn_timeout_ms;
+    size_t transaction_timeout_ms;
 };
 
 extern struct sway_server server;

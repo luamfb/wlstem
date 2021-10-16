@@ -152,8 +152,8 @@ bool server_init(struct sway_server *server) {
     }
 
     // This may have been set already via -Dtxn-timeout
-    if (!server->txn_timeout_ms) {
-        server->txn_timeout_ms = 200;
+    if (!server->transaction_timeout_ms) {
+        server->transaction_timeout_ms = 200;
     }
 
     server->input = input_manager_create(wls->server);
