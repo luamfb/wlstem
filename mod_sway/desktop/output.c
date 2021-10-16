@@ -551,14 +551,6 @@ static void damage_handle_frame(struct wl_listener *listener, void *user_data) {
     send_frame_done(output, &data);
 }
 
-void output_damage_whole(struct sway_output *output) {
-    // The output can exist with no wlr_output if it's just been disconnected
-    // and the transaction to evacuate it has't completed yet.
-    if (output && output->wlr_output && output->damage) {
-        wlr_output_damage_add_whole(output->damage);
-    }
-}
-
 static void damage_surface_iterator(struct sway_output *output, struct sway_view *view,
         struct wlr_surface *surface, struct wlr_box *_box, float rotation,
         void *_data) {
