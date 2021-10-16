@@ -58,17 +58,6 @@ struct sway_output *all_output_by_name_or_id(const char *name_or_id) {
     return NULL;
 }
 
-static int scale_length(int length, int offset, float scale) {
-    return round((offset + length) * scale) - round(offset * scale);
-}
-
-void scale_box(struct wlr_box *box, float scale) {
-    box->width = scale_length(box->width, box->x, scale);
-    box->height = scale_length(box->height, box->y, scale);
-    box->x = round(box->x * scale);
-    box->y = round(box->y * scale);
-}
-
 struct send_frame_done_data {
     struct timespec when;
     int msec_until_refresh;
@@ -198,99 +187,7 @@ static void damage_handle_frame(struct wl_listener *listener, void *user_data) {
     send_frame_done(output, &data);
 }
 
-static void damage_surface_iterator(struct sway_output *output, struct sway_view *view,
-        struct wlr_surface *surface, struct wlr_box *_box, float rotation,
-        void *_data) {
-    bool *data = _data;
-    bool whole = *data;
-
-    struct wlr_box box = *_box;
-    scale_box(&box, output->wlr_output->scale);
-
-    int center_x = box.x + box.width/2;
-    int center_y = box.y + box.height/2;
-
-    if (pixman_region32_not_empty(&surface->buffer_damage)) {
-        pixman_region32_t damage;
-        pixman_region32_init(&damage);
-        wlr_surface_get_effective_damage(surface, &damage);
-        wlr_region_scale(&damage, &damage, output->wlr_output->scale);
-        if (ceil(output->wlr_output->scale) > surface->current.scale) {
-            // When scaling up a surface, it'll become blurry so we need to
-            // expand the damage region
-            wlr_region_expand(&damage, &damage,
-                ceil(output->wlr_output->scale) - surface->current.scale);
-        }
-        pixman_region32_translate(&damage, box.x, box.y);
-        wlr_region_rotated_bounds(&damage, &damage, rotation,
-            center_x, center_y);
-        wlr_output_damage_add(output->damage, &damage);
-        pixman_region32_fini(&damage);
-    }
-
-    if (whole) {
-        wlr_box_rotated_bounds(&box, &box, rotation);
-        wlr_output_damage_add_box(output->damage, &box);
-    }
-
-    if (!wl_list_empty(&surface->current.frame_callback_list)) {
-        wlr_output_schedule_frame(output->wlr_output);
-    }
-}
-
-void output_damage_surface(struct sway_output *output, double ox, double oy,
-        struct wlr_surface *surface, bool whole) {
-    output_surface_for_each_surface(output, surface, ox, oy,
-        damage_surface_iterator, &whole);
-}
-
-void output_damage_from_view(struct sway_output *output,
-        struct sway_view *view) {
-    if (!view_is_visible(view)) {
-        return;
-    }
-    bool whole = false;
-    output_view_for_each_surface(output, view, damage_surface_iterator, &whole);
-}
-
 // Expecting an unscaled box in layout coordinates
-void output_damage_box(struct sway_output *output, struct wlr_box *_box) {
-    struct wlr_box box;
-    memcpy(&box, _box, sizeof(struct wlr_box));
-    box.x -= output->lx;
-    box.y -= output->ly;
-    scale_box(&box, output->wlr_output->scale);
-    wlr_output_damage_add_box(output->damage, &box);
-}
-
-static void damage_child_views_iterator(struct sway_container *con,
-        void *data) {
-    if (!con->view || !view_is_visible(con->view)) {
-        return;
-    }
-    struct sway_output *output = data;
-    bool whole = true;
-    output_view_for_each_surface(output, con->view, damage_surface_iterator,
-            &whole);
-}
-
-void output_damage_whole_container(struct sway_output *output,
-        struct sway_container *con) {
-    // Pad the box by 1px, because the width is a double and might be a fraction
-    struct wlr_box box = {
-        .x = con->current.x - output->lx - 1,
-        .y = con->current.y - output->ly - 1,
-        .width = con->current.width + 2,
-        .height = con->current.height + 2,
-    };
-    scale_box(&box, output->wlr_output->scale);
-    wlr_output_damage_add_box(output->damage, &box);
-    // Damage subsurfaces as well, which may extend outside the box
-    if (con->view) {
-        damage_child_views_iterator(con, output);
-    }
-}
-
 static void damage_handle_destroy(struct wl_listener *listener, void *data) {
     struct sway_output *output =
         wl_container_of(listener, output, damage_destroy);

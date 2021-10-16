@@ -14,11 +14,11 @@
 #include <wlr/types/wlr_xcursor_manager.h>
 #include "config.h"
 #include "cursor.h"
+#include "damage.h"
 #include "foreach.h"
 #include "list.h"
 #include "log.h"
 #include "sway_config.h"
-#include "sway_desktop.h"
 #include "input_manager.h"
 #include "sway_keyboard.h"
 #include "seat.h"

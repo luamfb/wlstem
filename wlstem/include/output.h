@@ -76,19 +76,6 @@ struct sway_output *output_from_wlr_output(struct wlr_output *output);
 struct sway_output *output_get_in_direction(struct sway_output *reference,
         enum wlr_direction direction);
 
-void output_damage_whole(struct sway_output *output);
-
-void output_damage_surface(struct sway_output *output, double ox, double oy,
-    struct wlr_surface *surface, bool whole);
-
-void output_damage_from_view(struct sway_output *output,
-    struct sway_view *view);
-
-void output_damage_box(struct sway_output *output, struct wlr_box *box);
-
-void output_damage_whole_container(struct sway_output *output,
-    struct sway_container *con);
-
 // this ONLY includes the enabled outputs
 struct sway_output *output_by_name_or_id(const char *name_or_id);
 

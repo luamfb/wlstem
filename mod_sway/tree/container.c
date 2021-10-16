@@ -10,6 +10,7 @@
 #include <wlr/types/wlr_foreign_toplevel_management_v1.h>
 #include "cairo.h"
 #include "pango.h"
+#include "damage.h"
 #include "foreach.h"
 #include "sway_config.h"
 #include "output.h"
@@ -179,13 +180,6 @@ bool surface_is_popup(struct wlr_surface *surface) {
     }
 
     return false;
-}
-
-void container_damage_whole(struct sway_container *container) {
-    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
-        struct sway_output *output = wls->output_manager->outputs->items[i];
-        output_damage_whole_container(output, container);
-    }
 }
 
 /**
