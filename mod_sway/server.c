@@ -151,11 +151,6 @@ bool server_init(struct sway_server *server) {
         wlr_multi_backend_add(wls->server->backend, server->headless_backend);
     }
 
-    // This may have been set already via -Dtxn-timeout
-    if (!server->transaction_timeout_ms) {
-        server->transaction_timeout_ms = 200;
-    }
-
     server->input = input_manager_create(wls->server);
     input_manager_get_default_seat(); // create seat0
 

@@ -186,7 +186,7 @@ void enable_debug_flag(const char *flag, struct wls_debug *debug) {
     } else if (strcmp(flag, "txn-timings") == 0) {
         debug->txn_timings = true;
     } else if (strncmp(flag, "txn-timeout=", 12) == 0) {
-        server.transaction_timeout_ms = atoi(&flag[12]);
+        debug->transaction_timeout_ms = atoi(&flag[12]);
     } else {
         sway_log(SWAY_ERROR, "Unknown debug flag: %s", flag);
     }

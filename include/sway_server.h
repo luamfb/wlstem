@@ -74,8 +74,6 @@ struct sway_server {
     struct wlr_foreign_toplevel_manager_v1 *foreign_toplevel_manager;
 
     struct server_wm *wm;
-
-    size_t transaction_timeout_ms;
 };
 
 extern struct sway_server server;
