@@ -18,6 +18,7 @@
 #include <wlr/types/wlr_keyboard.h>
 #include <xkbcommon/xkbcommon-keysyms.h>
 #include "input_manager.h"
+#include "foreach.h"
 #include "seat.h"
 #include "sway_switch.h"
 #include "sway_commands.h"

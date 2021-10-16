@@ -44,12 +44,6 @@ struct wls_output_manager *wls_output_manager_create(struct wls_server *server);
 
 void wls_output_manager_destroy(struct wls_output_manager *output_manager);
 
-void wls_output_layout_for_each_output(void (*f)(struct sway_output *output, void *data),
-        void *data);
-
-void wls_output_layout_for_each_container(void (*f)(struct sway_container *con, void *data),
-        void *data);
-
 void wls_output_layout_get_box(struct wls_output_manager *output_manager, struct wlr_box *box);
 
 void wls_update_output_manager_config(struct wls_output_manager *output_manager);

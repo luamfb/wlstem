@@ -76,10 +76,6 @@ struct sway_output *output_from_wlr_output(struct wlr_output *output);
 struct sway_output *output_get_in_direction(struct sway_output *reference,
         enum wlr_direction direction);
 
-typedef void (*sway_surface_iterator_func_t)(struct sway_output *output, struct sway_view *view,
-    struct wlr_surface *surface, struct wlr_box *box, float rotation,
-    void *user_data);
-
 void output_damage_whole(struct sway_output *output);
 
 void output_damage_surface(struct sway_output *output, double ox, double oy,
@@ -107,43 +103,6 @@ bool output_has_opaque_overlay_layer_surface(struct sway_output *output);
 
 void output_render(struct sway_output *output, struct timespec *when,
     pixman_region32_t *damage);
-
-void output_surface_for_each_surface(struct sway_output *output,
-        struct wlr_surface *surface, double ox, double oy,
-        sway_surface_iterator_func_t iterator, void *user_data);
-
-void output_view_for_each_surface(struct sway_output *output,
-    struct sway_view *view, sway_surface_iterator_func_t iterator,
-    void *user_data);
-
-void output_view_for_each_popup_surface(struct sway_output *output,
-        struct sway_view *view, sway_surface_iterator_func_t iterator,
-        void *user_data);
-
-void output_layer_for_each_surface(struct sway_output *output,
-    struct wl_list *layer_surfaces, sway_surface_iterator_func_t iterator,
-    void *user_data);
-
-void output_layer_for_each_toplevel_surface(struct sway_output *output,
-    struct wl_list *layer_surfaces, sway_surface_iterator_func_t iterator,
-    void *user_data);
-
-void output_layer_for_each_popup_surface(struct sway_output *output,
-    struct wl_list *layer_surfaces, sway_surface_iterator_func_t iterator,
-    void *user_data);
-
-#if HAVE_XWAYLAND
-void output_unmanaged_for_each_surface(struct sway_output *output,
-    struct wl_list *unmanaged, sway_surface_iterator_func_t iterator,
-    void *user_data);
-#endif
-
-void output_drag_icons_for_each_surface(struct sway_output *output,
-    struct wl_list *drag_icons, sway_surface_iterator_func_t iterator,
-    void *user_data);
-
-void output_for_each_container(struct sway_output *output,
-        void (*f)(struct sway_container *con, void *data), void *data);
 
 void output_get_box(struct sway_output *output, struct wlr_box *box);
 

@@ -283,18 +283,6 @@ void view_close_popups(struct sway_view *view);
 
 void view_damage_from(struct sway_view *view);
 
-/**
- * Iterate all surfaces of a view (toplevels + popups).
- */
-void view_for_each_surface(struct sway_view *view,
-    wlr_surface_iterator_func_t iterator, void *user_data);
-
-/**
- * Iterate all popup surfaces of a view.
- */
-void view_for_each_popup_surface(struct sway_view *view,
-    wlr_surface_iterator_func_t iterator, void *user_data);
-
 // view implementation
 
 void view_init(struct sway_view *view, enum sway_view_type type,

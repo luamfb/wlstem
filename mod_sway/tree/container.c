@@ -10,6 +10,7 @@
 #include <wlr/types/wlr_foreign_toplevel_management_v1.h>
 #include "cairo.h"
 #include "pango.h"
+#include "foreach.h"
 #include "sway_config.h"
 #include "output.h"
 #include "list.h"

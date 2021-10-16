@@ -4,6 +4,7 @@
 #include <string.h>
 #include <strings.h>
 #include <wlr/types/wlr_output_damage.h>
+#include "foreach.h"
 #include "output.h"
 #include "seat.h"
 #include "sway_server.h"
@@ -154,16 +155,6 @@ struct sway_output *output_get_in_direction(struct sway_output *reference,
     return output_from_wlr_output(wlr_adjacent);
 }
 
-void output_for_each_container(struct sway_output *output,
-        void (*f)(struct sway_container *con, void *data), void *data) {
-    if (output->active) {
-        for (int i = 0; i < output->tiling->length; ++i) {
-            struct sway_container *container = output->tiling->items[i];
-            f(container, data);
-        }
-    }
-}
-
 void output_get_box(struct sway_output *output, struct wlr_box *box) {
     box->x = output->lx;
     box->y = output->ly;
@@ -191,16 +182,4 @@ struct sway_container *output_add_container(struct sway_output *output,
 
 bool output_has_containers(struct sway_output *output) {
     return output->tiling->length;
-}
-
-void wls_output_layout_for_each_container(void (*f)(struct sway_container *con, void *data),
-        void *data) {
-    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
-        struct sway_output *output = wls->output_manager->outputs->items[i];
-        output_for_each_container(output, f, data);
-    }
-
-    if (wls->output_manager->noop_output->active) {
-        output_for_each_container(wls->output_manager->noop_output, f, data);
-    }
 }
