@@ -5,6 +5,7 @@
 #include <wlr/types/wlr_tablet_v2.h>
 #include "list.h"
 #include "node.h"
+#include "misc_protocols.h"
 #include "output_manager.h"
 
 struct wls_context {
@@ -15,6 +16,7 @@ struct wls_context {
     struct wls_input_method_manager *input_method_manager;
     struct wlr_tablet_manager_v2 *tablet_v2;
     struct wl_list seats;
+    struct wls_misc_protocols *misc_protocols;
 };
 
 // The context for wlstem.

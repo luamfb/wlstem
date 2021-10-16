@@ -11,12 +11,12 @@
 #if HAVE_XWAYLAND
 #include <wlr/xwayland.h>
 #endif
+#include "idle_inhibit_v1.h"
 #include "list.h"
 #include "log.h"
 #include "sway_commands.h"
 #include "sway_desktop.h"
 #include "sway_transaction.h"
-#include "sway_idle_inhibit_v1.h"
 #include "cursor.h"
 #include "output.h"
 #include "seat.h"
@@ -781,34 +781,6 @@ void view_child_destroy(struct sway_view_child *child) {
     }
 }
 
-struct sway_view *view_from_wlr_surface(struct wlr_surface *wlr_surface) {
-    if (wlr_surface_is_xdg_surface(wlr_surface)) {
-        struct wlr_xdg_surface *xdg_surface =
-            wlr_xdg_surface_from_wlr_surface(wlr_surface);
-        return view_from_wlr_xdg_surface(xdg_surface);
-    }
-#if HAVE_XWAYLAND
-    if (wlr_surface_is_xwayland_surface(wlr_surface)) {
-        struct wlr_xwayland_surface *xsurface =
-            wlr_xwayland_surface_from_wlr_surface(wlr_surface);
-        return view_from_wlr_xwayland_surface(xsurface);
-    }
-#endif
-    if (wlr_surface_is_subsurface(wlr_surface)) {
-        struct wlr_subsurface *subsurface =
-            wlr_subsurface_from_wlr_surface(wlr_surface);
-        return view_from_wlr_surface(subsurface->parent);
-    }
-    if (wlr_surface_is_layer_surface(wlr_surface)) {
-        return NULL;
-    }
-
-    const char *role = wlr_surface->role ? wlr_surface->role->name : NULL;
-    sway_log(SWAY_DEBUG, "Surface of unknown type (role %s): %p",
-        role, wlr_surface);
-    return NULL;
-}
-
 static char *escape_pango_markup(const char *buffer) {
     size_t length = escape_markup_text(buffer, NULL);
     char *escaped_title = calloc(length + 1, sizeof(char));
@@ -918,17 +890,6 @@ void view_update_title(struct sway_view *view, bool force) {
     if (view->foreign_toplevel && title) {
         wlr_foreign_toplevel_handle_v1_set_title(view->foreign_toplevel, title);
     }
-}
-
-bool view_is_visible(struct sway_view *view) {
-    if (view->container->node.destroying) {
-        return false;
-    }
-    struct sway_output *output = view->container->output;
-    if (!output) {
-        return false;
-    }
-    return true;
 }
 
 void view_set_urgent(struct sway_view *view, bool enable) {

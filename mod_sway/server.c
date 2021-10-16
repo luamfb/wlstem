@@ -14,7 +14,6 @@
 #include <wlr/types/wlr_data_control_v1.h>
 #include <wlr/types/wlr_export_dmabuf_v1.h>
 #include <wlr/types/wlr_gamma_control_v1.h>
-#include <wlr/types/wlr_idle.h>
 #include <wlr/types/wlr_layer_shell_v1.h>
 #include <wlr/types/wlr_pointer_constraints_v1.h>
 #include <wlr/types/wlr_primary_selection_v1.h>
@@ -30,7 +29,6 @@
 #include "list.h"
 #include "log.h"
 #include "sway_config.h"
-#include "sway_idle_inhibit_v1.h"
 #include "input_manager.h"
 #include "sway_arrange.h"
 #include "output.h"
@@ -67,10 +65,6 @@ bool server_init(struct sway_server *server) {
         &server->output_layout_change);
 
     wlr_xdg_output_manager_v1_create(wls->server->wl_display, wls->output_manager->output_layout);
-
-    server->idle = wlr_idle_create(wls->server->wl_display);
-    server->idle_inhibit_manager_v1 =
-        sway_idle_inhibit_manager_v1_create(wls->server->wl_display, server->idle);
 
     server->layer_shell = wlr_layer_shell_v1_create(wls->server->wl_display);
     wl_signal_add(&server->layer_shell->events.new_surface,

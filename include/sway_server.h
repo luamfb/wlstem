@@ -42,9 +42,6 @@ struct sway_server {
     struct wl_listener new_output;
     struct wl_listener output_layout_change;
 
-    struct wlr_idle *idle;
-    struct sway_idle_inhibit_manager_v1 *idle_inhibit_manager_v1;
-
     struct wlr_layer_shell_v1 *layer_shell;
     struct wl_listener layer_shell_surface;
 

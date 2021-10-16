@@ -425,11 +425,6 @@ static void handle_destroy(struct wl_listener *listener, void *data) {
     view_begin_destroy(view);
 }
 
-struct sway_view *view_from_wlr_xdg_surface(
-        struct wlr_xdg_surface *xdg_surface) {
-    return xdg_surface->data;
-}
-
 void handle_xdg_shell_surface(struct wl_listener *listener, void *data) {
     struct wlr_xdg_surface *xdg_surface = data;
 

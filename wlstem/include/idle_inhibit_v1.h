@@ -3,6 +3,8 @@
 #include <wlr/types/wlr_idle_inhibit_v1.h>
 #include <wlr/types/wlr_idle.h>
 
+struct sway_view;
+
 enum sway_idle_inhibit_mode {
     INHIBIT_IDLE_APPLICATION,  // Application set inhibitor (when visible)
     INHIBIT_IDLE_FOCUS,  // User set inhibitor when focused

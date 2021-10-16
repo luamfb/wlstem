@@ -83,7 +83,7 @@ void seat_idle_notify_activity(struct sway_seat *seat,
     uint32_t mask = seat->idle_inhibit_sources;
     struct wlr_idle_timeout *timeout;
     int ntimers = 0, nidle = 0;
-    wl_list_for_each(timeout, &server.idle->idle_timers, link) {
+    wl_list_for_each(timeout, &wls->misc_protocols->idle->idle_timers, link) {
         ++ntimers;
         if (timeout->idle_state) {
             ++nidle;
@@ -93,7 +93,7 @@ void seat_idle_notify_activity(struct sway_seat *seat,
         mask = seat->idle_wake_sources;
     }
     if ((source & mask) > 0) {
-        wlr_idle_notify_activity(server.idle, seat->wlr_seat);
+        wlr_idle_notify_activity(wls->misc_protocols->idle, seat->wlr_seat);
     }
 }
 
@@ -1318,18 +1318,6 @@ struct wls_transaction_node *seat_get_active_tiling_child(struct sway_seat *seat
     return NULL;
 }
 
-struct wls_transaction_node *seat_get_focus(struct sway_seat *seat) {
-    if (!seat->has_focus) {
-        return NULL;
-    }
-    if (wl_list_empty(&seat->focus_stack)) {
-        return NULL;
-    }
-    struct sway_seat_node *current =
-        wl_container_of(seat->focus_stack.next, current, link);
-    return current->node;
-}
-
 struct sway_output *seat_get_focused_output(struct sway_seat *seat) {
     struct wls_transaction_node *focus = seat_get_next_in_focus_stack(seat);
     if (!focus) {
@@ -1339,14 +1327,6 @@ struct sway_output *seat_get_focused_output(struct sway_seat *seat) {
         return focus->sway_container->output;
     } else if (focus->type == N_OUTPUT) {
         return focus->sway_output;
-    }
-    return NULL;
-}
-
-struct sway_container *seat_get_focused_container(struct sway_seat *seat) {
-    struct wls_transaction_node *focus = seat_get_focus(seat);
-    if (focus && focus->type == N_CONTAINER) {
-        return focus->sway_container;
     }
     return NULL;
 }

@@ -590,11 +590,6 @@ static void handle_set_hints(struct wl_listener *listener, void *data) {
     }
 }
 
-struct sway_view *view_from_wlr_xwayland_surface(
-        struct wlr_xwayland_surface *xsurface) {
-    return xsurface->data;
-}
-
 struct sway_xwayland_view *create_xwayland_view(struct wlr_xwayland_surface *xsurface) {
     sway_log(SWAY_DEBUG, "New xwayland surface title='%s' class='%s'",
         xsurface->title, xsurface->class);
