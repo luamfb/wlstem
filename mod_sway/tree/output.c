@@ -79,25 +79,6 @@ static void output_evacuate(struct sway_output *output) {
     }
 }
 
-void output_destroy(struct sway_output *output) {
-    if (!sway_assert(output->node.destroying,
-                "Tried to free output which wasn't marked as destroying")) {
-        return;
-    }
-    if (!sway_assert(output->wlr_output == NULL,
-                "Tried to free output which still had a wlr_output")) {
-        return;
-    }
-    if (!sway_assert(output->node.ntxnrefs == 0, "Tried to free output "
-                "which is still referenced by transactions")) {
-        return;
-    }
-    wl_event_source_remove(output->repaint_timer);
-    list_free(output->tiling);
-    list_free(output->current.tiling);
-    free(output);
-}
-
 static void untrack_output(struct sway_container *con, void *data) {
     struct sway_output *output = data;
     int index = list_find(con->outputs, output);
