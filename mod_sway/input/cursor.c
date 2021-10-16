@@ -26,7 +26,7 @@
 #include "sway_transaction.h"
 #include "sway_keyboard.h"
 #include "tablet.h"
-#include "sway_layers.h"
+#include "layers.h"
 #include "sway_server.h"
 #include "output.h"
 #include "container.h"

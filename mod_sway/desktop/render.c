@@ -20,7 +20,7 @@
 #include "sway_config.h"
 #include "input_manager.h"
 #include "seat.h"
-#include "sway_layers.h"
+#include "layers.h"
 #include "output.h"
 #include "sway_server.h"
 #include "sway_arrange.h"

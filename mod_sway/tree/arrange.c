@@ -7,12 +7,12 @@
 #include <wlr/types/wlr_output_layout.h>
 #include "sway_transaction.h"
 #include "seat.h"
-#include "sway_layers.h"
 #include "sway_arrange.h"
 #include "sway_server.h"
 #include "container.h"
 #include "output.h"
 #include "view.h"
+#include "layers.h"
 #include "list.h"
 #include "log.h"
 #include "wlstem.h"
