@@ -18,7 +18,8 @@
 #include "log.h"
 #include "wlstem.h"
 #include "server.h"
-#include "sway_server.h"
+
+#define DEFAULT_TRANSACTION_TIMEOUT_MS 200
 
 struct sway_transaction {
     struct wl_event_source *timer;
@@ -396,8 +397,12 @@ static void transaction_commit(struct sway_transaction *transaction) {
         transaction->timer = wl_event_loop_add_timer(wls->server->wl_event_loop,
                 handle_timeout, transaction);
         if (transaction->timer) {
-            wl_event_source_timer_update(transaction->timer,
-                    server.transaction_timeout_ms);
+            size_t timeout = wls->debug.transaction_timeout_ms;
+            if (!timeout) {
+                timeout = wls->debug.transaction_timeout_ms =
+                    DEFAULT_TRANSACTION_TIMEOUT_MS;
+            }
+            wl_event_source_timer_update(transaction->timer, timeout);
         } else {
             sway_log_errno(SWAY_ERROR, "Unable to create transaction timer "
                     "(some imperfect frames might be rendered)");
@@ -489,3 +494,5 @@ void transaction_commit_dirty(void) {
         transaction_progress_queue();
     }
 }
+
+#undef DEFAULT_TRANSACTION_TIMEOUT_MS

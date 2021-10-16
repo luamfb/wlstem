@@ -18,6 +18,8 @@ struct wls_debug {
         DAMAGE_HIGHLIGHT,  // Highlight regions of the screen being damaged
         DAMAGE_RERENDER,   // Render the full output when any damage occurs
     } damage;
+
+    size_t transaction_timeout_ms; // 0 means use default timeout
 };
 
 struct wls_context {
