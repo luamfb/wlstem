@@ -17,6 +17,7 @@
 #include <wlr/util/region.h>
 #include "log.h"
 #include "config.h"
+#include "foreach.h"
 #include "sway_config.h"
 #include "input_manager.h"
 #include "seat.h"

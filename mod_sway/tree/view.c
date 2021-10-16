@@ -12,6 +12,7 @@
 #include <wlr/xwayland.h>
 #endif
 #include "idle_inhibit_v1.h"
+#include "foreach.h"
 #include "list.h"
 #include "log.h"
 #include "sway_commands.h"
@@ -282,28 +283,6 @@ void view_damage_from(struct sway_view *view) {
     for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
         struct sway_output *output = wls->output_manager->outputs->items[i];
         output_damage_from_view(output, view);
-    }
-}
-
-void view_for_each_surface(struct sway_view *view,
-        wlr_surface_iterator_func_t iterator, void *user_data) {
-    if (!view->surface) {
-        return;
-    }
-    if (view->impl->for_each_surface) {
-        view->impl->for_each_surface(view, iterator, user_data);
-    } else {
-        wlr_surface_for_each_surface(view->surface, iterator, user_data);
-    }
-}
-
-void view_for_each_popup_surface(struct sway_view *view,
-        wlr_surface_iterator_func_t iterator, void *user_data) {
-    if (!view->surface) {
-        return;
-    }
-    if (view->impl->for_each_popup_surface) {
-        view->impl->for_each_popup_surface(view, iterator, user_data);
     }
 }
 

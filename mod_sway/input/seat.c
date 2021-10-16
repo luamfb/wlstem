@@ -14,6 +14,7 @@
 #include <wlr/types/wlr_xcursor_manager.h>
 #include "config.h"
 #include "cursor.h"
+#include "foreach.h"
 #include "list.h"
 #include "log.h"
 #include "sway_config.h"

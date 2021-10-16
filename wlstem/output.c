@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_output_damage.h>
+#include "layers.h"
 #include "list.h"
 #include "log.h"
 #include "output.h"
@@ -50,4 +51,29 @@ void output_damage_whole(struct sway_output *output) {
     if (output && output->wlr_output && output->damage) {
         wlr_output_damage_add_whole(output->damage);
     }
+}
+
+bool output_has_opaque_overlay_layer_surface(struct sway_output *output) {
+    struct sway_layer_surface *sway_layer_surface;
+    wl_list_for_each(sway_layer_surface,
+            &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY], link) {
+        struct wlr_surface *wlr_surface = sway_layer_surface->layer_surface->surface;
+        pixman_box32_t output_box = {
+            .x2 = output->width,
+            .y2 = output->height,
+        };
+        pixman_region32_t surface_opaque_box;
+        pixman_region32_init(&surface_opaque_box);
+        pixman_region32_copy(&surface_opaque_box, &wlr_surface->opaque_region);
+        pixman_region32_translate(&surface_opaque_box,
+            sway_layer_surface->geo.x, sway_layer_surface->geo.y);
+        pixman_region_overlap_t contains =
+            pixman_region32_contains_rectangle(&surface_opaque_box, &output_box);
+        pixman_region32_fini(&surface_opaque_box);
+
+        if (contains == PIXMAN_REGION_IN) {
+            return true;
+        }
+    }
+    return false;
 }

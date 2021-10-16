@@ -31,6 +31,7 @@ lib_wlstem = shared_library(
 
         'cursor.c',
         'input_method.c',
+        'foreach.c',
         'text_input.c',
         'tablet.c',
         'util.c',
