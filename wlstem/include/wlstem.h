@@ -8,6 +8,18 @@
 #include "misc_protocols.h"
 #include "output_manager.h"
 
+struct wls_debug {
+    bool noatomic;         // Ignore atomic layout updates
+    bool txn_timings;      // Log verbose messages about transactions
+    bool txn_wait;         // Always wait for the timeout before applying
+
+    enum {
+        DAMAGE_DEFAULT,    // Default behaviour
+        DAMAGE_HIGHLIGHT,  // Highlight regions of the screen being damaged
+        DAMAGE_RERENDER,   // Render the full output when any damage occurs
+    } damage;
+};
+
 struct wls_context {
     struct wls_server *server;
     struct wls_node_manager *node_manager;
@@ -17,6 +29,8 @@ struct wls_context {
     struct wlr_tablet_manager_v2 *tablet_v2;
     struct wl_list seats;
     struct wls_misc_protocols *misc_protocols;
+
+    struct wls_debug debug;
 };
 
 // The context for wlstem.

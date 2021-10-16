@@ -208,7 +208,7 @@ static void apply_container_state(struct sway_container *container,
  */
 static void transaction_apply(struct sway_transaction *transaction) {
     sway_log(SWAY_DEBUG, "Applying transaction %p", transaction);
-    if (debug.txn_timings) {
+    if (wls->debug.txn_timings) {
         struct timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
         struct timespec *commit = &transaction->commit_time;
@@ -380,12 +380,12 @@ static void transaction_commit(struct sway_transaction *transaction) {
         node->instruction = instruction;
     }
     transaction->num_configures = transaction->num_waiting;
-    if (debug.txn_timings) {
+    if (wls->debug.txn_timings) {
         clock_gettime(CLOCK_MONOTONIC, &transaction->commit_time);
     }
-    if (debug.noatomic) {
+    if (wls->debug.noatomic) {
         transaction->num_waiting = 0;
-    } else if (debug.txn_wait) {
+    } else if (wls->debug.txn_wait) {
         // Force the transaction to time out even if all views are ready.
         // We do this by inflating the waiting counter.
         transaction->num_waiting += 1000000;
@@ -410,7 +410,7 @@ static void set_instruction_ready(
         struct sway_transaction_instruction *instruction) {
     struct sway_transaction *transaction = instruction->transaction;
 
-    if (debug.txn_timings) {
+    if (wls->debug.txn_timings) {
         struct timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
         struct timespec *start = &transaction->commit_time;

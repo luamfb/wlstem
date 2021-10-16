@@ -27,7 +27,6 @@
 static bool terminate_request = false;
 static int exit_value = 0;
 struct sway_server server = {0};
-struct sway_debug debug = {0};
 
 void sway_terminate(int exit_code) {
     if (!wls->server->wl_display) {
@@ -175,17 +174,17 @@ static void log_kernel(void) {
 }
 
 
-void enable_debug_flag(const char *flag) {
+void enable_debug_flag(const char *flag, struct wls_debug *debug) {
     if (strcmp(flag, "damage=highlight") == 0) {
-        debug.damage = DAMAGE_HIGHLIGHT;
+        debug->damage = DAMAGE_HIGHLIGHT;
     } else if (strcmp(flag, "damage=rerender") == 0) {
-        debug.damage = DAMAGE_RERENDER;
+        debug->damage = DAMAGE_RERENDER;
     } else if (strcmp(flag, "noatomic") == 0) {
-        debug.noatomic = true;
+        debug->noatomic = true;
     } else if (strcmp(flag, "txn-wait") == 0) {
-        debug.txn_wait = true;
+        debug->txn_wait = true;
     } else if (strcmp(flag, "txn-timings") == 0) {
-        debug.txn_timings = true;
+        debug->txn_timings = true;
     } else if (strncmp(flag, "txn-timeout=", 12) == 0) {
         server.txn_timeout_ms = atoi(&flag[12]);
     } else {
@@ -239,6 +238,7 @@ int main(int argc, char **argv) {
         "\n";
 
     int c;
+    struct wls_debug wls_debug = {0};
     while (1) {
         int option_index = 0;
         c = getopt_long(argc, argv, "hCdD:vVc:", long_options, &option_index);
@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
             debug = 1;
             break;
         case 'D': // extended debug options
-            enable_debug_flag(optarg);
+            enable_debug_flag(optarg, &wls_debug);
             break;
         case 'u':
             allow_unsupported_gpu = 1;
@@ -328,6 +328,7 @@ int main(int argc, char **argv) {
     if (!wls_init()) {
         return 1;
     }
+    wls->debug = wls_debug;
 
     if (!server_init(&server)) {
         return 1;
