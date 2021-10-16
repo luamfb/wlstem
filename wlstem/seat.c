@@ -22,3 +22,9 @@ struct sway_container *seat_get_focused_container(struct sway_seat *seat) {
     }
     return NULL;
 }
+
+void seatop_rebase(struct sway_seat *seat, uint32_t time_msec) {
+    if (seat->seatop_impl->rebase) {
+        seat->seatop_impl->rebase(seat, time_msec);
+    }
+}

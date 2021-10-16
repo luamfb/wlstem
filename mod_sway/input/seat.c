@@ -1447,12 +1447,6 @@ void seatop_tablet_tool_motion(struct sway_seat *seat,
     }
 }
 
-void seatop_rebase(struct sway_seat *seat, uint32_t time_msec) {
-    if (seat->seatop_impl->rebase) {
-        seat->seatop_impl->rebase(seat, time_msec);
-    }
-}
-
 void seatop_end(struct sway_seat *seat) {
     if (seat->seatop_impl && seat->seatop_impl->end) {
         seat->seatop_impl->end(seat);
