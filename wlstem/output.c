@@ -77,3 +77,14 @@ bool output_has_opaque_overlay_layer_surface(struct sway_output *output) {
     }
     return false;
 }
+
+static int scale_length(int length, int offset, float scale) {
+    return round((offset + length) * scale) - round(offset * scale);
+}
+
+void scale_box(struct wlr_box *box, float scale) {
+    box->width = scale_length(box->width, box->x, scale);
+    box->height = scale_length(box->height, box->y, scale);
+    box->x = round(box->x * scale);
+    box->y = round(box->y * scale);
+}

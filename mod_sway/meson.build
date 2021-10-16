@@ -5,7 +5,6 @@ sway_sources = files(
     'server.c',
     'xdg_decoration.c',
 
-    'desktop/desktop.c',
     'desktop/layer_shell.c',
     'desktop/output.c',
     'desktop/render.c',

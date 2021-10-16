@@ -11,12 +11,12 @@
 #if HAVE_XWAYLAND
 #include <wlr/xwayland.h>
 #endif
+#include "damage.h"
 #include "idle_inhibit_v1.h"
 #include "foreach.h"
 #include "list.h"
 #include "log.h"
 #include "sway_commands.h"
-#include "sway_desktop.h"
 #include "sway_transaction.h"
 #include "cursor.h"
 #include "output.h"
@@ -276,13 +276,6 @@ void view_close(struct sway_view *view) {
 void view_close_popups(struct sway_view *view) {
     if (view->impl->close_popups) {
         view->impl->close_popups(view);
-    }
-}
-
-void view_damage_from(struct sway_view *view) {
-    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
-        struct sway_output *output = wls->output_manager->outputs->items[i];
-        output_damage_from_view(output, view);
     }
 }
 

@@ -281,8 +281,6 @@ void view_close(struct sway_view *view);
 
 void view_close_popups(struct sway_view *view);
 
-void view_damage_from(struct sway_view *view);
-
 // view implementation
 
 void view_init(struct sway_view *view, enum sway_view_type type,

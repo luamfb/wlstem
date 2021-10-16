@@ -6,8 +6,8 @@
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_output.h>
 #include <wlr/xwayland.h>
+#include "damage.h"
 #include "log.h"
-#include "sway_desktop.h"
 #include "sway_transaction.h"
 #include "input_manager.h"
 #include "seat.h"

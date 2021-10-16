@@ -8,6 +8,7 @@
 #include <wlr/types/wlr_output.h>
 #include "log.h"
 #include "cursor.h"
+#include "damage.h"
 #include "sway_transaction.h"
 #include "input_manager.h"
 #include "seat.h"

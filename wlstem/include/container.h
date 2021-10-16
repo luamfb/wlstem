@@ -105,8 +105,6 @@ struct sway_container *tiling_container_at(
         struct wls_transaction_node *parent, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
-void container_damage_whole(struct sway_container *container);
-
 void container_update_title_textures(struct sway_container *container);
 
 /**

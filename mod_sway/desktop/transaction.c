@@ -5,7 +5,7 @@
 #include <time.h>
 #include <wlr/types/wlr_buffer.h>
 #include "sway_config.h"
-#include "sway_desktop.h"
+#include "damage.h"
 #include "sway_transaction.h"
 #include "idle_inhibit_v1.h"
 #include "input_manager.h"

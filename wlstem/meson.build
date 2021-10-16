@@ -30,6 +30,7 @@ lib_wlstem = shared_library(
         'stringop.c',
 
         'cursor.c',
+        'damage.c',
         'input_method.c',
         'foreach.c',
         'text_input.c',
