@@ -62,6 +62,7 @@ void container_destroy(struct sway_container *con) {
         }
     }
 
+    wl_signal_emit(&con->events.destroy, con);
     free(con);
 }
 
