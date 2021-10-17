@@ -199,7 +199,6 @@ void view_autoconfigure(struct sway_view *view) {
 
     con->border_top = con->border_bottom = true;
     con->border_left = con->border_right = true;
-    double y_offset = 0;
 
     double x, y, width, height;
     // Height is: 1px border + 3px pad + title height + 3px pad + 1px border
@@ -207,15 +206,9 @@ void view_autoconfigure(struct sway_view *view) {
     width = con->width
         - con->border_thickness * con->border_left
         - con->border_thickness * con->border_right;
-    if (y_offset) {
-        y = con->y + y_offset;
-        height = con->height - y_offset
-            - con->border_thickness * con->border_bottom;
-    } else {
-        y = con->y + container_titlebar_height();
-        height = con->height - container_titlebar_height()
-            - con->border_thickness * con->border_bottom;
-    }
+    y = con->y + container_titlebar_height();
+    height = con->height - container_titlebar_height()
+        - con->border_thickness * con->border_bottom;
 
     con->content_x = x;
     con->content_y = y;
