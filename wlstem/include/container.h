@@ -24,7 +24,6 @@ struct sway_container_state {
 
     bool focused;
 
-    int border_thickness;
     bool border_top;
     bool border_bottom;
     bool border_left;
@@ -62,7 +61,6 @@ struct sway_container {
     // These are in layout coordinates.
     double surface_x, surface_y;
 
-    int border_thickness;
     bool border_top;
     bool border_bottom;
     bool border_left;

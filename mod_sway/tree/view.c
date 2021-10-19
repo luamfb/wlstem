@@ -202,13 +202,13 @@ void view_autoconfigure(struct sway_view *view) {
 
     double x, y, width, height;
     // Height is: 1px border + 3px pad + title height + 3px pad + 1px border
-    x = con->x + con->border_thickness * con->border_left;
+    x = con->x + config->border_thickness * con->border_left;
     width = con->width
-        - con->border_thickness * con->border_left
-        - con->border_thickness * con->border_right;
+        - config->border_thickness * con->border_left
+        - config->border_thickness * con->border_right;
     y = con->y + container_titlebar_height();
     height = con->height - container_titlebar_height()
-        - con->border_thickness * con->border_bottom;
+        - config->border_thickness * con->border_bottom;
 
     con->content_x = x;
     con->content_y = y;
@@ -452,7 +452,6 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
         view_update_csd_from_client(view, decoration);
     }
 
-    view->container->border_thickness = config->border_thickness;
     view_set_tiled(view, true);
 
     view_update_title(view, false);
