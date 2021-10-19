@@ -97,7 +97,6 @@ static void copy_container_state(struct sway_container *container,
     state->width = container->width;
     state->height = container->height;
     state->output = container->output;
-    state->border_thickness = container->border_thickness;
     state->border_top = container->border_top;
     state->border_left = container->border_left;
     state->border_right = container->border_right;

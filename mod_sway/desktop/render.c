@@ -347,7 +347,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
         premultiply_alpha(color, con->alpha);
         box.x = state->x;
         box.y = state->content_y;
-        box.width = state->border_thickness;
+        box.width = config->border_thickness;
         box.height = state->content_height;
         scale_box(&box, output_scale);
         render_rect(output, damage, &box, color);
@@ -364,7 +364,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
         premultiply_alpha(color, con->alpha);
         box.x = state->content_x + state->content_width;
         box.y = state->content_y;
-        box.width = state->border_thickness;
+        box.width = config->border_thickness;
         box.height = state->content_height;
         scale_box(&box, output_scale);
         render_rect(output, damage, &box, color);
@@ -376,7 +376,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
         box.x = state->x;
         box.y = state->content_y + state->content_height;
         box.width = state->width;
-        box.height = state->border_thickness;
+        box.height = config->border_thickness;
         scale_box(&box, output_scale);
         render_rect(output, damage, &box, color);
     }
