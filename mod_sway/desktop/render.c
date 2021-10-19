@@ -342,7 +342,8 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
     float color[4];
     struct sway_container_state *state = &con->current;
 
-    if (state->border_left) {
+    // left border
+    {
         memcpy(&color, colors->child_border, sizeof(float) * 4);
         premultiply_alpha(color, con->alpha);
         box.x = state->x;
@@ -355,7 +356,8 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
 
     list_t *siblings = container_get_current_siblings(con);
 
-    if (state->border_right) {
+    // right border
+    {
         if (siblings->length == 1) {
             memcpy(&color, colors->indicator, sizeof(float) * 4);
         } else {
@@ -370,7 +372,8 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
         render_rect(output, damage, &box, color);
     }
 
-    if (state->border_bottom) {
+    // bottom border
+    {
         memcpy(&color, colors->child_border, sizeof(float) * 4);
         premultiply_alpha(color, con->alpha);
         box.x = state->x;

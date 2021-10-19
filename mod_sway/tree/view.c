@@ -197,18 +197,13 @@ bool view_ancestor_is_only_visible(struct sway_view *view) {
 void view_autoconfigure(struct sway_view *view) {
     struct sway_container *con = view->container;
 
-    con->border_bottom = true;
-    con->border_left = con->border_right = true;
-
     double x, y, width, height;
     // Height is: 1px border + 3px pad + title height + 3px pad + 1px border
-    x = con->x + config->border_thickness * con->border_left;
-    width = con->width
-        - config->border_thickness * con->border_left
-        - config->border_thickness * con->border_right;
+    x = con->x + config->border_thickness;
+    width = con->width - config->border_thickness - config->border_thickness;
     y = con->y + container_titlebar_height();
     height = con->height - container_titlebar_height()
-        - config->border_thickness * con->border_bottom;
+        - config->border_thickness;
 
     con->content_x = x;
     con->content_y = y;

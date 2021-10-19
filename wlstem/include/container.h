@@ -24,10 +24,6 @@ struct sway_container_state {
 
     bool focused;
 
-    bool border_bottom;
-    bool border_left;
-    bool border_right;
-
     double content_x, content_y;
     double content_width, content_height;
 };
@@ -59,10 +55,6 @@ struct sway_container {
     // refuses to resize to the content dimensions then it can be smaller.
     // These are in layout coordinates.
     double surface_x, surface_y;
-
-    bool border_bottom;
-    bool border_left;
-    bool border_right;
 
     struct sway_output *output;
 
