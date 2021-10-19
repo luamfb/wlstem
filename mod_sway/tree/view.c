@@ -197,7 +197,7 @@ bool view_ancestor_is_only_visible(struct sway_view *view) {
 void view_autoconfigure(struct sway_view *view) {
     struct sway_container *con = view->container;
 
-    con->border_top = con->border_bottom = true;
+    con->border_bottom = true;
     con->border_left = con->border_right = true;
 
     double x, y, width, height;
