@@ -60,6 +60,8 @@ bool wls_init(void) {
     wls->tablet_v2 = _tablet_v2;
     wls->misc_protocols = _misc_protocols;
 
+    wl_signal_init(&wls->events.new_window);
+
     return true;
 }
 
