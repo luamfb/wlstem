@@ -2,6 +2,7 @@
 #define WLSTEM_WLSTEM_H
 
 #include <stdbool.h>
+#include <wayland-server-core.h>
 #include <wlr/types/wlr_tablet_v2.h>
 #include "list.h"
 #include "node.h"
@@ -33,6 +34,9 @@ struct wls_context {
     struct wls_misc_protocols *misc_protocols;
 
     struct wls_debug debug;
+    struct {
+        struct wl_signal new_window;
+    } events;
 };
 
 // The context for wlstem.

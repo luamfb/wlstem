@@ -34,6 +34,9 @@ struct sway_container *container_create(struct sway_view *view) {
     wl_signal_init(&c->events.destroy);
     wl_signal_emit(&wls->node_manager->events.new_node, &c->node);
 
+    // Only emit this signal when the container is fully initialized.
+    wl_signal_emit(&wls->events.new_window, c);
+
     return c;
 }
 
