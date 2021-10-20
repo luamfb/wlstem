@@ -36,8 +36,7 @@ struct sway_container {
     // This means most places of the code can refer to the main variables (pending state) and it'll just work.
     struct sway_container_state current;
 
-    char *title;           // The view's title (unformatted)
-    char *formatted_title; // The title displayed in the title bar
+    char *title;           // The view's title
 
     // For C_ROOT, this has no meaning
     // For other types, this is the position in layout coordinates
@@ -63,15 +62,14 @@ struct sway_container {
 
     float alpha;
 
-    struct wlr_texture *title_focused;
-    struct wlr_texture *title_unfocused;
-    struct wlr_texture *title_urgent;
     size_t title_height;
     size_t title_baseline;
 
     struct {
         struct wl_signal destroy;
     } events;
+
+    void *data; // custom user data
 };
 
 struct sway_container *container_create(struct sway_view *view);

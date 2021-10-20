@@ -25,6 +25,7 @@
 #include "output.h"
 #include "sway_server.h"
 #include "sway_arrange.h"
+#include "window_title.h"
 #include "container.h"
 #include "output_manager.h"
 #include "view.h"
@@ -580,6 +581,7 @@ static void render_containers_linear(struct sway_output *output,
         pixman_region32_t *damage, struct parent_data *parent) {
     for (int i = 0; i < parent->children->length; ++i) {
         struct sway_container *child = parent->children->items[i];
+        struct window_title *child_title = child->data;
 
         if (child->view) {
             struct sway_view *view = child->view;
@@ -589,13 +591,13 @@ static void render_containers_linear(struct sway_output *output,
 
             if (view_is_urgent(view)) {
                 colors = &config->border_colors.urgent;
-                title_texture = child->title_urgent;
+                title_texture = child_title->title_urgent;
             } else if (state->focused || parent->focused) {
                 colors = &config->border_colors.focused;
-                title_texture = child->title_focused;
+                title_texture = child_title->title_focused;
             } else {
                 colors = &config->border_colors.unfocused;
-                title_texture = child->title_unfocused;
+                title_texture = child_title->title_unfocused;
             }
 
             render_titlebar(output, damage, child, state->x,
