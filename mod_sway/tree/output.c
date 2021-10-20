@@ -155,13 +155,6 @@ struct sway_output *output_get_in_direction(struct sway_output *reference,
     return output_from_wlr_output(wlr_adjacent);
 }
 
-void output_get_box(struct sway_output *output, struct wlr_box *box) {
-    box->x = output->lx;
-    box->y = output->ly;
-    box->width = output->width;
-    box->height = output->height;
-}
-
 void output_get_render_box(struct sway_output *output, struct wlr_box *box) {
     box->x = output->render_lx;
     box->y = output->render_ly;

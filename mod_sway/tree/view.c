@@ -42,32 +42,6 @@ void view_init(struct sway_view *view, enum sway_view_type type,
     wl_signal_init(&view->events.unmap);
 }
 
-void view_destroy(struct sway_view *view) {
-    if (!sway_assert(view->surface == NULL, "Tried to free mapped view")) {
-        return;
-    }
-    if (!sway_assert(view->destroying,
-                "Tried to free view which wasn't marked as destroying")) {
-        return;
-    }
-    if (!sway_assert(view->container == NULL,
-                "Tried to free view which still has a container "
-                "(might have a pending transaction?)")) {
-        return;
-    }
-    if (!wl_list_empty(&view->saved_buffers)) {
-        view_remove_saved_buffer(view);
-    }
-
-    free(view->title_format);
-
-    if (view->impl->destroy) {
-        view->impl->destroy(view);
-    } else {
-        free(view);
-    }
-}
-
 void view_begin_destroy(struct sway_view *view) {
     if (!sway_assert(view->surface == NULL, "Tried to destroy a mapped view")) {
         return;
@@ -158,14 +132,6 @@ void view_get_constraints(struct sway_view *view, double *min_width,
         *min_height = DBL_MIN;
         *max_height = DBL_MAX;
     }
-}
-
-uint32_t view_configure(struct sway_view *view, double lx, double ly, int width,
-        int height) {
-    if (view->impl->configure) {
-        return view->impl->configure(view, lx, ly, width, height);
-    }
-    return 0;
 }
 
 bool view_inhibit_idle(struct sway_view *view) {
@@ -875,43 +841,6 @@ void view_set_urgent(struct sway_view *view, bool enable) {
 
 bool view_is_urgent(struct sway_view *view) {
     return view->urgent.tv_sec || view->urgent.tv_nsec;
-}
-
-void view_remove_saved_buffer(struct sway_view *view) {
-    if (!sway_assert(!wl_list_empty(&view->saved_buffers), "Expected a saved buffer")) {
-        return;
-    }
-    struct sway_saved_buffer *saved_buf, *tmp;
-    wl_list_for_each_safe(saved_buf, tmp, &view->saved_buffers, link) {
-        wlr_buffer_unlock(&saved_buf->buffer->base);
-        wl_list_remove(&saved_buf->link);
-        free(saved_buf);
-    }
-}
-
-static void view_save_buffer_iterator(struct wlr_surface *surface,
-        int sx, int sy, void *data) {
-    struct sway_view *view = data;
-
-    if (surface && wlr_surface_has_buffer(surface)) {
-        wlr_buffer_lock(&surface->buffer->base);
-        struct sway_saved_buffer *saved_buffer = calloc(1, sizeof(struct sway_saved_buffer));
-        saved_buffer->buffer = surface->buffer;
-        saved_buffer->width = surface->current.width;
-        saved_buffer->height = surface->current.height;
-        saved_buffer->x = sx;
-        saved_buffer->y = sy;
-        saved_buffer->transform = surface->current.transform;
-        wlr_surface_get_buffer_source_box(surface, &saved_buffer->source_box);
-        wl_list_insert(&view->saved_buffers, &saved_buffer->link);
-    }
-}
-
-void view_save_buffer(struct sway_view *view) {
-    if (!sway_assert(wl_list_empty(&view->saved_buffers), "Didn't expect saved buffer")) {
-        view_remove_saved_buffer(view);
-    }
-    view_for_each_surface(view, view_save_buffer_iterator, view);
 }
 
 bool view_is_transient_for(struct sway_view *child,
