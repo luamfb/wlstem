@@ -13,6 +13,7 @@
 #include "damage.h"
 #include "foreach.h"
 #include "sway_config.h"
+#include "window_title.h"
 #include "output.h"
 #include "list.h"
 #include "log.h"
@@ -50,10 +51,6 @@ void container_destroy(struct sway_container *con) {
         return;
     }
     free(con->title);
-    free(con->formatted_title);
-    wlr_texture_destroy(con->title_focused);
-    wlr_texture_destroy(con->title_unfocused);
-    wlr_texture_destroy(con->title_urgent);
     list_free(con->outputs);
 
     if (con->view) {
@@ -207,7 +204,8 @@ static void update_title_texture(struct sway_container *con,
         wlr_texture_destroy(*texture);
         *texture = NULL;
     }
-    if (!con->formatted_title) {
+    struct window_title *title_data = con->data;
+    if (!title_data->formatted_title) {
         return;
     }
 
@@ -232,7 +230,7 @@ static void update_title_texture(struct sway_container *con,
     }
     cairo_set_font_options(c, fo);
     get_text_size(c, config->font, &width, NULL, NULL, scale,
-            config->pango_markup, "%s", con->formatted_title);
+            config->pango_markup, "%s", title_data->formatted_title);
     cairo_surface_destroy(dummy_surface);
     cairo_destroy(c);
 
@@ -251,7 +249,7 @@ static void update_title_texture(struct sway_container *con,
     cairo_move_to(cairo, 0, 0);
 
     pango_printf(cairo, config->font, scale, config->pango_markup,
-            "%s", con->formatted_title);
+            "%s", title_data->formatted_title);
 
     cairo_surface_flush(surface);
     unsigned char *data = cairo_image_surface_get_data(surface);
@@ -266,17 +264,19 @@ static void update_title_texture(struct sway_container *con,
 }
 
 void container_update_title_textures(struct sway_container *container) {
-    update_title_texture(container, &container->title_focused,
+    struct window_title *title_data = container->data;
+    update_title_texture(container, &title_data->title_focused,
             &config->border_colors.focused);
-    update_title_texture(container, &container->title_unfocused,
+    update_title_texture(container, &title_data->title_unfocused,
             &config->border_colors.unfocused);
-    update_title_texture(container, &container->title_urgent,
+    update_title_texture(container, &title_data->title_urgent,
             &config->border_colors.urgent);
     container_damage_whole(container);
 }
 
 void container_calculate_title_height(struct sway_container *container) {
-    if (!container->formatted_title) {
+    struct window_title *title_data = container->data;
+    if (!title_data->formatted_title) {
         container->title_height = 0;
         return;
     }
@@ -284,7 +284,7 @@ void container_calculate_title_height(struct sway_container *container) {
     int height;
     int baseline;
     get_text_size(cairo, config->font, NULL, &height, &baseline, 1,
-            config->pango_markup, "%s", container->formatted_title);
+            config->pango_markup, "%s", title_data->formatted_title);
     cairo_destroy(cairo);
     container->title_height = height;
     container->title_baseline = baseline;

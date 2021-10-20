@@ -9,6 +9,7 @@
 #include "seat.h"
 #include "sway_arrange.h"
 #include "sway_server.h"
+#include "window_title.h"
 #include "container.h"
 #include "output.h"
 #include "view.h"
@@ -45,6 +46,35 @@ static void wm_handle_output_disconnected(
     arrange_root();
 }
 
+static void title_handle_container_destroyed(
+        struct wl_listener *listener, void *data) {
+
+    struct window_title *title =
+        wl_container_of(listener, title, container_destroyed);
+
+    free(title->formatted_title);
+    wlr_texture_destroy(title->title_focused);
+    wlr_texture_destroy(title->title_unfocused);
+    wlr_texture_destroy(title->title_urgent);
+    free(title);
+}
+
+static void wm_handle_new_window(
+        struct wl_listener *listener, void *data) {
+    struct sway_container *container = data;
+    struct window_title *title_data =
+        calloc(1, sizeof(struct window_title));
+    if (!title_data) {
+        sway_log(SWAY_ERROR, "failed to allocate memory for window title data");
+        return;
+    }
+
+    wl_signal_add(&container->events.destroy, &title_data->container_destroyed);
+    title_data->container_destroyed.notify = title_handle_container_destroyed;
+
+    container->data = title_data;
+}
+
 struct server_wm * server_wm_create(void) {
     struct server_wm *wm = calloc(1, sizeof(struct server_wm));
     if (!wm) {
@@ -61,6 +91,9 @@ struct server_wm * server_wm_create(void) {
     wl_signal_add(&wls->output_manager->events.output_disconnected,
         &wm->output_disconnected);
     wm->output_disconnected.notify = wm_handle_output_disconnected;
+
+    wl_signal_add(&wls->events.new_window, &wm->new_window);
+    wm->new_window.notify = wm_handle_new_window;
 
     return wm;
 }

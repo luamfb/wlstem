@@ -18,6 +18,7 @@
 #include "log.h"
 #include "sway_commands.h"
 #include "sway_transaction.h"
+#include "window_title.h"
 #include "cursor.h"
 #include "output.h"
 #include "seat.h"
@@ -824,8 +825,9 @@ void view_update_title(struct sway_view *view, bool force) {
         }
     }
 
+    struct window_title *title_data = view->container->data;
     free(view->container->title);
-    free(view->container->formatted_title);
+    free(title_data->formatted_title);
     if (title) {
         size_t len = parse_title_format(view, NULL);
         char *buffer = calloc(len + 1, sizeof(char));
@@ -835,10 +837,10 @@ void view_update_title(struct sway_view *view, bool force) {
         parse_title_format(view, buffer);
 
         view->container->title = strdup(title);
-        view->container->formatted_title = buffer;
+        title_data->formatted_title = buffer;
     } else {
         view->container->title = NULL;
-        view->container->formatted_title = NULL;
+        title_data->formatted_title = NULL;
     }
     container_calculate_title_height(view->container);
     config_update_font_height(false);
