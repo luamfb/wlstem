@@ -88,3 +88,10 @@ void scale_box(struct wlr_box *box, float scale) {
     box->x = round(box->x * scale);
     box->y = round(box->y * scale);
 }
+
+void output_get_box(struct sway_output *output, struct wlr_box *box) {
+    box->x = output->lx;
+    box->y = output->ly;
+    box->width = output->width;
+    box->height = output->height;
+}

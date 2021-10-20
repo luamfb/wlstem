@@ -45,6 +45,7 @@ lib_wlstem = shared_library(
         'view.c',
         'seat.c',
         'server.c',
+        'window.c',
         'wlstem.c',
     ),
     dependencies: wlstem_deps,
