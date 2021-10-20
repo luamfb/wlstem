@@ -11,6 +11,7 @@ struct window_title {
     struct wlr_texture *title_urgent;
 
     struct wl_listener container_destroyed;
+    struct wl_listener scale_changed;
 };
 
 #endif /* SERVER_WINDOW_TITLE_H_ */
