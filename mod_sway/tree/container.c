@@ -33,6 +33,7 @@ struct sway_container *container_create(struct sway_view *view) {
     c->outputs = create_list();
 
     wl_signal_init(&c->events.destroy);
+    wl_signal_init(&c->events.scale_change);
     wl_signal_emit(&wls->node_manager->events.new_node, &c->node);
 
     // Only emit this signal when the container is fully initialized.
@@ -379,7 +380,7 @@ void container_discover_outputs(struct sway_container *con) {
         old_output->wlr_output->scale : -1;
     double new_scale = new_output ? new_output->wlr_output->scale : -1;
     if (old_scale != new_scale) {
-        container_update_title_textures(con);
+        wl_signal_emit(&con->events.scale_change, con);
     }
 }
 

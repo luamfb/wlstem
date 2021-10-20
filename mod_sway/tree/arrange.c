@@ -59,6 +59,12 @@ static void title_handle_container_destroyed(
     free(title);
 }
 
+static void title_handle_scale_change(
+        struct wl_listener *listener, void *data) {
+    struct sway_container *con = data;
+    container_update_title_textures(con);
+}
+
 static void wm_handle_new_window(
         struct wl_listener *listener, void *data) {
     struct sway_container *container = data;
@@ -71,6 +77,9 @@ static void wm_handle_new_window(
 
     wl_signal_add(&container->events.destroy, &title_data->container_destroyed);
     title_data->container_destroyed.notify = title_handle_container_destroyed;
+
+    wl_signal_add(&container->events.scale_change, &title_data->scale_changed);
+    title_data->scale_changed.notify = title_handle_scale_change;
 
     container->data = title_data;
 }

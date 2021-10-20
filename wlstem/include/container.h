@@ -67,6 +67,7 @@ struct sway_container {
 
     struct {
         struct wl_signal destroy;
+        struct wl_signal scale_change;
     } events;
 
     void *data; // custom user data
