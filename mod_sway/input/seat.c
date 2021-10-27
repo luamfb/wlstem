@@ -1462,10 +1462,17 @@ void seatop_tablet_tool_tip(struct sway_seat *seat,
     }
 }
 
+void default_handle_tablet_tool_motion(struct sway_seat *seat,
+        struct sway_tablet_tool *tool, uint32_t time_msec);
+void down_handle_tablet_tool_motion(struct sway_seat *seat,
+        struct sway_tablet_tool *tool, uint32_t time_msec);
+
 void seatop_tablet_tool_motion(struct sway_seat *seat,
         struct sway_tablet_tool *tool, uint32_t time_msec) {
-    if (seat->seatop_impl->tablet_tool_motion) {
-        seat->seatop_impl->tablet_tool_motion(seat, tool, time_msec);
+    if (!seat->cursor_pressed) {
+        default_handle_tablet_tool_motion(seat, tool, time_msec);
+    } else {
+        down_handle_tablet_tool_motion(seat, tool, time_msec);
     }
 }
 

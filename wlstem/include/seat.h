@@ -17,8 +17,6 @@ struct sway_seat;
 
 struct sway_seatop_impl {
     void (*rebase)(struct sway_seat *seat, uint32_t time_msec);
-    void (*tablet_tool_motion)(struct sway_seat *seat,
-            struct sway_tablet_tool *tool, uint32_t time_msec);
     void (*tablet_tool_tip)(struct sway_seat *seat, struct sway_tablet_tool *tool,
             uint32_t time_msec, enum wlr_tablet_tool_tip_state state);
     void (*unref)(struct sway_seat *seat, struct sway_container *con);
