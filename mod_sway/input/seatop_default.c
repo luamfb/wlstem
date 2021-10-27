@@ -297,7 +297,7 @@ void default_handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
     e->previous_node = node;
 }
 
-static void handle_tablet_tool_motion(struct sway_seat *seat,
+void default_handle_tablet_tool_motion(struct sway_seat *seat,
         struct sway_tablet_tool *tool, uint32_t time_msec) {
     struct seatop_default_event *e = seat->seatop_data;
     struct sway_cursor *cursor = seat->cursor;
@@ -397,7 +397,6 @@ static void handle_rebase(struct sway_seat *seat, uint32_t time_msec) {
 
 static const struct sway_seatop_impl seatop_impl = {
     .tablet_tool_tip = handle_tablet_tool_tip,
-    .tablet_tool_motion = handle_tablet_tool_motion,
     .rebase = handle_rebase,
 };
 

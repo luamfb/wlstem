@@ -60,7 +60,7 @@ static void handle_tablet_tool_tip(struct sway_seat *seat,
     }
 }
 
-static void handle_tablet_tool_motion(struct sway_seat *seat,
+void down_handle_tablet_tool_motion(struct sway_seat *seat,
         struct sway_tablet_tool *tool, uint32_t time_msec) {
     struct seatop_down_event *e = seat->seatop_data;
     struct sway_container *con = e->con;
@@ -82,7 +82,6 @@ static void handle_unref(struct sway_seat *seat, struct sway_container *con) {
 
 static const struct sway_seatop_impl seatop_impl = {
     .tablet_tool_tip = handle_tablet_tool_tip,
-    .tablet_tool_motion = handle_tablet_tool_motion,
     .unref = handle_unref,
 };
 
