@@ -17,8 +17,6 @@ struct sway_seat;
 
 struct sway_seatop_impl {
     void (*rebase)(struct sway_seat *seat, uint32_t time_msec);
-    void (*render)(struct sway_seat *seat, struct sway_output *output,
-            pixman_region32_t *damage);
 };
 
 struct sway_seat_device {
@@ -257,13 +255,6 @@ void seatop_end(struct sway_seat *seat);
  * The seatop may choose to abort itself in response to this.
  */
 void seatop_unref(struct sway_seat *seat, struct sway_container *con);
-
-/**
- * Instructs a seatop to render anything that it needs to render
- * (eg. dropzone for move-tiling)
- */
-void seatop_render(struct sway_seat *seat, struct sway_output *output,
-        pixman_region32_t *damage);
 
 bool seatop_allows_set_cursor(struct sway_seat *seat);
 
