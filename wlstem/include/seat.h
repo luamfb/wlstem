@@ -27,7 +27,6 @@ struct sway_seatop_impl {
             struct sway_tablet_tool *tool, uint32_t time_msec);
     void (*tablet_tool_tip)(struct sway_seat *seat, struct sway_tablet_tool *tool,
             uint32_t time_msec, enum wlr_tablet_tool_tip_state state);
-    void (*end)(struct sway_seat *seat);
     void (*unref)(struct sway_seat *seat, struct sway_container *con);
     void (*render)(struct sway_seat *seat, struct sway_output *output,
             pixman_region32_t *damage);

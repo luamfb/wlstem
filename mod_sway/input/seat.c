@@ -1447,9 +1447,6 @@ void seatop_tablet_tool_motion(struct sway_seat *seat,
 }
 
 void seatop_end(struct sway_seat *seat) {
-    if (seat->seatop_impl && seat->seatop_impl->end) {
-        seat->seatop_impl->end(seat);
-    }
     free(seat->seatop_data);
     seat->seatop_data = NULL;
     seat->seatop_impl = NULL;
