@@ -1463,7 +1463,7 @@ void seatop_render(struct sway_seat *seat, struct sway_output *output,
 }
 
 bool seatop_allows_set_cursor(struct sway_seat *seat) {
-    return seat->seatop_impl->allow_set_cursor;
+    return true;
 }
 
 struct sway_keyboard_shortcuts_inhibitor *

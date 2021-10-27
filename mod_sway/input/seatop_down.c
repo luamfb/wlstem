@@ -86,7 +86,6 @@ static const struct sway_seatop_impl seatop_impl = {
     .tablet_tool_tip = handle_tablet_tool_tip,
     .tablet_tool_motion = handle_tablet_tool_motion,
     .unref = handle_unref,
-    .allow_set_cursor = true,
 };
 
 void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,

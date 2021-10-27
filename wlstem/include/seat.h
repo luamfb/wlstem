@@ -31,7 +31,6 @@ struct sway_seatop_impl {
     void (*unref)(struct sway_seat *seat, struct sway_container *con);
     void (*render)(struct sway_seat *seat, struct sway_output *output,
             pixman_region32_t *damage);
-    bool allow_set_cursor;
 };
 
 struct sway_seat_device {

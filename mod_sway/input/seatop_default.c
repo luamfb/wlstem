@@ -401,7 +401,6 @@ static const struct sway_seatop_impl seatop_impl = {
     .tablet_tool_tip = handle_tablet_tool_tip,
     .tablet_tool_motion = handle_tablet_tool_motion,
     .rebase = handle_rebase,
-    .allow_set_cursor = true,
 };
 
 void seatop_begin_default(struct sway_seat *seat) {
