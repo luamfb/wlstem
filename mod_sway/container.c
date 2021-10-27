@@ -28,14 +28,14 @@ struct sway_container *container_at(struct sway_output *output,
         }
         *surface = NULL;
     }
-    // Tiling (focused)
+    // Toplevel window (focused)
     if (focus && focus->view) {
         if ((c = surface_at_view(focus, lx, ly, surface, sx, sy))) {
             return c;
         }
     }
-    // Tiling (non-focused)
-    if ((c = tiling_container_at(&output->node, lx, ly, surface, sx, sy))) {
+    // Toplevel window (non-focused)
+    if ((c = toplevel_window_at(&output->node, lx, ly, surface, sx, sy))) {
         return c;
     }
     return NULL;
