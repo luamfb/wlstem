@@ -264,7 +264,7 @@ static void check_focus_follows_mouse(struct sway_seat *seat,
     }
 }
 
-static void handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
+void default_handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
     struct seatop_default_event *e = seat->seatop_data;
     struct sway_cursor *cursor = seat->cursor;
 
@@ -396,7 +396,6 @@ static void handle_rebase(struct sway_seat *seat, uint32_t time_msec) {
 }
 
 static const struct sway_seatop_impl seatop_impl = {
-    .pointer_motion = handle_pointer_motion,
     .pointer_axis = handle_pointer_axis,
     .tablet_tool_tip = handle_tablet_tool_tip,
     .tablet_tool_motion = handle_tablet_tool_motion,

@@ -1428,9 +1428,15 @@ void seatop_button(struct sway_seat *seat, uint32_t time_msec,
     }
 }
 
+
+void default_handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec);
+void down_handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec);
+
 void seatop_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
-    if (seat->seatop_impl->pointer_motion) {
-        seat->seatop_impl->pointer_motion(seat, time_msec);
+    if (!seat->cursor_pressed) {
+        default_handle_pointer_motion(seat, time_msec);
+    } else {
+        down_handle_pointer_motion(seat, time_msec);
     }
 }
 
