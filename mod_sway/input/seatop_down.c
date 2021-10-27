@@ -73,7 +73,7 @@ void down_handle_tablet_tool_motion(struct sway_seat *seat,
     }
 }
 
-static void handle_unref(struct sway_seat *seat, struct sway_container *con) {
+void down_handle_unref(struct sway_seat *seat, struct sway_container *con) {
     struct seatop_down_event *e = seat->seatop_data;
     if (e->con == con) {
         seatop_begin_default(seat);
@@ -81,7 +81,6 @@ static void handle_unref(struct sway_seat *seat, struct sway_container *con) {
 }
 
 static const struct sway_seatop_impl seatop_impl = {
-    .unref = handle_unref,
 };
 
 void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,

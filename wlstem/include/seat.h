@@ -17,7 +17,6 @@ struct sway_seat;
 
 struct sway_seatop_impl {
     void (*rebase)(struct sway_seat *seat, uint32_t time_msec);
-    void (*unref)(struct sway_seat *seat, struct sway_container *con);
     void (*render)(struct sway_seat *seat, struct sway_output *output,
             pixman_region32_t *damage);
 };

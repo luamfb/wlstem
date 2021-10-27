@@ -1404,12 +1404,13 @@ void seat_consider_warp_to_focus(struct sway_seat *seat) {
     }
 }
 
+void down_handle_unref(struct sway_seat *seat, struct sway_container *con);
+
 void seatop_unref(struct sway_seat *seat, struct sway_container *con) {
-    if (seat->seatop_impl->unref) {
-        seat->seatop_impl->unref(seat, con);
+    if (seat->cursor_pressed) {
+        down_handle_unref(seat, con);
     }
 }
-
 
 void default_handle_button(struct sway_seat *seat, uint32_t time_msec,
         struct wlr_input_device *device, uint32_t button,
