@@ -1443,8 +1443,6 @@ void seatop_tablet_tool_motion(struct sway_seat *seat,
         struct sway_tablet_tool *tool, uint32_t time_msec) {
     if (seat->seatop_impl->tablet_tool_motion) {
         seat->seatop_impl->tablet_tool_motion(seat, tool, time_msec);
-    } else {
-        seatop_pointer_motion(seat, time_msec);
     }
 }
 
