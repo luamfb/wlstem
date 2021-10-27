@@ -70,7 +70,7 @@ static void state_add_button(struct seatop_default_event *e, uint32_t button) {
  * Functions used by handle_tablet_tool_tip  /
  *-----------------------------------------*/
 
-static void handle_tablet_tool_tip(struct sway_seat *seat,
+void default_handle_tablet_tool_tip(struct sway_seat *seat,
         struct sway_tablet_tool *tool, uint32_t time_msec,
         enum wlr_tablet_tool_tip_state state) {
     if (state == WLR_TABLET_TOOL_TIP_UP) {
@@ -396,7 +396,6 @@ static void handle_rebase(struct sway_seat *seat, uint32_t time_msec) {
 }
 
 static const struct sway_seatop_impl seatop_impl = {
-    .tablet_tool_tip = handle_tablet_tool_tip,
     .rebase = handle_rebase,
 };
 

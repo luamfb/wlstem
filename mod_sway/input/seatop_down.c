@@ -51,7 +51,7 @@ void down_handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
     }
 }
 
-static void handle_tablet_tool_tip(struct sway_seat *seat,
+void down_handle_tablet_tool_tip(struct sway_seat *seat,
         struct sway_tablet_tool *tool, uint32_t time_msec,
         enum wlr_tablet_tool_tip_state state) {
     if (state == WLR_TABLET_TOOL_TIP_UP) {
@@ -81,7 +81,6 @@ static void handle_unref(struct sway_seat *seat, struct sway_container *con) {
 }
 
 static const struct sway_seatop_impl seatop_impl = {
-    .tablet_tool_tip = handle_tablet_tool_tip,
     .unref = handle_unref,
 };
 

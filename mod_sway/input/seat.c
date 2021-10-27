@@ -1454,11 +1454,20 @@ void seatop_pointer_axis(struct sway_seat *seat,
     }
 }
 
+void default_handle_tablet_tool_tip(struct sway_seat *seat,
+        struct sway_tablet_tool *tool, uint32_t time_msec,
+        enum wlr_tablet_tool_tip_state state);
+void down_handle_tablet_tool_tip(struct sway_seat *seat,
+        struct sway_tablet_tool *tool, uint32_t time_msec,
+        enum wlr_tablet_tool_tip_state state);
+
 void seatop_tablet_tool_tip(struct sway_seat *seat,
         struct sway_tablet_tool *tool, uint32_t time_msec,
         enum wlr_tablet_tool_tip_state state) {
-    if (seat->seatop_impl->tablet_tool_tip) {
-        seat->seatop_impl->tablet_tool_tip(seat, tool, time_msec, state);
+    if (!seat->cursor_pressed) {
+        default_handle_tablet_tool_tip(seat, tool, time_msec, state);
+    } else {
+        down_handle_tablet_tool_tip(seat, tool, time_msec, state);
     }
 }
 
