@@ -348,7 +348,7 @@ static uint32_t wl_axis_to_button(struct wlr_event_pointer_axis *event) {
     }
 }
 
-static void handle_pointer_axis(struct sway_seat *seat,
+void default_handle_pointer_axis(struct sway_seat *seat,
         struct wlr_event_pointer_axis *event) {
     struct sway_input_device *input_device =
         event->device ? event->device->data : NULL;
@@ -396,7 +396,6 @@ static void handle_rebase(struct sway_seat *seat, uint32_t time_msec) {
 }
 
 static const struct sway_seatop_impl seatop_impl = {
-    .pointer_axis = handle_pointer_axis,
     .tablet_tool_tip = handle_tablet_tool_tip,
     .tablet_tool_motion = handle_tablet_tool_motion,
     .rebase = handle_rebase,

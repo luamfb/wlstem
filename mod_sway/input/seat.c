@@ -1440,10 +1440,17 @@ void seatop_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
     }
 }
 
+void default_handle_pointer_axis(struct sway_seat *seat,
+        struct wlr_event_pointer_axis *event);
+void down_handle_pointer_axis(struct sway_seat *seat,
+        struct wlr_event_pointer_axis *event);
+
 void seatop_pointer_axis(struct sway_seat *seat,
         struct wlr_event_pointer_axis *event) {
-    if (seat->seatop_impl->pointer_axis) {
-        seat->seatop_impl->pointer_axis(seat, event);
+    if (!seat->cursor_pressed) {
+        default_handle_pointer_axis(seat, event);
+    } else {
+        down_handle_pointer_axis(seat, event);
     }
 }
 
