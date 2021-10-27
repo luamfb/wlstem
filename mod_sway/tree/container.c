@@ -33,7 +33,7 @@ void container_begin_destroy(struct sway_container *con) {
     }
 }
 
-static struct sway_container *container_at_linear(struct wls_transaction_node *parent,
+static struct sway_container *toplevel_window_at_recurse(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     list_t *children = node_get_children(parent);
@@ -41,7 +41,7 @@ static struct sway_container *container_at_linear(struct wls_transaction_node *p
         for (int i = 0; i < children->length; ++i) {
             struct sway_container *child = children->items[i];
             struct sway_container *container =
-                tiling_container_at(&child->node, lx, ly, surface, sx, sy);
+                toplevel_window_at(&child->node, lx, ly, surface, sx, sy);
             if (container) {
                 return container;
             }
@@ -73,7 +73,7 @@ struct sway_container *view_container_at(struct wls_transaction_node *parent,
     return NULL;
 }
 
-struct sway_container *tiling_container_at(struct wls_transaction_node *parent,
+struct sway_container *toplevel_window_at(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     if (node_is_view(parent)) {
@@ -83,7 +83,7 @@ struct sway_container *tiling_container_at(struct wls_transaction_node *parent,
         return NULL;
     }
     if (node_may_have_container_children(parent)) {
-        return container_at_linear(parent, lx, ly, surface, sx, sy);
+        return toplevel_window_at_recurse(parent, lx, ly, surface, sx, sy);
     }
     return NULL;
 }

@@ -88,7 +88,7 @@ struct sway_container *container_at(struct sway_output *output,
         double lx, double ly, struct wlr_surface **surface,
         double *sx, double *sy);
 
-struct sway_container *tiling_container_at(
+struct sway_container *toplevel_window_at(
         struct wls_transaction_node *parent, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
