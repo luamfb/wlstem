@@ -100,6 +100,14 @@ void wls_output_layout_for_each_container(void (*f)(struct sway_container *con, 
     }
 }
 
+void wls_output_layout_for_each_output(void (*f)(struct sway_output *output, void *data),
+        void *data) {
+    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
+        struct sway_output *output = wls->output_manager->outputs->items[i];
+        f(output, data);
+    }
+}
+
 // =============== OUTPUTS ===============
 
 static void for_each_surface_container_iterator(struct sway_container *con,
