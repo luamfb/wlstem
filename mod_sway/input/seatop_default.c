@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#include <stdbool.h>
 #include <float.h>
 #include <libevdev/libevdev.h>
 #include <wlr/types/wlr_cursor.h>
@@ -405,6 +406,8 @@ static const struct sway_seatop_impl seatop_impl = {
 
 void seatop_begin_default(struct sway_seat *seat) {
     seatop_end(seat);
+
+    seat->cursor_pressed = false;
 
     struct seatop_default_event *e =
         calloc(1, sizeof(struct seatop_default_event));

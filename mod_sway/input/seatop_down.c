@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#include <stdbool.h>
 #include <float.h>
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_tablet_v2.h>
@@ -91,6 +92,8 @@ static const struct sway_seatop_impl seatop_impl = {
 void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,
         uint32_t time_msec, int sx, int sy) {
     seatop_end(seat);
+
+    seat->cursor_pressed = true;
 
     struct seatop_down_event *e =
         calloc(1, sizeof(struct seatop_down_event));
