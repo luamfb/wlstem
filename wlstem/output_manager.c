@@ -162,14 +162,6 @@ void wls_output_manager_destroy(struct wls_output_manager *output_manager) {
     free(output_manager);
 }
 
-void wls_output_layout_for_each_output(void (*f)(struct sway_output *output, void *data),
-        void *data) {
-    for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
-        struct sway_output *output = wls->output_manager->outputs->items[i];
-        f(output, data);
-    }
-}
-
 void wls_output_layout_get_box(struct wls_output_manager *root, struct wlr_box *box) {
     box->x = root->x;
     box->y = root->y;
