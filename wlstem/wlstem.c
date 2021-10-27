@@ -59,6 +59,7 @@ bool wls_init(void) {
     wls->input_method_manager = _input_method_manager;
     wls->tablet_v2 = _tablet_v2;
     wls->misc_protocols = _misc_protocols;
+    wls->current_seat = NULL;
 
     wl_signal_init(&wls->events.new_window);
 
@@ -69,6 +70,7 @@ void wls_fini(void) {
     if (!wls) {
         return; // nothing to do.
     }
+
     // This needs the output_manager and the the dirty_nodes list,
     // so call it before destroying them
     wls_server_destroy(wls->server);
@@ -82,6 +84,8 @@ void wls_fini(void) {
     }
 
     free(wls->misc_protocols);
+
+    wls->current_seat = NULL;
 
     // Only destroy the node manager after everything else was destroyed,
     // because some of that destruction code uses the transaction list it has.

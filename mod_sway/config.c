@@ -58,8 +58,6 @@ void free_config(struct sway_config *config) {
         return;
     }
 
-    config->current_seat = NULL;
-
     if (config->input_configs) {
         for (int i = 0; i < config->input_configs->length; i++) {
             free_input_config(config->input_configs->items[i]);

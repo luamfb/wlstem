@@ -55,8 +55,8 @@ static void seat_node_destroy(struct sway_seat_node *seat_node) {
 }
 
 void seat_destroy(struct sway_seat *seat) {
-    if (seat == config->current_seat) {
-        config->current_seat = input_manager_get_default_seat();
+    if (seat == wls->current_seat) {
+        wls->current_seat = input_manager_get_default_seat();
     }
     struct sway_seat_device *seat_device, *next;
     wl_list_for_each_safe(seat_device, next, &seat->devices, link) {

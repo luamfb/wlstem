@@ -224,8 +224,6 @@ struct sway_config {
 
     // The keysym to keycode translation
     struct xkb_state *keysym_translation_state;
-
-    struct sway_seat *current_seat;
 };
 
 /**
