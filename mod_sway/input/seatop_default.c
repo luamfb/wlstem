@@ -144,7 +144,7 @@ static void add_or_remove_button_to_state(struct sway_seat *seat,
     }
 }
 
-static void handle_button(struct sway_seat *seat, uint32_t time_msec,
+void default_handle_button(struct sway_seat *seat, uint32_t time_msec,
         struct wlr_input_device *device, uint32_t button,
         enum wlr_button_state state) {
     struct sway_cursor *cursor = seat->cursor;
@@ -396,7 +396,6 @@ static void handle_rebase(struct sway_seat *seat, uint32_t time_msec) {
 }
 
 static const struct sway_seatop_impl seatop_impl = {
-    .button = handle_button,
     .pointer_motion = handle_pointer_motion,
     .pointer_axis = handle_pointer_axis,
     .tablet_tool_tip = handle_tablet_tool_tip,
