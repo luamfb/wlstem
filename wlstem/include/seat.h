@@ -16,9 +16,6 @@ struct sway_output;
 struct sway_seat;
 
 struct sway_seatop_impl {
-    void (*button)(struct sway_seat *seat, uint32_t time_msec,
-            struct wlr_input_device *device, uint32_t button,
-            enum wlr_button_state state);
     void (*pointer_motion)(struct sway_seat *seat, uint32_t time_msec);
     void (*pointer_axis)(struct sway_seat *seat,
             struct wlr_event_pointer_axis *event);

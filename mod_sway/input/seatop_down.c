@@ -29,7 +29,7 @@ static void handle_pointer_axis(struct sway_seat *seat,
         round(scroll_factor * event->delta_discrete), event->source);
 }
 
-static void handle_button(struct sway_seat *seat, uint32_t time_msec,
+void down_handle_button(struct sway_seat *seat, uint32_t time_msec,
         struct wlr_input_device *device, uint32_t button,
         enum wlr_button_state state) {
     seat_pointer_notify_button(seat, time_msec, button, state);
@@ -81,7 +81,6 @@ static void handle_unref(struct sway_seat *seat, struct sway_container *con) {
 }
 
 static const struct sway_seatop_impl seatop_impl = {
-    .button = handle_button,
     .pointer_motion = handle_pointer_motion,
     .pointer_axis = handle_pointer_axis,
     .tablet_tool_tip = handle_tablet_tool_tip,

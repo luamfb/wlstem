@@ -1410,11 +1410,21 @@ void seatop_unref(struct sway_seat *seat, struct sway_container *con) {
     }
 }
 
+
+void default_handle_button(struct sway_seat *seat, uint32_t time_msec,
+        struct wlr_input_device *device, uint32_t button,
+        enum wlr_button_state state);
+void down_handle_button(struct sway_seat *seat, uint32_t time_msec,
+        struct wlr_input_device *device, uint32_t button,
+        enum wlr_button_state state);
+
 void seatop_button(struct sway_seat *seat, uint32_t time_msec,
         struct wlr_input_device *device, uint32_t button,
         enum wlr_button_state state) {
-    if (seat->seatop_impl->button) {
-        seat->seatop_impl->button(seat, time_msec, device, button, state);
+    if (!seat->cursor_pressed) {
+        default_handle_button(seat, time_msec, device, button, state);
+    } else {
+        down_handle_button(seat, time_msec, device, button, state);
     }
 }
 
