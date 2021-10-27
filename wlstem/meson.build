@@ -29,6 +29,7 @@ lib_wlstem = shared_library(
         'pango.c',
         'stringop.c',
 
+        'at.c',
         'cursor.c',
         'damage.c',
         'input_method.c',
