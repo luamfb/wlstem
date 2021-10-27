@@ -88,6 +88,9 @@ struct sway_seat {
     int32_t touch_id;
     double touch_x, touch_y;
 
+    // whether a device that functions as cursor is currently being pressed
+    bool cursor_pressed;
+
     // Seat operations (drag and resize)
     const struct sway_seatop_impl *seatop_impl;
     void *seatop_data;
