@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <float.h>
+#include "input_config.h"
 #include "sway_config.h"
 #include "sway_server.h"
 #include "sway_keyboard.h"
