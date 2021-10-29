@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include <wayland-server-core.h>
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "input_manager.h"
 #include "seat.h"
 #include "sway_server.h"

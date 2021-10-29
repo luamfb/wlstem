@@ -17,7 +17,7 @@
 #include "list.h"
 #include "log.h"
 #include "sway_commands.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "window_title.h"
 #include "cursor.h"
 #include "output.h"

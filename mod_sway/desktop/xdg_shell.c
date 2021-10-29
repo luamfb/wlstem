@@ -8,7 +8,7 @@
 #include "damage.h"
 #include "log.h"
 #include "sway_decoration.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "input_manager.h"
 #include "cursor.h"
 #include "seat.h"

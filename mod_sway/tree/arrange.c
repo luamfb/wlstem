@@ -5,7 +5,7 @@
 #include <string.h>
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "seat.h"
 #include "sway_arrange.h"
 #include "sway_server.h"
