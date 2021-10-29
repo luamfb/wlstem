@@ -15,7 +15,7 @@
 #include "sway_commands.h"
 #include "sway_config.h"
 #include "sway_server.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "sway_arrange.h"
 #include "output_manager.h"
 #include "log.h"

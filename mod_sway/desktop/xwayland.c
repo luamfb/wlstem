@@ -8,7 +8,7 @@
 #include <wlr/xwayland.h>
 #include "damage.h"
 #include "log.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "input_manager.h"
 #include "seat.h"
 #include "sway_server.h"

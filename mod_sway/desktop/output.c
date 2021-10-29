@@ -17,7 +17,7 @@
 #include "config.h"
 #include "log.h"
 #include "sway_config.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "input_manager.h"
 #include "foreach.h"
 #include "seat.h"

@@ -10,7 +10,7 @@
 #include <xkbcommon/xkbcommon-names.h>
 #include "sway_commands.h"
 #include "sway_config.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "input_manager.h"
 #include "sway_keyboard.h"
 #include "cursor.h"

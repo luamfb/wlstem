@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "sway_server.h"
 #include "sway_arrange.h"
 #include "sway_xdg_decoration.h"

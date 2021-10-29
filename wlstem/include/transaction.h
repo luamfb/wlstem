@@ -1,5 +1,5 @@
-#ifndef _SWAY_TRANSACTION_H
-#define _SWAY_TRANSACTION_H
+#ifndef WLSTEM_TRANSACTION_H_
+#define WLSTEM_TRANSACTION_H_
 #include <stdint.h>
 
 /**

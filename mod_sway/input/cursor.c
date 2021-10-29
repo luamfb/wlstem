@@ -23,7 +23,7 @@
 #include "util.h"
 #include "sway_commands.h"
 #include "sway_config.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "sway_keyboard.h"
 #include "tablet.h"
 #include "layers.h"

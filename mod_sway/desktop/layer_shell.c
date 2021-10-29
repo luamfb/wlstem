@@ -9,7 +9,7 @@
 #include "log.h"
 #include "cursor.h"
 #include "damage.h"
-#include "sway_transaction.h"
+#include "transaction.h"
 #include "input_manager.h"
 #include "seat.h"
 #include "layers.h"
