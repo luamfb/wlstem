@@ -27,7 +27,8 @@ sway_sources = files(
     'bindkey.c',
     'container.c',
 
-    'tree/arrange.c',
+    'wm.c',
+
     'tree/container.c',
     'tree/view.c',
     'tree/output.c',
