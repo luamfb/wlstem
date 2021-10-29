@@ -3,11 +3,17 @@
 
 #include <stdbool.h>
 #include <wayland-server-core.h>
+#include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_tablet_v2.h>
 #include "list.h"
 #include "node.h"
 #include "misc_protocols.h"
 #include "output_manager.h"
+
+struct sway_output;
+
+typedef void (*handle_output_commit_fn)(struct sway_output *output,
+        struct wlr_output_event_commit *event);
 
 struct wls_debug {
     bool noatomic;         // Ignore atomic layout updates
@@ -34,6 +40,8 @@ struct wls_context {
     struct sway_seat *current_seat;
     struct wls_misc_protocols *misc_protocols;
 
+    handle_output_commit_fn handle_output_commit;
+
     struct wls_debug debug;
     struct {
         struct wl_signal new_window;
@@ -48,7 +56,7 @@ extern struct wls_context *wls;
 // Initializes the `wls` variable containing wlstem's context.
 // Returns whether or not the initialization succeeded.
 //
-bool wls_init(void);
+bool wls_init(handle_output_commit_fn);
 
 // Finalizes the wlstem context, freeing up any resources it used so far.
 void wls_fini(void);
