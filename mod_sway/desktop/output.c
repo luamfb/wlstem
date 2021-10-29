@@ -24,7 +24,7 @@
 #include "layers.h"
 #include "output.h"
 #include "sway_server.h"
-#include "sway_surface.h"
+#include "surface.h"
 #include "server_wm.h"
 #include "container.h"
 #include "output_manager.h"

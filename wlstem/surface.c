@@ -3,7 +3,7 @@
 #include <time.h>
 #include <wlr/types/wlr_surface.h>
 #include "sway_server.h"
-#include "sway_surface.h"
+#include "surface.h"
 #include "wlstem.h"
 #include "server.h"
 
