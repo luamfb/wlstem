@@ -239,10 +239,10 @@ static void handle_mode(struct wl_listener *listener, void *data) {
     if (!output->enabled) {
         return;
     }
-    arrange_layers(output);
-    arrange_output(output);
-    transaction_commit_dirty();
 
+    wl_signal_emit(&wls->output_manager->events.output_mode_changed, output);
+
+    transaction_commit_dirty();
     wls_update_output_manager_config(wls->output_manager);
 }
 
