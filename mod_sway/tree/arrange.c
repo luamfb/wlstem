@@ -7,7 +7,7 @@
 #include <wlr/types/wlr_output_layout.h>
 #include "transaction.h"
 #include "seat.h"
-#include "sway_arrange.h"
+#include "server_wm.h"
 #include "sway_server.h"
 #include "window_title.h"
 #include "container.h"

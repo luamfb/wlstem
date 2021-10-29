@@ -13,7 +13,7 @@
 #include "cursor.h"
 #include "seat.h"
 #include "output.h"
-#include "sway_arrange.h"
+#include "server_wm.h"
 #include "container.h"
 #include "view.h"
 #include "sway_xdg_decoration.h"
