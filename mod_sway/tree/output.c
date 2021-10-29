@@ -120,20 +120,6 @@ void output_disable(struct sway_output *output) {
     wl_signal_emit(&wls->output_manager->events.output_disconnected, output);
 }
 
-void output_begin_destroy(struct sway_output *output) {
-    if (!sway_assert(!output->enabled, "Expected a disabled output")) {
-        return;
-    }
-    sway_log(SWAY_DEBUG, "Destroying output '%s'", output->wlr_output->name);
-
-    output->node.destroying = true;
-    node_set_dirty(&output->node);
-
-    wl_list_remove(&output->link);
-    output->wlr_output->data = NULL;
-    output->wlr_output = NULL;
-}
-
 struct sway_output *output_from_wlr_output(struct wlr_output *output) {
     return output->data;
 }

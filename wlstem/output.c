@@ -9,6 +9,20 @@
 #include "output.h"
 #include "wlstem.h"
 
+void output_begin_destroy(struct sway_output *output) {
+    if (!sway_assert(!output->enabled, "Expected a disabled output")) {
+        return;
+    }
+    sway_log(SWAY_DEBUG, "Destroying output '%s'", output->wlr_output->name);
+
+    output->node.destroying = true;
+    node_set_dirty(&output->node);
+
+    wl_list_remove(&output->link);
+    output->wlr_output->data = NULL;
+    output->wlr_output = NULL;
+}
+
 void output_enable(struct sway_output *output) {
     if (!sway_assert(!output->enabled, "output is already enabled")) {
         return;
