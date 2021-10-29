@@ -2,7 +2,7 @@
 #include "sway_decoration.h"
 #include "transaction.h"
 #include "sway_server.h"
-#include "sway_arrange.h"
+#include "server_wm.h"
 #include "view.h"
 #include "log.h"
 

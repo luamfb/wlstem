@@ -1,5 +1,5 @@
-#ifndef _SWAY_ARRANGE_H
-#define _SWAY_ARRANGE_H
+#ifndef SERVER_WM_H_
+#define SERVER_WM_H_
 
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_output.h>

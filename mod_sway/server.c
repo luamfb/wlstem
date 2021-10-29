@@ -30,7 +30,7 @@
 #include "log.h"
 #include "sway_config.h"
 #include "input_manager.h"
-#include "sway_arrange.h"
+#include "server_wm.h"
 #include "output.h"
 #include "sway_server.h"
 #include "output_manager.h"

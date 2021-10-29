@@ -14,7 +14,7 @@
 #include "sway_server.h"
 #include "cursor.h"
 #include "output.h"
-#include "sway_arrange.h"
+#include "server_wm.h"
 #include "container.h"
 #include "view.h"
 #include "sway_xwayland.h"

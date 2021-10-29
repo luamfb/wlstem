@@ -15,7 +15,7 @@
 #include "layers.h"
 #include "output.h"
 #include "sway_server.h"
-#include "sway_arrange.h"
+#include "server_wm.h"
 #include "wlstem.h"
 
 static void apply_exclusive(struct wlr_box *usable_area,
