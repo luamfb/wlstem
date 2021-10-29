@@ -46,6 +46,13 @@ static void wm_handle_output_disconnected(
     arrange_root();
 }
 
+static void wm_handle_output_mode_changed(
+        struct wl_listener *listener, void *data) {
+    struct sway_output *output = data;
+    arrange_layers(output);
+    arrange_output(output);
+}
+
 static void title_handle_container_destroyed(
         struct wl_listener *listener, void *data) {
 
@@ -100,6 +107,10 @@ struct server_wm * server_wm_create(void) {
     wl_signal_add(&wls->output_manager->events.output_disconnected,
         &wm->output_disconnected);
     wm->output_disconnected.notify = wm_handle_output_disconnected;
+
+    wl_signal_add(&wls->output_manager->events.output_mode_changed,
+        &wm->output_mode_changed);
+    wm->output_mode_changed.notify = wm_handle_output_mode_changed;
 
     wl_signal_add(&wls->events.new_window, &wm->new_window);
     wm->new_window.notify = wm_handle_new_window;

@@ -11,6 +11,7 @@ struct server_wm {
     struct wl_listener output_layout_change;
     struct wl_listener output_connected;
     struct wl_listener output_disconnected;
+    struct wl_listener output_mode_changed;
 
     struct wl_listener new_window;
 };

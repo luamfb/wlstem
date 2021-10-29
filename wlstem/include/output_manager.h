@@ -37,6 +37,7 @@ struct wls_output_manager {
         struct wl_signal output_layout_changed;
         struct wl_signal output_connected;
         struct wl_signal output_disconnected;
+        struct wl_signal output_mode_changed;
     } events;
 };
 

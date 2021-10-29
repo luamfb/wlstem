@@ -152,6 +152,7 @@ struct wls_output_manager *wls_output_manager_create(struct wls_server *server) 
     wl_signal_init(&output_manager->events.output_layout_changed);
     wl_signal_init(&output_manager->events.output_connected);
     wl_signal_init(&output_manager->events.output_disconnected);
+    wl_signal_init(&output_manager->events.output_mode_changed);
 
     return output_manager;
 }
