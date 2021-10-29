@@ -102,8 +102,13 @@ static void copy_container_state(struct sway_container *container,
     state->content_width = container->content_width;
     state->content_height = container->content_height;
 
+    /* XXX commented out so we can migrate this to wlstem without
+     * having migrated input_manager_current_seat() yet.
+     *
     struct sway_seat *seat = input_manager_current_seat();
     state->focused = seat_get_focus(seat) == &container->node;
+    */
+    state->focused = false; //XXX
 }
 
 static void transaction_add_node(struct sway_transaction *transaction,
