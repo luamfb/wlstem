@@ -292,7 +292,6 @@ void handle_new_output(struct wl_listener *listener, void *data) {
     if (!output) {
         return;
     }
-    output->server = server;
     output->damage = wlr_output_damage_create(wlr_output);
 
     wl_signal_add(&wlr_output->events.destroy, &output->destroy);
