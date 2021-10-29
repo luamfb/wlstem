@@ -13,9 +13,14 @@
 
 struct wls_context *wls = NULL;
 
-bool wls_init(void) {
+bool wls_init(handle_output_commit_fn handle_output_commit) {
     if (wls) {
         sway_log(SWAY_ERROR, "the wlstem context was already initialized!");
+        return false;
+    }
+
+    if (!handle_output_commit) {
+        sway_log(SWAY_ERROR, "refusing NULL callback");
         return false;
     }
 
@@ -52,6 +57,8 @@ bool wls_init(void) {
     }
 
     wls = _wls;
+    wls->handle_output_commit = handle_output_commit;
+
     wls->server = _server;
     wls->node_manager = _node_manager;
     wls->output_manager = _output_manager;
