@@ -250,9 +250,8 @@ static void update_textures(struct sway_container *con, void *data) {
     container_update_title_textures(con);
 }
 
-static void handle_commit(struct wl_listener *listener, void *data) {
-    struct sway_output *output = wl_container_of(listener, output, commit);
-    struct wlr_output_event_commit *event = data;
+void handle_output_commit(struct sway_output *output,
+        struct wlr_output_event_commit *event) {
 
     if (!output->enabled) {
         return;
@@ -269,6 +268,13 @@ static void handle_commit(struct wl_listener *listener, void *data) {
 
         wls_update_output_manager_config(wls->output_manager);
     }
+}
+
+static void handle_commit(struct wl_listener *listener, void *data) {
+    struct sway_output *output = wl_container_of(listener, output, commit);
+    struct wlr_output_event_commit *event = data;
+
+    handle_output_commit(output, event);
 }
 
 static void handle_present(struct wl_listener *listener, void *data) {
