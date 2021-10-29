@@ -11,7 +11,6 @@
 #include "output_config.h"
 #include "node.h"
 
-struct sway_server;
 struct sway_container;
 struct sway_view;
 
@@ -24,7 +23,6 @@ struct sway_output_state {
 struct sway_output {
     struct wls_transaction_node node;
     struct wlr_output *wlr_output;
-    struct sway_server *server;
     struct wl_list link;
 
     struct wl_list layers[4]; // sway_layer_surface::link
