@@ -46,6 +46,7 @@ lib_wlstem = shared_library(
         'view.c',
         'seat.c',
         'server.c',
+        'surface.c',
         'transaction.c',
         'window.c',
         'wlstem.c',

@@ -1,5 +1,5 @@
-#ifndef _SWAY_SURFACE_H
-#define _SWAY_SURFACE_H
+#ifndef WLSTEM_SURFACE_H_
+#define WLSTEM_SURFACE_H_
 #include <wlr/types/wlr_surface.h>
 
 struct sway_surface {
