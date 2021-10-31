@@ -9,6 +9,28 @@
 #include "output.h"
 #include "wlstem.h"
 
+struct sway_output *output_create(struct wlr_output *wlr_output) {
+    struct sway_output *output = calloc(1, sizeof(struct sway_output));
+    node_init(&output->node, N_OUTPUT, output);
+    output->wlr_output = wlr_output;
+    wlr_output->data = output;
+    output->detected_subpixel = wlr_output->subpixel;
+    output->scale_filter = SCALE_FILTER_NEAREST;
+
+    wl_signal_init(&output->events.destroy);
+
+    wl_list_insert(&wls->output_manager->all_outputs, &output->link);
+
+    output->active = false;
+
+    size_t len = sizeof(output->layers) / sizeof(output->layers[0]);
+    for (size_t i = 0; i < len; ++i) {
+        wl_list_init(&output->layers[i]);
+    }
+
+    return output;
+}
+
 void output_begin_destroy(struct sway_output *output) {
     if (!sway_assert(!output->enabled, "Expected a disabled output")) {
         return;
