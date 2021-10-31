@@ -1,12 +1,14 @@
 #define _POSIX_C_SOURCE 200809L
-
+#include <assert.h>
 #include <stdlib.h>
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_output_damage.h>
+#include "foreach.h"
 #include "layers.h"
 #include "list.h"
 #include "log.h"
 #include "output.h"
+#include "seat.h"
 #include "wlstem.h"
 
 struct sway_output *output_create(struct wlr_output *wlr_output) {
@@ -61,6 +63,82 @@ void output_enable(struct sway_output *output) {
     wl_signal_emit(&wls->node_manager->events.new_node, &output->node);
     wl_signal_emit(&wls->output_manager->events.output_connected, output);
 }
+
+void output_seize_containers_from(struct sway_output *absorber,
+    struct sway_output *giver)
+{
+    if (!sway_assert(absorber->active, "Expected active output")) {
+        assert(false);
+    }
+    while (giver->tiling->length) {
+        struct sway_container *container = giver->tiling->items[0];
+        output_add_container(absorber, container);
+    }
+
+    node_set_dirty(&absorber->node);
+}
+
+static void output_evacuate(struct sway_output *output) {
+    if (!output->active) {
+        return;
+    }
+    struct sway_output *fallback_output =
+        wls->choose_absorber_output(output);
+
+    if (output->active) {
+        struct sway_output *new_output = fallback_output;
+        if (!new_output) {
+            new_output = wls->output_manager->noop_output;
+        }
+
+        if (output_has_containers(output)) {
+            output_seize_containers_from(new_output, output);
+        }
+        output->active = false;
+        node_set_dirty(&output->node);
+    }
+}
+
+static void untrack_output(struct sway_container *con, void *data) {
+    struct sway_output *output = data;
+    int index = list_find(con->outputs, output);
+    if (index != -1) {
+        list_del(con->outputs, index);
+    }
+}
+
+static void remove_output_from_all_focus_stacks(struct sway_output *output) {
+    struct sway_seat *seat = NULL;
+    wl_list_for_each(seat, &wls->seats, link) {
+        remove_node_from_focus_stack(seat, &output->node);
+    }
+}
+
+void output_disable(struct sway_output *output) {
+    if (!sway_assert(output->enabled, "Expected an enabled output")) {
+        return;
+    }
+    int index = list_find(wls->output_manager->outputs, output);
+    if (!sway_assert(index >= 0, "Output not found in root node")) {
+        return;
+    }
+
+    sway_log(SWAY_DEBUG, "Disabling output '%s'", output->wlr_output->name);
+    wl_signal_emit(&output->events.destroy, output);
+
+    output_evacuate(output);
+    remove_output_from_all_focus_stacks(output);
+
+    wls_output_layout_for_each_container(untrack_output, output);
+
+    list_del(wls->output_manager->outputs, index);
+
+    output->enabled = false;
+    output->current_mode = NULL;
+
+    wl_signal_emit(&wls->output_manager->events.output_disconnected, output);
+}
+
 
 void output_destroy(struct sway_output *output) {
     if (!sway_assert(output->node.destroying,
@@ -130,4 +208,19 @@ void output_get_box(struct sway_output *output, struct wlr_box *box) {
     box->y = output->ly;
     box->width = output->width;
     box->height = output->height;
+}
+
+struct sway_container *output_add_container(struct sway_output *output,
+        struct sway_container *con) {
+    if (con->output) {
+        container_detach(con);
+    }
+    list_add(output->tiling, con);
+    con->output = output;
+    node_set_dirty(&con->node);
+    return con;
+}
+
+bool output_has_containers(struct sway_output *output) {
+    return output->tiling->length;
 }

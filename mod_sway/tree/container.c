@@ -228,10 +228,6 @@ void container_get_box(struct sway_container *container, struct wlr_box *box) {
     box->height = container->height;
 }
 
-list_t *container_get_siblings(struct sway_container *container) {
-    return container->output->tiling;
-}
-
 int container_sibling_index(struct sway_container *child) {
     return list_find(container_get_siblings(child), child);
 }
@@ -254,23 +250,6 @@ void container_add_sibling(struct sway_container *fixed,
     int index = list_find(siblings, fixed);
     list_insert(siblings, index + after, active);
     active->output = fixed->output;
-}
-
-void container_detach(struct sway_container *child) {
-    struct sway_output *old_output = child->output;
-    list_t *siblings = container_get_siblings(child);
-    if (siblings) {
-        int index = list_find(siblings, child);
-        if (index != -1) {
-            list_del(siblings, index);
-        }
-    }
-    child->output = NULL;
-
-    if (old_output) {
-        node_set_dirty(&old_output->node);
-    }
-    node_set_dirty(&child->node);
 }
 
 void container_replace(struct sway_container *container,
