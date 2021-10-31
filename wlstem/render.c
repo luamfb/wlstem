@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include <assert.h>
+#include <string.h>
 #include <wayland-server-core.h>
 #include <GLES2/gl2.h>
 #include <wlr/render/gles2.h>
@@ -9,6 +10,13 @@
 #include <wlr/types/wlr_output.h>
 #include "output.h"
 #include "output_config.h"
+
+void premultiply_alpha(float color[4], float opacity) {
+    color[3] *= opacity;
+    color[0] *= color[3];
+    color[1] *= color[3];
+    color[2] *= color[3];
+}
 
 void scissor_output(struct wlr_output *wlr_output,
         pixman_box32_t *rect) {
@@ -55,6 +63,41 @@ static void set_scale_filter(struct wlr_output *wlr_output,
         assert(false); // unreachable
     }
 }
+
+void render_rect(struct sway_output *output,
+        pixman_region32_t *output_damage, const struct wlr_box *_box,
+        float color[static 4]) {
+    struct wlr_output *wlr_output = output->wlr_output;
+    struct wlr_renderer *renderer =
+        wlr_backend_get_renderer(wlr_output->backend);
+
+    struct wlr_box box;
+    memcpy(&box, _box, sizeof(struct wlr_box));
+    box.x -= output->lx * wlr_output->scale;
+    box.y -= output->ly * wlr_output->scale;
+
+    pixman_region32_t damage;
+    pixman_region32_init(&damage);
+    pixman_region32_union_rect(&damage, &damage, box.x, box.y,
+        box.width, box.height);
+    pixman_region32_intersect(&damage, &damage, output_damage);
+    bool damaged = pixman_region32_not_empty(&damage);
+    if (!damaged) {
+        goto damage_finish;
+    }
+
+    int nrects;
+    pixman_box32_t *rects = pixman_region32_rectangles(&damage, &nrects);
+    for (int i = 0; i < nrects; ++i) {
+        scissor_output(wlr_output, &rects[i]);
+        wlr_render_rect(renderer, &box, color,
+            wlr_output->transform_matrix);
+    }
+
+damage_finish:
+    pixman_region32_fini(&damage);
+}
+
 
 void render_texture(struct wlr_output *wlr_output,
         pixman_region32_t *output_damage, struct wlr_texture *texture,
