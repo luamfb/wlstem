@@ -41,6 +41,7 @@ lib_wlstem = shared_library(
         'misc_protocols.c',
         'output.c',
         'output_config.c',
+        'output_handlers.c',
         'output_manager.c',
         'node.c',
         'view.c',
