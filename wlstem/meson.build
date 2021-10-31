@@ -44,6 +44,7 @@ lib_wlstem = shared_library(
         'output_manager.c',
         'node.c',
         'view.c',
+        'render.c',
         'seat.c',
         'server.c',
         'surface.c',
