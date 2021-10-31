@@ -32,17 +32,22 @@ void seize_containers_from_noop_output(struct sway_output *output) {
     }
 }
 
+struct sway_output * choose_absorber_output(struct sway_output *giver) {
+    struct sway_output *absorber = NULL;
+    if (wls->output_manager->outputs->length > 1) {
+        absorber = wls->output_manager->outputs->items[0];
+        if (absorber == giver) {
+            absorber = wls->output_manager->outputs->items[1];
+        }
+    }
+    return absorber;
+}
+
 static void output_evacuate(struct sway_output *output) {
     if (!output->active) {
         return;
     }
-    struct sway_output *fallback_output = NULL;
-    if (wls->output_manager->outputs->length > 1) {
-        fallback_output = wls->output_manager->outputs->items[0];
-        if (fallback_output == output) {
-            fallback_output = wls->output_manager->outputs->items[1];
-        }
-    }
+    struct sway_output *fallback_output = choose_absorber_output(output);
 
     if (output->active) {
         struct sway_output *new_output = fallback_output;
