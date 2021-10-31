@@ -32,28 +32,6 @@ void seize_containers_from_noop_output(struct sway_output *output) {
     }
 }
 
-struct sway_output *output_create(struct wlr_output *wlr_output) {
-    struct sway_output *output = calloc(1, sizeof(struct sway_output));
-    node_init(&output->node, N_OUTPUT, output);
-    output->wlr_output = wlr_output;
-    wlr_output->data = output;
-    output->detected_subpixel = wlr_output->subpixel;
-    output->scale_filter = SCALE_FILTER_NEAREST;
-
-    wl_signal_init(&output->events.destroy);
-
-    wl_list_insert(&wls->output_manager->all_outputs, &output->link);
-
-    output->active = false;
-
-    size_t len = sizeof(output->layers) / sizeof(output->layers[0]);
-    for (size_t i = 0; i < len; ++i) {
-        wl_list_init(&output->layers[i]);
-    }
-
-    return output;
-}
-
 static void output_evacuate(struct sway_output *output) {
     if (!output->active) {
         return;
