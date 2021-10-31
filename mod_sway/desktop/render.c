@@ -515,39 +515,22 @@ static void render_containers_in_output(struct sway_output *output,
     render_containers_linear(output, damage, &data);
 }
 
-void output_render(struct sway_output *output, struct timespec *when,
+void output_render_overlay(struct sway_output *output,
+        struct wlr_renderer *renderer,
         pixman_region32_t *damage) {
+
+    render_layer_toplevel(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY]);
+    render_layer_popups(output, damage,
+        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY]);
+    render_drag_icons(output, damage, &wls->output_manager->drag_icons);
+}
+
+void output_render_non_overlay(struct sway_output *output,
+        struct wlr_renderer *renderer,
+        pixman_region32_t *damage) {
+
     struct wlr_output *wlr_output = output->wlr_output;
-
-    struct wlr_renderer *renderer =
-        wlr_backend_get_renderer(wlr_output->backend);
-    if (!sway_assert(renderer != NULL,
-            "expected the output backend to have a renderer")) {
-        return;
-    }
-
-    if (!output->current.active) {
-        return;
-    }
-
-    wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
-
-    if (!pixman_region32_not_empty(damage)) {
-        // Output isn't damaged but needs buffer swap
-        goto renderer_end;
-    }
-
-    if (wls->debug.damage == DAMAGE_HIGHLIGHT) {
-        wlr_renderer_clear(renderer, (float[]){1, 1, 0, 1});
-    } else if (wls->debug.damage == DAMAGE_RERENDER) {
-        int width, height;
-        wlr_output_transformed_resolution(wlr_output, &width, &height);
-        pixman_region32_union_rect(damage, damage, 0, 0, width, height);
-    }
-
-    if (output_has_opaque_overlay_layer_surface(output)) {
-        goto render_overlay;
-    }
 
     float clear_color[] = {0.25f, 0.25f, 0.25f, 1.0f};
 
@@ -582,13 +565,42 @@ void output_render(struct sway_output *output, struct timespec *when,
     if (focus && focus->view) {
         render_view_popups(focus->view, output, damage, focus->alpha);
     }
+}
 
-render_overlay:
-    render_layer_toplevel(output, damage,
-        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY]);
-    render_layer_popups(output, damage,
-        &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY]);
-    render_drag_icons(output, damage, &wls->output_manager->drag_icons);
+void output_render(struct sway_output *output, struct timespec *when,
+        pixman_region32_t *damage) {
+    struct wlr_output *wlr_output = output->wlr_output;
+
+    struct wlr_renderer *renderer =
+        wlr_backend_get_renderer(wlr_output->backend);
+    if (!sway_assert(renderer != NULL,
+            "expected the output backend to have a renderer")) {
+        return;
+    }
+
+    if (!output->current.active) {
+        return;
+    }
+
+    wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
+
+    if (!pixman_region32_not_empty(damage)) {
+        // Output isn't damaged but needs buffer swap
+        goto renderer_end;
+    }
+
+    if (wls->debug.damage == DAMAGE_HIGHLIGHT) {
+        wlr_renderer_clear(renderer, (float[]){1, 1, 0, 1});
+    } else if (wls->debug.damage == DAMAGE_RERENDER) {
+        int width, height;
+        wlr_output_transformed_resolution(wlr_output, &width, &height);
+        pixman_region32_union_rect(damage, damage, 0, 0, width, height);
+    }
+
+    if (!output_has_opaque_overlay_layer_surface(output)) {
+        output_render_non_overlay(output, renderer, damage);
+    }
+    output_render_overlay(output, renderer, damage);
 
 renderer_end:
     wlr_renderer_scissor(renderer, NULL);
