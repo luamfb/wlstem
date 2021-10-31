@@ -139,6 +139,9 @@ struct wls_output_manager *wls_output_manager_create(struct wls_server *server) 
     wl_list_init(&output_manager->drag_icons);
     output_manager->outputs = create_list();
 
+    output_manager->new_output.notify = handle_new_output;
+    wl_signal_add(&server->backend->events.new_output, &output_manager->new_output);
+
     output_manager->output_manager_v1 =
         wlr_output_manager_v1_create(server->wl_display);
 
