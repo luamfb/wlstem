@@ -500,7 +500,7 @@ static void render_container(struct sway_output *output,
     render_containers_linear(output, damage, &data);
 }
 
-static void render_output(struct sway_output *output,
+static void render_containers_in_output(struct sway_output *output,
         pixman_region32_t *damage) {
     struct parent_data data = {
         .box = {
@@ -563,7 +563,7 @@ void output_render(struct sway_output *output, struct timespec *when,
     render_layer_toplevel(output, damage,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
 
-    render_output(output, damage);
+    render_containers_in_output(output, damage);
 #if HAVE_XWAYLAND
     render_unmanaged(output, damage, &wls->output_manager->xwayland_unmanaged);
 #endif
