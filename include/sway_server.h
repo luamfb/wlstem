@@ -39,7 +39,6 @@ struct sway_server {
 
     struct sway_input_manager *input;
 
-    struct wl_listener new_output;
     struct wl_listener output_layout_change;
 
     struct wlr_layer_shell_v1 *layer_shell;

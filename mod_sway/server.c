@@ -58,8 +58,6 @@ bool server_init(struct sway_server *server) {
 
     wlr_gamma_control_manager_v1_create(wls->server->wl_display);
 
-    server->new_output.notify = handle_new_output;
-    wl_signal_add(&wls->server->backend->events.new_output, &server->new_output);
     server->output_layout_change.notify = handle_output_layout_change;
     wl_signal_add(&wls->output_manager->output_layout->events.change,
         &server->output_layout_change);

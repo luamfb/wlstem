@@ -28,6 +28,7 @@ struct wls_output_manager {
     struct wl_listener output_manager_apply;
     struct wl_listener output_manager_test;
 
+    struct wl_listener new_output;
     list_t *outputs; // struct sway_output
 
     // For when there's no connected outputs
