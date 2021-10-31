@@ -6,6 +6,7 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_damage.h>
 #include <wlr/types/wlr_presentation_time.h>
+#include <wlr/types/wlr_output_power_management_v1.h>
 #include "foreach.h"
 #include "log.h"
 #include "output.h"
@@ -256,4 +257,22 @@ void handle_new_output(struct wl_listener *listener, void *data) {
     transaction_commit_dirty();
 
     wls_update_output_manager_config(wls->output_manager);
+}
+
+void handle_output_power_manager_set_mode(struct wl_listener *listener,
+        void *data) {
+    struct wlr_output_power_v1_set_mode_event *event = data;
+    struct sway_output *output = event->output->data;
+
+    struct output_config *oc = new_output_config(output->wlr_output->name);
+    switch (event->mode) {
+    case ZWLR_OUTPUT_POWER_V1_MODE_OFF:
+        oc->dpms_state = DPMS_OFF;
+        break;
+    case ZWLR_OUTPUT_POWER_V1_MODE_ON:
+        oc->dpms_state = DPMS_ON;
+        break;
+    }
+    oc = store_output_config(oc);
+    apply_output_config(oc, output);
 }
