@@ -15,14 +15,16 @@ struct wls_context *wls = NULL;
 
 bool wls_init(handle_output_commit_fn handle_output_commit,
         output_render_fn output_render_overlay,
-        output_render_fn output_render_non_overlay) {
+        output_render_fn output_render_non_overlay,
+        choose_absorber_output_fn choose_absorber_output) {
     if (wls) {
         sway_log(SWAY_ERROR, "the wlstem context was already initialized!");
         return false;
     }
 
     if (!handle_output_commit || !output_render_overlay
-            || !output_render_non_overlay) {
+            || !output_render_non_overlay
+            || !choose_absorber_output) {
         sway_log(SWAY_ERROR, "refusing NULL callback");
         return false;
     }
@@ -63,6 +65,7 @@ bool wls_init(handle_output_commit_fn handle_output_commit,
     wls->handle_output_commit = handle_output_commit;
     wls->output_render_overlay = output_render_overlay;
     wls->output_render_non_overlay = output_render_non_overlay;
+    wls->choose_absorber_output = choose_absorber_output;
 
     wls->server = _server;
     wls->node_manager = _node_manager;

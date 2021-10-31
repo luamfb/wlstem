@@ -27,6 +27,8 @@ void output_render_non_overlay(struct sway_output *output,
     struct wlr_renderer *renderer,
     pixman_region32_t *damage);
 
+struct sway_output * choose_absorber_output(struct sway_output *giver);
+
 struct server_wm * server_wm_create(void);
 void server_wm_destroy(struct server_wm *wm);
 

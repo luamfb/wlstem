@@ -19,6 +19,8 @@ typedef void (*handle_output_commit_fn)(struct sway_output *output,
 typedef void (*output_render_fn)(struct sway_output *output,
         struct wlr_renderer *renderer,
         pixman_region32_t *damage);
+typedef struct sway_output *
+    (*choose_absorber_output_fn)(struct sway_output *giver);
 
 struct wls_debug {
     bool noatomic;         // Ignore atomic layout updates
@@ -53,6 +55,12 @@ struct wls_context {
     // for all remaining layers in layer shell protocol
     output_render_fn output_render_non_overlay;
 
+    // this function must return which output will receive the windows from
+    // another output (`giver`), that has been disconnected.
+    // If NULL is returned, the `noop_output` is used, and the window will
+    // disappear (until it is moved to a "real" output).
+    choose_absorber_output_fn choose_absorber_output;
+
     struct wls_debug debug;
     struct {
         struct wl_signal new_window;
@@ -67,7 +75,8 @@ extern struct wls_context *wls;
 // Initializes the `wls` variable containing wlstem's context.
 // Returns whether or not the initialization succeeded.
 //
-bool wls_init(handle_output_commit_fn, output_render_fn, output_render_fn);
+bool wls_init(handle_output_commit_fn, output_render_fn, output_render_fn,
+    choose_absorber_output_fn);
 
 // Finalizes the wlstem context, freeing up any resources it used so far.
 void wls_fini(void);
