@@ -61,7 +61,7 @@ void container_destroy(struct sway_container *con) {
 }
 
 list_t *container_get_siblings(struct sway_container *container) {
-    return container->output->tiling;
+    return container->output->windows;
 }
 
 void container_detach(struct sway_container *child) {

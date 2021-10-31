@@ -83,8 +83,8 @@ static void copy_output_state(struct sway_output *output,
         struct sway_transaction_instruction *instruction) {
     struct sway_output_state *state = &instruction->output_state;
 
-    state->tiling = create_list();
-    list_cat(state->tiling, output->tiling);
+    state->windows = create_list();
+    list_cat(state->windows, output->windows);
     state->active = output->active;
 }
 
@@ -137,7 +137,7 @@ static void transaction_add_node(struct sway_transaction *transaction,
 static void apply_output_state(struct sway_output *output,
         struct sway_output_state *state) {
     output_damage_whole(output);
-    list_free(output->current.tiling);
+    list_free(output->current.windows);
     memcpy(&output->current, state, sizeof(struct sway_output_state));
     output_damage_whole(output);
 }

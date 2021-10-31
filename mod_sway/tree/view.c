@@ -316,7 +316,7 @@ static bool should_focus(struct sway_view *view) {
             sway_log(SWAY_DEBUG, "workspace has no output!");
             return false;
         }
-        size_t num_children = output->tiling->length;
+        size_t num_children = output->windows->length;
         if (num_children == 1) {
             return true;
         }

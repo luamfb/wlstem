@@ -372,8 +372,8 @@ void output_drag_icons_for_each_surface(struct sway_output *output,
 void output_for_each_container(struct sway_output *output,
         void (*f)(struct sway_container *con, void *data), void *data) {
     if (output->active) {
-        for (int i = 0; i < output->tiling->length; ++i) {
-            struct sway_container *container = output->tiling->items[i];
+        for (int i = 0; i < output->windows->length; ++i) {
+            struct sway_container *container = output->windows->items[i];
             f(container, data);
         }
     }
