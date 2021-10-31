@@ -8,8 +8,12 @@
 #include <wlr/render/wlr_texture.h>
 #include <wlr/types/wlr_box.h>
 #include <wlr/types/wlr_output.h>
+#include <wlr/types/wlr_output_damage.h>
+#include <wlr/util/region.h>
+#include "log.h"
 #include "output.h"
 #include "output_config.h"
+#include "wlstem.h"
 
 void premultiply_alpha(float color[4], float opacity) {
     color[3] *= opacity;
@@ -134,4 +138,69 @@ void render_texture(struct wlr_output *wlr_output,
 
 damage_finish:
     pixman_region32_fini(&damage);
+}
+
+void output_render(struct sway_output *output, struct timespec *when,
+        pixman_region32_t *damage) {
+    struct wlr_output *wlr_output = output->wlr_output;
+
+    struct wlr_renderer *renderer =
+        wlr_backend_get_renderer(wlr_output->backend);
+    if (!sway_assert(renderer != NULL,
+            "expected the output backend to have a renderer")) {
+        return;
+    }
+
+    if (!output->current.active) {
+        return;
+    }
+
+    wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
+
+    if (!pixman_region32_not_empty(damage)) {
+        // Output isn't damaged but needs buffer swap
+        goto renderer_end;
+    }
+
+    if (wls->debug.damage == DAMAGE_HIGHLIGHT) {
+        wlr_renderer_clear(renderer, (float[]){1, 1, 0, 1});
+    } else if (wls->debug.damage == DAMAGE_RERENDER) {
+        int width, height;
+        wlr_output_transformed_resolution(wlr_output, &width, &height);
+        pixman_region32_union_rect(damage, damage, 0, 0, width, height);
+    }
+
+    if (!output_has_opaque_overlay_layer_surface(output)) {
+        wls->output_render_non_overlay(output, renderer, damage);
+    }
+    wls->output_render_overlay(output, renderer, damage);
+
+renderer_end:
+    wlr_renderer_scissor(renderer, NULL);
+    wlr_output_render_software_cursors(wlr_output, damage);
+    wlr_renderer_end(renderer);
+
+    int width, height;
+    wlr_output_transformed_resolution(wlr_output, &width, &height);
+
+    pixman_region32_t frame_damage;
+    pixman_region32_init(&frame_damage);
+
+    enum wl_output_transform transform =
+        wlr_output_transform_invert(wlr_output->transform);
+    wlr_region_transform(&frame_damage, &output->damage->current,
+        transform, width, height);
+
+    if (wls->debug.damage == DAMAGE_HIGHLIGHT) {
+        pixman_region32_union_rect(&frame_damage, &frame_damage,
+            0, 0, wlr_output->width, wlr_output->height);
+    }
+
+    wlr_output_set_damage(wlr_output, &frame_damage);
+    pixman_region32_fini(&frame_damage);
+
+    if (!wlr_output_commit(wlr_output)) {
+        return;
+    }
+    output->last_frame = *when;
 }
