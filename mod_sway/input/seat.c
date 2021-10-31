@@ -1169,13 +1169,12 @@ struct wls_transaction_node *seat_get_active_tiling_child(struct sway_seat *seat
             continue;
         }
         if (parent->type == N_OUTPUT) {
-            // Only consider tiling children
             struct sway_output *output = parent->sway_output;
             if (!output) {
                 sway_log(SWAY_DEBUG, "workspace has no output!");
                 continue;
             }
-            if (list_find(output->tiling, node->sway_container) == -1) {
+            if (list_find(output->windows, node->sway_container) == -1) {
                 continue;
             }
         }

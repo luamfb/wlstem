@@ -509,7 +509,7 @@ static void render_containers_in_output(struct sway_output *output,
             .width = output->usable_area.width,
             .height = output->usable_area.height,
         },
-        .children = output->current.tiling,
+        .children = output->current.windows,
         .focused = false,
     };
     render_containers_linear(output, damage, &data);

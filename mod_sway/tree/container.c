@@ -238,7 +238,7 @@ list_t *container_get_current_siblings(struct sway_container *container) {
         sway_log(SWAY_ERROR, "container has no current output!");
         assert(false);
     }
-    return current_output->current.tiling;
+    return current_output->current.windows;
 }
 
 void container_add_sibling(struct sway_container *fixed,

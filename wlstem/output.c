@@ -51,7 +51,7 @@ void output_enable(struct sway_output *output) {
     if (!sway_assert(!output->enabled, "output is already enabled")) {
         return;
     }
-    output->tiling = create_list();
+    output->windows = create_list();
     output->enabled = true;
     list_add(wls->output_manager->outputs, output);
 
@@ -70,8 +70,8 @@ void output_seize_containers_from(struct sway_output *absorber,
     if (!sway_assert(absorber->active, "Expected active output")) {
         assert(false);
     }
-    while (giver->tiling->length) {
-        struct sway_container *container = giver->tiling->items[0];
+    while (giver->windows->length) {
+        struct sway_container *container = giver->windows->items[0];
         output_add_container(absorber, container);
     }
 
@@ -154,8 +154,8 @@ void output_destroy(struct sway_output *output) {
         return;
     }
     wl_event_source_remove(output->repaint_timer);
-    list_free(output->tiling);
-    list_free(output->current.tiling);
+    list_free(output->windows);
+    list_free(output->current.windows);
     free(output);
 }
 
@@ -215,12 +215,12 @@ struct sway_container *output_add_container(struct sway_output *output,
     if (con->output) {
         container_detach(con);
     }
-    list_add(output->tiling, con);
+    list_add(output->windows, con);
     con->output = output;
     node_set_dirty(&con->node);
     return con;
 }
 
 bool output_has_containers(struct sway_output *output) {
-    return output->tiling->length;
+    return output->windows->length;
 }

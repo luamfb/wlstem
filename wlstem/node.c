@@ -91,7 +91,7 @@ struct wls_transaction_node *node_get_parent(struct wls_transaction_node *node) 
 list_t *node_get_children(struct wls_transaction_node *node) {
     switch (node->type) {
     case N_OUTPUT:
-        return node->sway_output->tiling;
+        return node->sway_output->windows;
     case N_CONTAINER:
         return NULL;
     }
