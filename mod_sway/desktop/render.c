@@ -127,49 +127,6 @@ static void render_drag_icons(struct sway_output *output,
         render_surface_iterator, &data);
 }
 
-// _box.x and .y are expected to be layout-local
-// _box.width and .height are expected to be output-buffer-local
-void render_rect(struct sway_output *output,
-        pixman_region32_t *output_damage, const struct wlr_box *_box,
-        float color[static 4]) {
-    struct wlr_output *wlr_output = output->wlr_output;
-    struct wlr_renderer *renderer =
-        wlr_backend_get_renderer(wlr_output->backend);
-
-    struct wlr_box box;
-    memcpy(&box, _box, sizeof(struct wlr_box));
-    box.x -= output->lx * wlr_output->scale;
-    box.y -= output->ly * wlr_output->scale;
-
-    pixman_region32_t damage;
-    pixman_region32_init(&damage);
-    pixman_region32_union_rect(&damage, &damage, box.x, box.y,
-        box.width, box.height);
-    pixman_region32_intersect(&damage, &damage, output_damage);
-    bool damaged = pixman_region32_not_empty(&damage);
-    if (!damaged) {
-        goto damage_finish;
-    }
-
-    int nrects;
-    pixman_box32_t *rects = pixman_region32_rectangles(&damage, &nrects);
-    for (int i = 0; i < nrects; ++i) {
-        scissor_output(wlr_output, &rects[i]);
-        wlr_render_rect(renderer, &box, color,
-            wlr_output->transform_matrix);
-    }
-
-damage_finish:
-    pixman_region32_fini(&damage);
-}
-
-void premultiply_alpha(float color[4], float opacity) {
-    color[3] *= opacity;
-    color[0] *= color[3];
-    color[1] *= color[3];
-    color[2] *= color[3];
-}
-
 static void render_view_toplevels(struct sway_view *view,
         struct sway_output *output, pixman_region32_t *damage, float alpha) {
     struct render_data data = {

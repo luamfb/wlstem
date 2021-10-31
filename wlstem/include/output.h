@@ -93,6 +93,8 @@ void output_get_box(struct sway_output *output, struct wlr_box *box);
 
 void output_get_render_box(struct sway_output *output, struct wlr_box *box);
 
+// _box.x and .y are expected to be layout-local
+// _box.width and .height are expected to be output-buffer-local
 void render_rect(struct sway_output *output,
         pixman_region32_t *output_damage, const struct wlr_box *_box,
         float color[static 4]);
