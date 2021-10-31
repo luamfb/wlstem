@@ -41,6 +41,8 @@ struct wls_output_manager {
     } events;
 };
 
+void handle_new_output(struct wl_listener *listener, void *data);
+
 struct wls_output_manager *wls_output_manager_create(struct wls_server *server);
 
 void wls_output_manager_destroy(struct wls_output_manager *output_manager);

@@ -84,7 +84,6 @@ bool server_init(struct sway_server *server);
 bool server_start(struct sway_server *server);
 
 void handle_compositor_new_surface(struct wl_listener *listener, void *data);
-void handle_new_output(struct wl_listener *listener, void *data);
 
 void handle_idle_inhibitor_v1(struct wl_listener *listener, void *data);
 void handle_layer_shell_surface(struct wl_listener *listener, void *data);
