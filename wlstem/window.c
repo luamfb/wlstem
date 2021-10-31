@@ -60,6 +60,27 @@ void container_destroy(struct sway_container *con) {
     free(con);
 }
 
+list_t *container_get_siblings(struct sway_container *container) {
+    return container->output->tiling;
+}
+
+void container_detach(struct sway_container *child) {
+    struct sway_output *old_output = child->output;
+    list_t *siblings = container_get_siblings(child);
+    if (siblings) {
+        int index = list_find(siblings, child);
+        if (index != -1) {
+            list_del(siblings, index);
+        }
+    }
+    child->output = NULL;
+
+    if (old_output) {
+        node_set_dirty(&old_output->node);
+    }
+    node_set_dirty(&child->node);
+}
+
 /**
  * Return the output which will be used for scale purposes.
  * This is the most recently entered output.
