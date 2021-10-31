@@ -19,6 +19,13 @@ struct server_wm {
 void handle_output_commit(struct sway_output *output,
     struct wlr_output_event_commit *event);
 
+void output_render_overlay(struct sway_output *output,
+    struct wlr_renderer *renderer,
+    pixman_region32_t *damage);
+
+void output_render_non_overlay(struct sway_output *output,
+    struct wlr_renderer *renderer,
+    pixman_region32_t *damage);
 
 struct server_wm * server_wm_create(void);
 void server_wm_destroy(struct server_wm *wm);

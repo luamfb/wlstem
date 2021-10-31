@@ -13,13 +13,16 @@
 
 struct wls_context *wls = NULL;
 
-bool wls_init(handle_output_commit_fn handle_output_commit) {
+bool wls_init(handle_output_commit_fn handle_output_commit,
+        output_render_fn output_render_overlay,
+        output_render_fn output_render_non_overlay) {
     if (wls) {
         sway_log(SWAY_ERROR, "the wlstem context was already initialized!");
         return false;
     }
 
-    if (!handle_output_commit) {
+    if (!handle_output_commit || !output_render_overlay
+            || !output_render_non_overlay) {
         sway_log(SWAY_ERROR, "refusing NULL callback");
         return false;
     }
@@ -58,6 +61,8 @@ bool wls_init(handle_output_commit_fn handle_output_commit) {
 
     wls = _wls;
     wls->handle_output_commit = handle_output_commit;
+    wls->output_render_overlay = output_render_overlay;
+    wls->output_render_non_overlay = output_render_non_overlay;
 
     wls->server = _server;
     wls->node_manager = _node_manager;
