@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <wayland-server-core.h>
+#include <wlr/render/wlr_renderer.h>
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_tablet_v2.h>
 #include "list.h"
@@ -14,6 +15,10 @@ struct sway_output;
 
 typedef void (*handle_output_commit_fn)(struct sway_output *output,
         struct wlr_output_event_commit *event);
+
+typedef void (*output_render_fn)(struct sway_output *output,
+        struct wlr_renderer *renderer,
+        pixman_region32_t *damage);
 
 struct wls_debug {
     bool noatomic;         // Ignore atomic layout updates
@@ -40,7 +45,13 @@ struct wls_context {
     struct sway_seat *current_seat;
     struct wls_misc_protocols *misc_protocols;
 
+    // user-provided callbacks
     handle_output_commit_fn handle_output_commit;
+
+    // for the overlay in layer shell protocol
+    output_render_fn output_render_overlay;
+    // for all remaining layers in layer shell protocol
+    output_render_fn output_render_non_overlay;
 
     struct wls_debug debug;
     struct {
@@ -56,7 +67,7 @@ extern struct wls_context *wls;
 // Initializes the `wls` variable containing wlstem's context.
 // Returns whether or not the initialization succeeded.
 //
-bool wls_init(handle_output_commit_fn);
+bool wls_init(handle_output_commit_fn, output_render_fn, output_render_fn);
 
 // Finalizes the wlstem context, freeing up any resources it used so far.
 void wls_fini(void);
