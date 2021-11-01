@@ -1,5 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
-
+#include <assert.h>
 #include <stdlib.h>
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_foreign_toplevel_management_v1.h>
@@ -81,6 +81,60 @@ void container_detach(struct sway_container *child) {
     node_set_dirty(&child->node);
 }
 
+/**
+ * Indicate to clients in this container that they are participating in (or
+ * have just finished) an interactive resize
+ */
+void container_set_resizing(struct sway_container *con, bool resizing) {
+    if (!con) {
+        return;
+    }
+
+    if (con->view) {
+        if (con->view->impl->set_resizing) {
+            con->view->impl->set_resizing(con->view, resizing);
+        }
+    }
+}
+
+void container_get_box(struct sway_container *container, struct wlr_box *box) {
+    box->x = container->x;
+    box->y = container->y;
+    box->width = container->width;
+    box->height = container->height;
+}
+
+int container_sibling_index(struct sway_container *child) {
+    return list_find(container_get_siblings(child), child);
+}
+
+list_t *container_get_current_siblings(struct sway_container *container) {
+    struct sway_output *current_output = container->current.output;
+    if (!current_output) {
+        sway_log(SWAY_ERROR, "container has no current output!");
+        assert(false);
+    }
+    return current_output->current.windows;
+}
+
+void container_add_sibling(struct sway_container *fixed,
+        struct sway_container *active, bool after) {
+    if (active->output) {
+        container_detach(active);
+    }
+    list_t *siblings = container_get_siblings(fixed);
+    int index = list_find(siblings, fixed);
+    list_insert(siblings, index + after, active);
+    active->output = fixed->output;
+}
+
+void container_replace(struct sway_container *container,
+        struct sway_container *replacement) {
+    if (container->output) {
+        container_add_sibling(container, replacement, 1);
+        container_detach(container);
+    }
+}
 /**
  * Return the output which will be used for scale purposes.
  * This is the most recently entered output.

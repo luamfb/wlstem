@@ -46,3 +46,19 @@ void handle_compositor_new_surface(struct wl_listener *listener, void *data) {
         wl_resource_post_no_memory(wlr_surface->resource);
     }
 }
+
+bool surface_is_popup(struct wlr_surface *surface) {
+    if (wlr_surface_is_xdg_surface(surface)) {
+        struct wlr_xdg_surface *xdg_surface =
+            wlr_xdg_surface_from_wlr_surface(surface);
+        while (xdg_surface && xdg_surface->role != WLR_XDG_SURFACE_ROLE_NONE) {
+            if (xdg_surface->role == WLR_XDG_SURFACE_ROLE_POPUP) {
+                return true;
+            }
+            xdg_surface = xdg_surface->toplevel->parent;
+        }
+        return false;
+    }
+
+    return false;
+}
