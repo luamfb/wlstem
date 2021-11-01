@@ -6,7 +6,6 @@ sway_sources = files(
     'xdg_decoration.c',
 
     'desktop/layer_shell.c',
-    'desktop/output.c',
     'desktop/render.c',
     'desktop/xdg_shell.c',
 
@@ -25,13 +24,13 @@ sway_sources = files(
 
     'bindkey.c',
     'container.c',
+    'output.c',
 
     'arrange.c',
     'wm.c',
     'window_title.c',
 
     'tree/view.c',
-    'tree/output.c',
 )
 
 sway_deps = [
