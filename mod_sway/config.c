@@ -32,6 +32,7 @@
 #include "list.h"
 #include "log.h"
 #include "util.h"
+#include "window_title.h"
 
 struct sway_config *config = NULL;
 

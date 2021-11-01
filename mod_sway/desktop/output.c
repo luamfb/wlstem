@@ -30,6 +30,7 @@
 #include "output_manager.h"
 #include "view.h"
 #include "wlstem.h"
+#include "window_title.h"
 #include "server.h"
 
 static void update_textures(struct sway_container *con, void *data) {
