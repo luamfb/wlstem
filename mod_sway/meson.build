@@ -27,8 +27,8 @@ sway_sources = files(
     'container.c',
 
     'wm.c',
+    'window_title.c',
 
-    'tree/container.c',
     'tree/view.c',
     'tree/output.c',
 )
