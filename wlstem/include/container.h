@@ -92,18 +92,6 @@ struct sway_container *toplevel_window_at(
         struct wls_transaction_node *parent, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
-void container_update_title_textures(struct sway_container *container);
-
-/**
- * Calculate the container's title_height property.
- */
-void container_calculate_title_height(struct sway_container *container);
-
-/**
- * Return the height of a regular title bar.
- */
-size_t container_titlebar_height(void);
-
 void container_set_resizing(struct sway_container *con, bool resizing);
 
 /**
