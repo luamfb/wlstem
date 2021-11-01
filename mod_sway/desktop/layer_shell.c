@@ -15,6 +15,7 @@
 #include "layers.h"
 #include "output.h"
 #include "sway_server.h"
+#include "server_arrange.h"
 #include "server_wm.h"
 #include "wlstem.h"
 

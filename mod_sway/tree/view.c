@@ -23,6 +23,7 @@
 #include "output.h"
 #include "seat.h"
 #include "sway_server.h"
+#include "server_arrange.h"
 #include "server_wm.h"
 #include "container.h"
 #include "view.h"

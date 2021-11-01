@@ -5,7 +5,6 @@
 #include <wlr/types/wlr_output.h>
 
 struct sway_output;
-struct sway_container;
 
 struct server_wm {
     struct wl_listener output_layout_change;
@@ -31,13 +30,5 @@ struct sway_output * choose_absorber_output(struct sway_output *giver);
 
 struct server_wm * server_wm_create(void);
 void server_wm_destroy(struct server_wm *wm);
-
-void arrange_container(struct sway_container *container);
-
-void arrange_output(struct sway_output *output);
-
-void arrange_root(void);
-
-void arrange_output_layout(void);
 
 #endif
