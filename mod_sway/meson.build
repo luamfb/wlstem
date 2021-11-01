@@ -26,6 +26,7 @@ sway_sources = files(
     'bindkey.c',
     'container.c',
 
+    'arrange.c',
     'wm.c',
     'window_title.c',
 
