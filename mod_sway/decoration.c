@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "sway_decoration.h"
 #include "transaction.h"
+#include "server_arrange.h"
 #include "sway_server.h"
 #include "server_wm.h"
 #include "view.h"

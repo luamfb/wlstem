@@ -50,9 +50,6 @@ struct sway_layer_subsurface {
     struct wl_listener commit;
 };
 
-struct sway_output;
-void arrange_layers(struct sway_output *output);
-
 struct sway_layer_surface *layer_from_wlr_layer_surface_v1(
     struct wlr_layer_surface_v1 *layer_surface);
 

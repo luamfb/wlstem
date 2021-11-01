@@ -24,6 +24,7 @@
 #include "sway_commands.h"
 #include "sway_config.h"
 #include "transaction.h"
+#include "server_arrange.h"
 #include "server_wm.h"
 #include "output_manager.h"
 #include "cairo.h"
