@@ -41,6 +41,19 @@ struct sway_container *container_at(struct sway_output *output,
     return NULL;
 }
 
+void container_begin_destroy(struct sway_container *con) {
+    wl_signal_emit(&con->node.events.destroy, &con->node);
+
+    container_end_mouse_operation(con);
+
+    con->node.destroying = true;
+    node_set_dirty(&con->node);
+
+    if (con->output) {
+        container_detach(con);
+    }
+}
+
 void container_end_mouse_operation(struct sway_container *container) {
     struct sway_seat *seat;
     wl_list_for_each(seat, &wls->seats, link) {

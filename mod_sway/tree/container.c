@@ -20,19 +20,6 @@
 #include "view.h"
 #include "wlstem.h"
 
-void container_begin_destroy(struct sway_container *con) {
-    wl_signal_emit(&con->node.events.destroy, &con->node);
-
-    container_end_mouse_operation(con);
-
-    con->node.destroying = true;
-    node_set_dirty(&con->node);
-
-    if (con->output) {
-        container_detach(con);
-    }
-}
-
 static struct sway_container *toplevel_window_at_recurse(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
