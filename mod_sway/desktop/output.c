@@ -55,9 +55,3 @@ void handle_output_commit(struct sway_output *output,
         wls_update_output_manager_config(wls->output_manager);
     }
 }
-
-void handle_output_layout_change(struct wl_listener *listener,
-        void *data) {
-    wls_update_output_manager_config(wls->output_manager);
-    wl_signal_emit(&wls->output_manager->events.output_layout_changed, wls->output_manager);
-}

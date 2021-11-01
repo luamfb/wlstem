@@ -276,3 +276,9 @@ void handle_output_power_manager_set_mode(struct wl_listener *listener,
     oc = store_output_config(oc);
     apply_output_config(oc, output);
 }
+
+void handle_output_layout_change(struct wl_listener *listener,
+        void *data) {
+    wls_update_output_manager_config(wls->output_manager);
+    wl_signal_emit(&wls->output_manager->events.output_layout_changed, wls->output_manager);
+}
