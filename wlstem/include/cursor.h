@@ -119,8 +119,8 @@ void cursor_set_image_surface(struct sway_cursor *cursor,
         struct wlr_surface *surface, int32_t hotspot_x, int32_t hotspot_y,
         struct wl_client *client);
 
-void cursor_warp_to_container(struct sway_cursor *cursor,
-    struct sway_container *container, bool force);
+void cursor_warp_to_window(struct sway_cursor *cursor,
+    struct wls_window *window, bool force);
 
 void cursor_warp_to_output(struct sway_cursor *cursor,
         struct sway_output *output);

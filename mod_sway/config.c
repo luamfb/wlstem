@@ -181,21 +181,21 @@ bool load_main_config(void) {
     return true;
 }
 
-static void find_font_height_iterator(struct sway_container *con, void *data) {
-    size_t amount_below_baseline = con->title_height - con->title_baseline;
+static void find_font_height_iterator(struct wls_window *win, void *data) {
+    size_t amount_below_baseline = win->title_height - win->title_baseline;
     size_t extended_height = config->font_baseline + amount_below_baseline;
     if (extended_height > config->font_height) {
         config->font_height = extended_height;
     }
 }
 
-static void find_baseline_iterator(struct sway_container *con, void *data) {
+static void find_baseline_iterator(struct wls_window *win, void *data) {
     bool *recalculate = data;
     if (*recalculate) {
-        container_calculate_title_height(con);
+        window_calculate_title_height(win);
     }
-    if (con->title_baseline > config->font_baseline) {
-        config->font_baseline = con->title_baseline;
+    if (win->title_baseline > config->font_baseline) {
+        config->font_baseline = win->title_baseline;
     }
 }
 
@@ -204,8 +204,8 @@ void config_update_font_height(bool recalculate) {
     config->font_height = 0;
     config->font_baseline = 0;
 
-    wls_output_layout_for_each_container(find_baseline_iterator, &recalculate);
-    wls_output_layout_for_each_container(find_font_height_iterator, NULL);
+    wls_output_layout_for_each_window(find_baseline_iterator, &recalculate);
+    wls_output_layout_for_each_window(find_font_height_iterator, NULL);
 
     if (config->font_height != prev_max_height) {
         arrange_root();

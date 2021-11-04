@@ -13,60 +13,60 @@
 #include "window.h"
 #include "wlstem.h"
 
-struct sway_container *container_create(struct sway_view *view) {
-    struct sway_container *c = calloc(1, sizeof(struct sway_container));
-    if (!c) {
-        sway_log(SWAY_ERROR, "Unable to allocate sway_container");
+struct wls_window *window_create(struct sway_view *view) {
+    struct wls_window *win = calloc(1, sizeof(struct wls_window));
+    if (!win) {
+        sway_log(SWAY_ERROR, "Unable to allocate wls_window");
         return NULL;
     }
-    node_init(&c->node, N_CONTAINER, c);
-    c->view = view;
-    c->alpha = 1.0f;
+    node_init(&win->node, N_WINDOW, win);
+    win->view = view;
+    win->alpha = 1.0f;
 
-    c->outputs = create_list();
+    win->outputs = create_list();
 
-    wl_signal_init(&c->events.destroy);
-    wl_signal_init(&c->events.scale_change);
-    wl_signal_emit(&wls->node_manager->events.new_node, &c->node);
+    wl_signal_init(&win->events.destroy);
+    wl_signal_init(&win->events.scale_change);
+    wl_signal_emit(&wls->node_manager->events.new_node, &win->node);
 
-    // Only emit this signal when the container is fully initialized.
-    wl_signal_emit(&wls->events.new_window, c);
+    // Only emit this signal when the window is fully initialized.
+    wl_signal_emit(&wls->events.new_window, win);
 
-    return c;
+    return win;
 }
 
-void container_destroy(struct sway_container *con) {
-    if (!sway_assert(con->node.destroying,
-                "Tried to free container which wasn't marked as destroying")) {
+void window_destroy(struct wls_window *win) {
+    if (!sway_assert(win->node.destroying,
+                "Tried to free window which wasn't marked as destroying")) {
         return;
     }
-    if (!sway_assert(con->node.ntxnrefs == 0, "Tried to free container "
+    if (!sway_assert(win->node.ntxnrefs == 0, "Tried to free window "
                 "which is still referenced by transactions")) {
         return;
     }
-    free(con->title);
-    list_free(con->outputs);
+    free(win->title);
+    list_free(win->outputs);
 
-    if (con->view) {
-        if (con->view->container == con) {
-            con->view->container = NULL;
+    if (win->view) {
+        if (win->view->window == win) {
+            win->view->window = NULL;
         }
-        if (con->view->destroying) {
-            view_destroy(con->view);
+        if (win->view->destroying) {
+            view_destroy(win->view);
         }
     }
 
-    wl_signal_emit(&con->events.destroy, con);
-    free(con);
+    wl_signal_emit(&win->events.destroy, win);
+    free(win);
 }
 
-list_t *container_get_siblings(struct sway_container *container) {
-    return container->output->windows;
+list_t *window_get_siblings(struct wls_window *window) {
+    return window->output->windows;
 }
 
-void container_detach(struct sway_container *child) {
+void window_detach(struct wls_window *child) {
     struct sway_output *old_output = child->output;
-    list_t *siblings = container_get_siblings(child);
+    list_t *siblings = window_get_siblings(child);
     if (siblings) {
         int index = list_find(siblings, child);
         if (index != -1) {
@@ -82,68 +82,68 @@ void container_detach(struct sway_container *child) {
 }
 
 /**
- * Indicate to clients in this container that they are participating in (or
+ * Indicate to clients in this window that they are participating in (or
  * have just finished) an interactive resize
  */
-void container_set_resizing(struct sway_container *con, bool resizing) {
-    if (!con) {
+void window_set_resizing(struct wls_window *win, bool resizing) {
+    if (!win) {
         return;
     }
 
-    if (con->view) {
-        if (con->view->impl->set_resizing) {
-            con->view->impl->set_resizing(con->view, resizing);
+    if (win->view) {
+        if (win->view->impl->set_resizing) {
+            win->view->impl->set_resizing(win->view, resizing);
         }
     }
 }
 
-void container_get_box(struct sway_container *container, struct wlr_box *box) {
-    box->x = container->x;
-    box->y = container->y;
-    box->width = container->width;
-    box->height = container->height;
+void window_get_box(struct wls_window *window, struct wlr_box *box) {
+    box->x = window->x;
+    box->y = window->y;
+    box->width = window->width;
+    box->height = window->height;
 }
 
-int container_sibling_index(struct sway_container *child) {
-    return list_find(container_get_siblings(child), child);
+int window_sibling_index(struct wls_window *child) {
+    return list_find(window_get_siblings(child), child);
 }
 
-list_t *container_get_current_siblings(struct sway_container *container) {
-    struct sway_output *current_output = container->current.output;
+list_t *window_get_current_siblings(struct wls_window *window) {
+    struct sway_output *current_output = window->current.output;
     if (!current_output) {
-        sway_log(SWAY_ERROR, "container has no current output!");
+        sway_log(SWAY_ERROR, "window has no current output!");
         assert(false);
     }
     return current_output->current.windows;
 }
 
-void container_add_sibling(struct sway_container *fixed,
-        struct sway_container *active, bool after) {
+void window_add_sibling(struct wls_window *fixed,
+        struct wls_window *active, bool after) {
     if (active->output) {
-        container_detach(active);
+        window_detach(active);
     }
-    list_t *siblings = container_get_siblings(fixed);
+    list_t *siblings = window_get_siblings(fixed);
     int index = list_find(siblings, fixed);
     list_insert(siblings, index + after, active);
     active->output = fixed->output;
 }
 
-void container_replace(struct sway_container *container,
-        struct sway_container *replacement) {
-    if (container->output) {
-        container_add_sibling(container, replacement, 1);
-        container_detach(container);
+void window_replace(struct wls_window *window,
+        struct wls_window *replacement) {
+    if (window->output) {
+        window_add_sibling(window, replacement, 1);
+        window_detach(window);
     }
 }
 /**
  * Return the output which will be used for scale purposes.
  * This is the most recently entered output.
  */
-struct sway_output *container_get_effective_output(struct sway_container *con) {
-    if (con->outputs->length == 0) {
+struct sway_output *window_get_effective_output(struct wls_window *win) {
+    if (win->outputs->length == 0) {
         return NULL;
     }
-    return con->outputs->items[con->outputs->length - 1];
+    return win->outputs->items[win->outputs->length - 1];
 }
 
 static void surface_send_enter_iterator(struct wlr_surface *surface,
@@ -158,14 +158,14 @@ static void surface_send_leave_iterator(struct wlr_surface *surface,
     wlr_surface_send_leave(surface, wlr_output);
 }
 
-void container_discover_outputs(struct sway_container *con) {
+void window_discover_outputs(struct wls_window *win) {
     struct wlr_box con_box = {
-        .x = con->current.x,
-        .y = con->current.y,
-        .width = con->current.width,
-        .height = con->current.height,
+        .x = win->current.x,
+        .y = win->current.y,
+        .width = win->current.width,
+        .height = win->current.height,
     };
-    struct sway_output *old_output = container_get_effective_output(con);
+    struct sway_output *old_output = window_get_effective_output(win);
 
     for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
         struct sway_output *output = wls->output_manager->outputs->items[i];
@@ -174,39 +174,39 @@ void container_discover_outputs(struct sway_container *con) {
         struct wlr_box intersection;
         bool intersects =
             wlr_box_intersection(&intersection, &con_box, &output_box);
-        int index = list_find(con->outputs, output);
+        int index = list_find(win->outputs, output);
 
         if (intersects && index == -1) {
             // Send enter
-            sway_log(SWAY_DEBUG, "Container %p entered output %p", con, output);
-            if (con->view) {
-                view_for_each_surface(con->view,
+            sway_log(SWAY_DEBUG, "Window %p entered output %p", win, output);
+            if (win->view) {
+                view_for_each_surface(win->view,
                         surface_send_enter_iterator, output->wlr_output);
-                if (con->view->foreign_toplevel) {
+                if (win->view->foreign_toplevel) {
                     wlr_foreign_toplevel_handle_v1_output_enter(
-                            con->view->foreign_toplevel, output->wlr_output);
+                            win->view->foreign_toplevel, output->wlr_output);
                 }
             }
-            list_add(con->outputs, output);
+            list_add(win->outputs, output);
         } else if (!intersects && index != -1) {
             // Send leave
-            sway_log(SWAY_DEBUG, "Container %p left output %p", con, output);
-            if (con->view) {
-                view_for_each_surface(con->view,
+            sway_log(SWAY_DEBUG, "Window %p left output %p", win, output);
+            if (win->view) {
+                view_for_each_surface(win->view,
                     surface_send_leave_iterator, output->wlr_output);
-                if (con->view->foreign_toplevel) {
+                if (win->view->foreign_toplevel) {
                     wlr_foreign_toplevel_handle_v1_output_leave(
-                            con->view->foreign_toplevel, output->wlr_output);
+                            win->view->foreign_toplevel, output->wlr_output);
                 }
             }
-            list_del(con->outputs, index);
+            list_del(win->outputs, index);
         }
     }
-    struct sway_output *new_output = container_get_effective_output(con);
+    struct sway_output *new_output = window_get_effective_output(win);
     double old_scale = old_output && old_output->enabled ?
         old_output->wlr_output->scale : -1;
     double new_scale = new_output ? new_output->wlr_output->scale : -1;
     if (old_scale != new_scale) {
-        wl_signal_emit(&con->events.scale_change, con);
+        wl_signal_emit(&win->events.scale_change, win);
     }
 }

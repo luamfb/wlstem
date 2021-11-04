@@ -6,7 +6,7 @@
 
 // A header for each of the several FOO_for_each_BAR functions.
 
-struct sway_container;
+struct wls_window;
 struct sway_output;
 struct sway_view;
 
@@ -19,7 +19,7 @@ typedef void (*sway_surface_iterator_func_t)(struct sway_output *output, struct 
 void wls_output_layout_for_each_output(void (*f)(struct sway_output *output, void *data),
         void *data);
 
-void wls_output_layout_for_each_container(void (*f)(struct sway_container *con, void *data),
+void wls_output_layout_for_each_window(void (*f)(struct wls_window *win, void *data),
         void *data);
 
 // =============== OUTPUTS ===============
@@ -58,8 +58,8 @@ void output_drag_icons_for_each_surface(struct sway_output *output,
     struct wl_list *drag_icons, sway_surface_iterator_func_t iterator,
     void *user_data);
 
-void output_for_each_container(struct sway_output *output,
-        void (*f)(struct sway_container *con, void *data), void *data);
+void output_for_each_window(struct sway_output *output,
+        void (*f)(struct wls_window *win, void *data), void *data);
 
 void output_for_each_surface(struct sway_output *output,
         sway_surface_iterator_func_t iterator, void *user_data);

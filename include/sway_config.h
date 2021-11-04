@@ -106,7 +106,7 @@ enum focus_follows_mouse_mode {
 enum mouse_warping_mode {
     WARP_NO,
     WARP_OUTPUT,
-    WARP_CONTAINER,
+    WARP_WINDOW,
 };
 
 enum alignment {
@@ -206,10 +206,10 @@ void seat_execute_command(struct sway_seat *seat, struct sway_binding *binding);
 
 /**
  * Updates the value of config->font_height based on the max title height
- * reported by each container. If recalculate is true, the containers will
+ * reported by each window. If recalculate is true, the windows will
  * recalculate their heights before reporting.
  *
- * If the height has changed, all containers will be rearranged to take on the
+ * If the height has changed, all windows will be rearranged to take on the
  * new size.
  */
 void config_update_font_height(bool recalculate);

@@ -65,21 +65,21 @@ void output_enable(struct sway_output *output) {
     wl_signal_emit(&wls->output_manager->events.output_connected, output);
 }
 
-void seize_containers_from_noop_output(struct sway_output *output) {
+void seize_windows_from_noop_output(struct sway_output *output) {
     if (wls->output_manager->noop_output->active) {
-        output_seize_containers_from(output, wls->output_manager->noop_output);
+        output_seize_windows_from(output, wls->output_manager->noop_output);
     }
 }
 
-void output_seize_containers_from(struct sway_output *absorber,
+void output_seize_windows_from(struct sway_output *absorber,
     struct sway_output *giver)
 {
     if (!sway_assert(absorber->active, "Expected active output")) {
         assert(false);
     }
     while (giver->windows->length) {
-        struct sway_container *container = giver->windows->items[0];
-        output_add_container(absorber, container);
+        struct wls_window *window = giver->windows->items[0];
+        output_add_window(absorber, window);
     }
 
     node_set_dirty(&absorber->node);
@@ -98,19 +98,19 @@ static void output_evacuate(struct sway_output *output) {
             new_output = wls->output_manager->noop_output;
         }
 
-        if (output_has_containers(output)) {
-            output_seize_containers_from(new_output, output);
+        if (output_has_windows(output)) {
+            output_seize_windows_from(new_output, output);
         }
         output->active = false;
         node_set_dirty(&output->node);
     }
 }
 
-static void untrack_output(struct sway_container *con, void *data) {
+static void untrack_output(struct wls_window *win, void *data) {
     struct sway_output *output = data;
-    int index = list_find(con->outputs, output);
+    int index = list_find(win->outputs, output);
     if (index != -1) {
-        list_del(con->outputs, index);
+        list_del(win->outputs, index);
     }
 }
 
@@ -136,7 +136,7 @@ void output_disable(struct sway_output *output) {
     output_evacuate(output);
     remove_output_from_all_focus_stacks(output);
 
-    wls_output_layout_for_each_container(untrack_output, output);
+    wls_output_layout_for_each_window(untrack_output, output);
 
     list_del(wls->output_manager->outputs, index);
 
@@ -217,18 +217,18 @@ void output_get_box(struct sway_output *output, struct wlr_box *box) {
     box->height = output->height;
 }
 
-struct sway_container *output_add_container(struct sway_output *output,
-        struct sway_container *con) {
-    if (con->output) {
-        container_detach(con);
+struct wls_window *output_add_window(struct sway_output *output,
+        struct wls_window *win) {
+    if (win->output) {
+        window_detach(win);
     }
-    list_add(output->windows, con);
-    con->output = output;
-    node_set_dirty(&con->node);
-    return con;
+    list_add(output->windows, win);
+    win->output = output;
+    node_set_dirty(&win->node);
+    return win;
 }
 
-bool output_has_containers(struct sway_output *output) {
+bool output_has_windows(struct sway_output *output) {
     return output->windows->length;
 }
 

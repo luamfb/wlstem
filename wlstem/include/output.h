@@ -11,12 +11,12 @@
 #include "output_config.h"
 #include "node.h"
 
-struct sway_container;
+struct wls_window;
 struct sway_view;
 
 struct sway_output_state {
     bool active;
-    list_t *windows;             // struct sway_container
+    list_t *windows;             // struct wls_window
     int render_lx, render_ly; // in layout coords
 };
 
@@ -31,7 +31,7 @@ struct sway_output {
     struct timespec last_frame;
     struct wlr_output_damage *damage;
 
-    list_t *windows;             // struct sway_container
+    list_t *windows;             // struct wls_window
 
     int lx, ly; // layout coords
     int render_lx, render_ly; // in layout coords
@@ -108,13 +108,13 @@ void handle_output_layout_change(struct wl_listener *listener, void *data);
 void handle_output_power_manager_set_mode(struct wl_listener *listener,
     void *data);
 
-struct sway_container *output_add_container(struct sway_output *output,
-        struct sway_container *con);
+struct wls_window *output_add_window(struct sway_output *output,
+        struct wls_window *win);
 
-bool output_has_containers(struct sway_output *output);
+bool output_has_windows(struct sway_output *output);
 
-void output_seize_containers_from(struct sway_output *absorber,
+void output_seize_windows_from(struct sway_output *absorber,
     struct sway_output *giver);
 
-void seize_containers_from_noop_output(struct sway_output *output);
+void seize_windows_from_noop_output(struct sway_output *output);
 #endif

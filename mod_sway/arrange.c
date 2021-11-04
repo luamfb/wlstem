@@ -21,7 +21,7 @@ static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {
     sway_log(SWAY_DEBUG, "Arranging %p horizontally", parent);
     double child_x = parent->x;
     for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
+        struct wls_window *child = children->items[i];
         child->x = child_x;
         child->y = parent->y;
         child->width = round(width_fraction * child_total_width);
@@ -39,22 +39,22 @@ static void arrange_children(list_t *children, struct wlr_box *parent) {
 
     apply_horiz_layout(children, parent);
 
-    // Recurse into child containers
+    // Recurse into child windows
     for (int i = 0; i < children->length; ++i) {
-        struct sway_container *child = children->items[i];
-        arrange_container(child);
+        struct wls_window *child = children->items[i];
+        arrange_window(child);
     }
 }
 
-void arrange_container(struct sway_container *container) {
-    if (container->view) {
-        view_autoconfigure(container->view);
-        node_set_dirty(&container->node);
+void arrange_window(struct wls_window *window) {
+    if (window->view) {
+        view_autoconfigure(window->view);
+        node_set_dirty(&window->node);
         return;
     }
     struct wlr_box box;
-    container_get_box(container, &box);
-    node_set_dirty(&container->node);
+    window_get_box(window, &box);
+    node_set_dirty(&window->node);
 }
 
 void arrange_output(struct sway_output *output) {

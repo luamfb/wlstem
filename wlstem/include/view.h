@@ -10,7 +10,7 @@
 #include "input_manager.h"
 #include "seat.h"
 
-struct sway_container;
+struct wls_window;
 struct sway_view;
 struct sway_xdg_decoration;
 
@@ -70,7 +70,7 @@ struct sway_view {
     enum sway_view_type type;
     const struct sway_view_impl *impl;
 
-    struct sway_container *container; // NULL if unmapped and transactions finished
+    struct wls_window *window; // NULL if unmapped and transactions finished
     struct wlr_surface *surface; // NULL for unmapped views
     struct sway_xdg_decoration *xdg_decoration;
 
@@ -252,7 +252,7 @@ bool view_inhibit_idle(struct sway_view *view);
 bool view_ancestor_is_only_visible(struct sway_view *view);
 
 /**
- * Configure the view's position and size based on the container's position and
+ * Configure the view's position and size based on the window's position and
  * size, taking borders into consideration.
  */
 void view_autoconfigure(struct sway_view *view);

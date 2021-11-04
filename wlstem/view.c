@@ -18,8 +18,8 @@ void view_destroy(struct sway_view *view) {
                 "Tried to free view which wasn't marked as destroying")) {
         return;
     }
-    if (!sway_assert(view->container == NULL,
-                "Tried to free view which still has a container "
+    if (!sway_assert(view->window == NULL,
+                "Tried to free view which still has a window "
                 "(might have a pending transaction?)")) {
         return;
     }
@@ -74,10 +74,10 @@ void view_remove_saved_buffer(struct sway_view *view) {
 }
 
 bool view_is_visible(struct sway_view *view) {
-    if (view->container->node.destroying) {
+    if (view->window->node.destroying) {
         return false;
     }
-    struct sway_output *output = view->container->output;
+    struct sway_output *output = view->window->output;
     if (!output) {
         return false;
     }

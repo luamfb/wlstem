@@ -4,13 +4,13 @@
 #include <wlr/types/wlr_box.h>
 #include <wlr/types/wlr_surface.h>
 
-struct sway_container;
+struct wls_window;
 struct sway_output;
 struct sway_view;
 
 void view_damage_from(struct sway_view *view);
 
-void container_damage_whole(struct sway_container *container);
+void window_damage_whole(struct wls_window *window);
 
 void output_damage_whole(struct sway_output *output);
 
@@ -22,13 +22,13 @@ void output_damage_from_view(struct sway_output *output,
 
 void output_damage_box(struct sway_output *output, struct wlr_box *box);
 
-void output_damage_whole_container(struct sway_output *output,
-    struct sway_container *con);
+void output_damage_whole_window(struct sway_output *output,
+    struct wls_window *win);
 
 void desktop_damage_surface(struct wlr_surface *surface, double lx, double ly,
     bool whole);
 
-void desktop_damage_whole_container(struct sway_container *con);
+void desktop_damage_whole_window(struct wls_window *win);
 
 void desktop_damage_box(struct wlr_box *box);
 

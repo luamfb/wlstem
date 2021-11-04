@@ -134,9 +134,9 @@ static void render_view_toplevels(struct sway_view *view,
         .alpha = alpha,
     };
     // Render all toplevels without descending into popups
-    double ox = view->container->surface_x -
+    double ox = view->window->surface_x -
         output->lx - view->geometry.x;
-    double oy = view->container->surface_y -
+    double oy = view->window->surface_y -
         output->ly - view->geometry.y;
     output_surface_for_each_surface(output, view->surface, ox, oy,
             render_surface_iterator, &data);
@@ -166,9 +166,9 @@ static void render_saved_view(struct sway_view *view,
         }
 
         struct wlr_box box = {
-            .x = view->container->surface_x - output->lx -
+            .x = view->window->surface_x - output->lx -
                 view->saved_geometry.x + saved_buf->x,
-            .y = view->container->surface_y - output->ly -
+            .y = view->window->surface_y - output->ly -
                 view->saved_geometry.y + saved_buf->y,
             .width = saved_buf->width,
             .height = saved_buf->height,
@@ -205,23 +205,23 @@ static void render_saved_view(struct sway_view *view,
  * Render a view's surface and left/bottom/right borders.
  */
 static void render_view(struct sway_output *output, pixman_region32_t *damage,
-        struct sway_container *con, struct border_colors *colors) {
-    struct sway_view *view = con->view;
+        struct wls_window *win, struct border_colors *colors) {
+    struct sway_view *view = win->view;
     if (!wl_list_empty(&view->saved_buffers)) {
-        render_saved_view(view, output, damage, view->container->alpha);
+        render_saved_view(view, output, damage, view->window->alpha);
     } else if (view->surface) {
-        render_view_toplevels(view, output, damage, view->container->alpha);
+        render_view_toplevels(view, output, damage, view->window->alpha);
     }
 
     struct wlr_box box;
     float output_scale = output->wlr_output->scale;
     float color[4];
-    struct sway_container_state *state = &con->current;
+    struct wls_window_state *state = &win->current;
 
     // left border
     {
         memcpy(&color, colors->child_border, sizeof(float) * 4);
-        premultiply_alpha(color, con->alpha);
+        premultiply_alpha(color, win->alpha);
         box.x = state->x;
         box.y = state->content_y;
         box.width = config->border_thickness;
@@ -230,7 +230,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
         render_rect(output, damage, &box, color);
     }
 
-    list_t *siblings = container_get_current_siblings(con);
+    list_t *siblings = window_get_current_siblings(win);
 
     // right border
     {
@@ -239,7 +239,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
         } else {
             memcpy(&color, colors->child_border, sizeof(float) * 4);
         }
-        premultiply_alpha(color, con->alpha);
+        premultiply_alpha(color, win->alpha);
         box.x = state->content_x + state->content_width;
         box.y = state->content_y;
         box.width = config->border_thickness;
@@ -251,7 +251,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
     // bottom border
     {
         memcpy(&color, colors->child_border, sizeof(float) * 4);
-        premultiply_alpha(color, con->alpha);
+        premultiply_alpha(color, win->alpha);
         box.x = state->x;
         box.y = state->content_y + state->content_height;
         box.width = state->width;
@@ -271,7 +271,7 @@ static void render_view(struct sway_output *output, pixman_region32_t *damage,
  * The left side is: 1px border, 2px padding, title
  */
 static void render_titlebar(struct sway_output *output,
-        pixman_region32_t *output_damage, struct sway_container *con,
+        pixman_region32_t *output_damage, struct wls_window *win,
         int x, int y, int width,
         struct border_colors *colors, struct wlr_texture *title_texture) {
     struct wlr_box box;
@@ -286,7 +286,7 @@ static void render_titlebar(struct sway_output *output,
 
     // Single pixel bar above title
     memcpy(&color, colors->border, sizeof(float) * 4);
-    premultiply_alpha(color, con->alpha);
+    premultiply_alpha(color, win->alpha);
     box.x = x;
     box.y = y;
     box.width = width;
@@ -296,7 +296,7 @@ static void render_titlebar(struct sway_output *output,
 
     // Single pixel bar below title
     box.x = x;
-    box.y = y + container_titlebar_height() - titlebar_border_thickness;
+    box.y = y + window_titlebar_height() - titlebar_border_thickness;
     box.width = width;
     box.height = titlebar_border_thickness;
     scale_box(&box, output_scale);
@@ -306,7 +306,7 @@ static void render_titlebar(struct sway_output *output,
     box.x = x;
     box.y = y + titlebar_border_thickness;
     box.width = titlebar_border_thickness;
-    box.height = container_titlebar_height() - titlebar_border_thickness * 2;
+    box.height = window_titlebar_height() - titlebar_border_thickness * 2;
     scale_box(&box, output_scale);
     render_rect(output, output_damage, &box, color);
 
@@ -314,7 +314,7 @@ static void render_titlebar(struct sway_output *output,
     box.x = x + width - titlebar_border_thickness;
     box.y = y + titlebar_border_thickness;
     box.width = titlebar_border_thickness;
-    box.height = container_titlebar_height() - titlebar_border_thickness * 2;
+    box.height = window_titlebar_height() - titlebar_border_thickness * 2;
     scale_box(&box, output_scale);
     render_rect(output, output_damage, &box, color);
 
@@ -341,7 +341,7 @@ static void render_titlebar(struct sway_output *output,
         // The title texture might be shorter than the config->font_height,
         // in which case we need to pad it above and below.
         int ob_padding_above = round((config->font_baseline -
-                    con->title_baseline + titlebar_v_padding -
+                    win->title_baseline + titlebar_v_padding -
                     titlebar_border_thickness) * output_scale);
         int ob_padding_below = ob_bg_height - ob_padding_above -
             texture_box.height;
@@ -372,11 +372,11 @@ static void render_titlebar(struct sway_output *output,
         }
 
         render_texture(output->wlr_output, output_damage, title_texture,
-            NULL, &texture_box, matrix, con->alpha);
+            NULL, &texture_box, matrix, win->alpha);
 
         // Padding above
         memcpy(&color, colors->background, sizeof(float) * 4);
-        premultiply_alpha(color, con->alpha);
+        premultiply_alpha(color, win->alpha);
         box.x = texture_box.x + round(output_x * output_scale);
         box.y = round((y + titlebar_border_thickness) * output_scale);
         box.width = texture_box.width;
@@ -443,26 +443,26 @@ struct parent_data {
     bool focused;
 };
 
-static void render_container(struct sway_output *output,
-    pixman_region32_t *damage, struct sway_container *con, bool parent_focused);
+static void render_window(struct sway_output *output,
+    pixman_region32_t *damage, struct wls_window *win, bool parent_focused);
 
 /**
- * Render a container's children using a L_HORIZ layout.
+ * Render a window's children using a L_HORIZ layout.
  *
- * Wrap child views in borders and leave child containers borderless because
+ * Wrap child views in borders and leave child windows borderless because
  * they'll apply their own borders to their children.
  */
-static void render_containers_linear(struct sway_output *output,
+static void render_windows_linear(struct sway_output *output,
         pixman_region32_t *damage, struct parent_data *parent) {
     for (int i = 0; i < parent->children->length; ++i) {
-        struct sway_container *child = parent->children->items[i];
+        struct wls_window *child = parent->children->items[i];
         struct window_title *child_title = child->data;
 
         if (child->view) {
             struct sway_view *view = child->view;
             struct border_colors *colors;
             struct wlr_texture *title_texture;
-            struct sway_container_state *state = &child->current;
+            struct wls_window_state *state = &child->current;
 
             if (view_is_urgent(view)) {
                 colors = &config->border_colors.urgent;
@@ -480,27 +480,27 @@ static void render_containers_linear(struct sway_output *output,
                     title_texture);
             render_view(output, damage, child, colors);
         } else {
-            render_container(output, damage, child,
+            render_window(output, damage, child,
                     parent->focused || child->current.focused);
         }
     }
 }
 
-static void render_container(struct sway_output *output,
-        pixman_region32_t *damage, struct sway_container *con, bool focused) {
+static void render_window(struct sway_output *output,
+        pixman_region32_t *damage, struct wls_window *win, bool focused) {
     struct parent_data data = {
         .box = {
-            .x = con->current.x,
-            .y = con->current.y,
-            .width = con->current.width,
-            .height = con->current.height,
+            .x = win->current.x,
+            .y = win->current.y,
+            .width = win->current.width,
+            .height = win->current.height,
         },
         .focused = focused,
     };
-    render_containers_linear(output, damage, &data);
+    render_windows_linear(output, damage, &data);
 }
 
-static void render_containers_in_output(struct sway_output *output,
+static void render_windows_in_output(struct sway_output *output,
         pixman_region32_t *damage) {
     struct parent_data data = {
         .box = {
@@ -512,7 +512,7 @@ static void render_containers_in_output(struct sway_output *output,
         .children = output->current.windows,
         .focused = false,
     };
-    render_containers_linear(output, damage, &data);
+    render_windows_linear(output, damage, &data);
 }
 
 void output_render_overlay(struct sway_output *output,
@@ -546,7 +546,7 @@ void output_render_non_overlay(struct sway_output *output,
     render_layer_toplevel(output, damage,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM]);
 
-    render_containers_in_output(output, damage);
+    render_windows_in_output(output, damage);
 #if HAVE_XWAYLAND
     render_unmanaged(output, damage, &wls->output_manager->xwayland_unmanaged);
 #endif
@@ -561,7 +561,7 @@ void output_render_non_overlay(struct sway_output *output,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_TOP]);
 
     struct sway_seat *seat = input_manager_current_seat();
-    struct sway_container *focus = seat_get_focused_container(seat);
+    struct wls_window *focus = seat_get_focused_window(seat);
     if (focus && focus->view) {
         render_view_popups(focus->view, output, damage, focus->alpha);
     }

@@ -89,8 +89,8 @@ void default_handle_tablet_tool_tip(struct sway_seat *seat,
         return;
     }
 
-    struct sway_container *cont = node && node->type == N_CONTAINER ?
-        node->sway_container : NULL;
+    struct wls_window *cont = node && node->type == N_WINDOW ?
+        node->wls_window : NULL;
 
     if (wlr_surface_is_layer_surface(surface)) {
         // Handle tapping a layer surface
@@ -100,9 +100,9 @@ void default_handle_tablet_tool_tip(struct sway_seat *seat,
             seat_set_focus_layer(seat, layer);
         }
     } else if (cont) {
-        // Handle tapping on a container surface
-        seat_set_focus_container(seat, cont);
-        seatop_begin_down(seat, node->sway_container, time_msec, sx, sy);
+        // Handle tapping on a window surface
+        seat_set_focus_window(seat, cont);
+        seatop_begin_down(seat, node->wls_window, time_msec, sx, sy);
     }
 #if HAVE_XWAYLAND
     // Handle tapping on an xwayland unmanaged view
@@ -155,8 +155,8 @@ void default_handle_button(struct sway_seat *seat, uint32_t time_msec,
     struct wls_transaction_node *node = node_at_coords(seat,
             cursor->cursor->x, cursor->cursor->y, &surface, &sx, &sy);
 
-    struct sway_container *cont = node && node->type == N_CONTAINER ?
-        node->sway_container : NULL;
+    struct wls_window *cont = node && node->type == N_WINDOW ?
+        node->wls_window : NULL;
 
     add_or_remove_button_to_state(seat, device, button, state);
 
@@ -180,15 +180,15 @@ void default_handle_button(struct sway_seat *seat, uint32_t time_msec,
         return;
     }
 
-    // Handle mousedown on a container surface
+    // Handle mousedown on a window surface
     if (surface && cont && state == WLR_BUTTON_PRESSED) {
-        seat_set_focus_container(seat, cont);
+        seat_set_focus_window(seat, cont);
         seatop_begin_down(seat, cont, time_msec, sx, sy);
         seat_pointer_notify_button(seat, time_msec, button, WLR_BUTTON_PRESSED);
         return;
     }
 
-    // Handle clicking a container surface or decorations
+    // Handle clicking a window surface or decorations
     if (cont && state == WLR_BUTTON_PRESSED) {
         node = seat_get_focus_inactive(seat, &cont->node);
         seat_set_focus(seat, node);
@@ -252,7 +252,7 @@ static void check_focus_follows_mouse(struct sway_seat *seat,
     // This is where we handle the common case. We don't want to focus inactive
     // tabs, hence the view_is_visible check.
     if (node_is_view(hovered_node) &&
-            view_is_visible(hovered_node->sway_container->view)) {
+            view_is_visible(hovered_node->wls_window->view)) {
         // e->previous_node is the node which the cursor was over previously.
         // If focus_follows_mouse is yes and the cursor got over the view due
         // to, say, a workspace switch, we don't want to set the focus.

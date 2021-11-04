@@ -1,5 +1,5 @@
-#ifndef _SWAY_CONTAINER_H
-#define _SWAY_CONTAINER_H
+#ifndef _SWAY_WINDOW_H
+#define _SWAY_WINDOW_H
 #include <stdint.h>
 #include <sys/types.h>
 #include <wlr/types/wlr_box.h>
@@ -15,8 +15,8 @@ struct sway_view;
 
 enum wlr_direction;
 
-struct sway_container_state {
-    // Container properties
+struct wls_window_state {
+    // Window properties
     double x, y;
     double width, height;
 
@@ -28,13 +28,13 @@ struct sway_container_state {
     double content_width, content_height;
 };
 
-struct sway_container {
+struct wls_window {
     struct wls_transaction_node node;
     struct sway_view *view;
 
-    // The pending state is the main container properties, and the current state is in the below struct.
+    // The pending state is the main window properties, and the current state is in the below struct.
     // This means most places of the code can refer to the main variables (pending state) and it'll just work.
-    struct sway_container_state current;
+    struct wls_window_state current;
 
     char *title;           // The view's title
 
@@ -73,66 +73,66 @@ struct sway_container {
     void *data; // custom user data
 };
 
-struct sway_container *container_create(struct sway_view *view);
+struct wls_window *window_create(struct sway_view *view);
 
-void container_destroy(struct sway_container *con);
+void window_destroy(struct wls_window *win);
 
-void container_begin_destroy(struct sway_container *con);
+void window_begin_destroy(struct wls_window *win);
 
 /**
- * Find a container at the given coordinates. Returns the surface and
- * surface-local coordinates of the given layout coordinates if the container
+ * Find a window at the given coordinates. Returns the surface and
+ * surface-local coordinates of the given layout coordinates if the window
  * is a view and the view contains a surface at those coordinates.
  */
-struct sway_container *container_at(struct sway_output *output,
+struct wls_window *window_at(struct sway_output *output,
         double lx, double ly, struct wlr_surface **surface,
         double *sx, double *sy);
 
-struct sway_container *toplevel_window_at(
+struct wls_window *toplevel_window_at(
         struct wls_transaction_node *parent, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
-void container_set_resizing(struct sway_container *con, bool resizing);
+void window_set_resizing(struct wls_window *win, bool resizing);
 
 /**
- * Get a container's box in layout coordinates.
+ * Get a window's box in layout coordinates.
  */
-void container_get_box(struct sway_container *container, struct wlr_box *box);
+void window_get_box(struct wls_window *window, struct wlr_box *box);
 
 /**
- * If the container is involved in a drag or resize operation via a mouse, this
+ * If the window is involved in a drag or resize operation via a mouse, this
  * ends the operation.
  */
-void container_end_mouse_operation(struct sway_container *container);
+void window_end_mouse_operation(struct wls_window *window);
 
 /**
  * Return the output which will be used for scale purposes.
  * This is the most recently entered output.
  */
-struct sway_output *container_get_effective_output(struct sway_container *con);
+struct sway_output *window_get_effective_output(struct wls_window *win);
 
-void container_discover_outputs(struct sway_container *con);
+void window_discover_outputs(struct wls_window *win);
 
-list_t *container_get_siblings(struct sway_container *container);
+list_t *window_get_siblings(struct wls_window *window);
 
-int container_sibling_index(struct sway_container *child);
+int window_sibling_index(struct wls_window *child);
 
-list_t *container_get_current_siblings(struct sway_container *container);
+list_t *window_get_current_siblings(struct wls_window *window);
 
 /**
  * Side should be 0 to add before, or 1 to add after.
  */
-void container_add_sibling(struct sway_container *parent,
-        struct sway_container *child, bool after);
+void window_add_sibling(struct wls_window *parent,
+        struct wls_window *child, bool after);
 
-void container_detach(struct sway_container *child);
+void window_detach(struct wls_window *child);
 
-void container_replace(struct sway_container *container,
-        struct sway_container *replacement);
+void window_replace(struct wls_window *window,
+        struct wls_window *replacement);
 
 bool surface_is_popup(struct wlr_surface *surface);
 
-struct sway_container *surface_at_view(struct sway_container *con, double lx, double ly,
+struct wls_window *surface_at_view(struct wls_window *win, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy);
 
 #endif

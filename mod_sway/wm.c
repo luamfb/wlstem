@@ -29,7 +29,7 @@ static void wm_handle_output_connected(
     struct sway_output *output = data;
     arrange_layers(output);
 
-    seize_containers_from_noop_output(output);
+    seize_windows_from_noop_output(output);
 
     // Set each seat's focus if not already set
     struct sway_seat *seat = NULL;
@@ -54,11 +54,11 @@ static void wm_handle_output_mode_changed(
     arrange_output(output);
 }
 
-static void title_handle_container_destroyed(
+static void title_handle_window_destroyed(
         struct wl_listener *listener, void *data) {
 
     struct window_title *title =
-        wl_container_of(listener, title, container_destroyed);
+        wl_container_of(listener, title, window_destroyed);
 
     free(title->formatted_title);
     wlr_texture_destroy(title->title_focused);
@@ -69,13 +69,13 @@ static void title_handle_container_destroyed(
 
 static void title_handle_scale_change(
         struct wl_listener *listener, void *data) {
-    struct sway_container *con = data;
-    container_update_title_textures(con);
+    struct wls_window *win = data;
+    window_update_title_textures(win);
 }
 
 static void wm_handle_new_window(
         struct wl_listener *listener, void *data) {
-    struct sway_container *container = data;
+    struct wls_window *window = data;
     struct window_title *title_data =
         calloc(1, sizeof(struct window_title));
     if (!title_data) {
@@ -83,13 +83,13 @@ static void wm_handle_new_window(
         return;
     }
 
-    wl_signal_add(&container->events.destroy, &title_data->container_destroyed);
-    title_data->container_destroyed.notify = title_handle_container_destroyed;
+    wl_signal_add(&window->events.destroy, &title_data->window_destroyed);
+    title_data->window_destroyed.notify = title_handle_window_destroyed;
 
-    wl_signal_add(&container->events.scale_change, &title_data->scale_changed);
+    wl_signal_add(&window->events.scale_change, &title_data->scale_changed);
     title_data->scale_changed.notify = title_handle_scale_change;
 
-    container->data = title_data;
+    window->data = title_data;
 }
 
 struct server_wm * server_wm_create(void) {

@@ -69,13 +69,13 @@ static void popup_unconstrain(struct sway_xdg_popup *popup) {
     struct sway_view *view = popup->child.view;
     struct wlr_xdg_popup *wlr_popup = popup->wlr_xdg_surface->popup;
 
-    struct sway_output *output = view->container->output;
+    struct sway_output *output = view->window->output;
 
     // the output box expressed in the coordinate system of the toplevel parent
     // of the popup
     struct wlr_box output_toplevel_sx_box = {
-        .x = output->lx - view->container->content_x,
-        .y = output->ly - view->container->content_y,
+        .x = output->lx - view->window->content_x,
+        .y = output->ly - view->window->content_y,
         .width = output->width,
         .height = output->height,
     };
@@ -290,7 +290,7 @@ static void handle_commit(struct wl_listener *listener, void *data) {
         transaction_commit_dirty();
     }
 
-    if (view->container->node.instruction) {
+    if (view->window->node.instruction) {
         transaction_notify_view_ready_by_serial(view,
                 xdg_surface->configure_serial);
     } else if (new_size) {

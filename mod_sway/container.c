@@ -9,54 +9,54 @@
 #include "window.h"
 #include "wlstem.h"
 
-struct sway_container *container_at(struct sway_output *output,
+struct wls_window *window_at(struct sway_output *output,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
-    struct sway_container *c;
+    struct wls_window *win;
 
     struct sway_seat *seat = input_manager_current_seat();
-    struct sway_container *focus = seat_get_focused_container(seat);
+    struct wls_window *focus = seat_get_focused_window(seat);
     if (!sway_assert(output->active, "Output is not active")) {
         return NULL;
     }
 
     // Focused view's popups
     if (focus && focus->view) {
-        c = surface_at_view(focus, lx, ly, surface, sx, sy);
-        if (c && surface_is_popup(*surface)) {
-            return c;
+        win = surface_at_view(focus, lx, ly, surface, sx, sy);
+        if (win && surface_is_popup(*surface)) {
+            return win;
         }
         *surface = NULL;
     }
     // Toplevel window (focused)
     if (focus && focus->view) {
-        if ((c = surface_at_view(focus, lx, ly, surface, sx, sy))) {
-            return c;
+        if ((win = surface_at_view(focus, lx, ly, surface, sx, sy))) {
+            return win;
         }
     }
     // Toplevel window (non-focused)
-    if ((c = toplevel_window_at(&output->node, lx, ly, surface, sx, sy))) {
-        return c;
+    if ((win = toplevel_window_at(&output->node, lx, ly, surface, sx, sy))) {
+        return win;
     }
     return NULL;
 }
 
-void container_begin_destroy(struct sway_container *con) {
-    wl_signal_emit(&con->node.events.destroy, &con->node);
+void window_begin_destroy(struct wls_window *win) {
+    wl_signal_emit(&win->node.events.destroy, &win->node);
 
-    container_end_mouse_operation(con);
+    window_end_mouse_operation(win);
 
-    con->node.destroying = true;
-    node_set_dirty(&con->node);
+    win->node.destroying = true;
+    node_set_dirty(&win->node);
 
-    if (con->output) {
-        container_detach(con);
+    if (win->output) {
+        window_detach(win);
     }
 }
 
-void container_end_mouse_operation(struct sway_container *container) {
+void window_end_mouse_operation(struct wls_window *window) {
     struct sway_seat *seat;
     wl_list_for_each(seat, &wls->seats, link) {
-        seatop_unref(seat, container);
+        seatop_unref(seat, window);
     }
 }

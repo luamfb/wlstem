@@ -144,9 +144,9 @@ struct wls_transaction_node *node_at_coords(
         return NULL;
     }
 
-    struct sway_container *c;
-    if ((c = container_at(output, lx, ly, surface, sx, sy))) {
-        return &c->node;
+    struct wls_window *win;
+    if ((win = window_at(output, lx, ly, surface, sx, sy))) {
+        return &win->node;
     }
 
     if ((*surface = layer_surface_at(output,
@@ -775,10 +775,10 @@ static void check_constraint_region(struct sway_cursor *cursor) {
     if (cursor->active_confine_requires_warp && view) {
         cursor->active_confine_requires_warp = false;
 
-        struct sway_container *con = view->container;
+        struct wls_window *win = view->window;
 
-        double sx = cursor->cursor->x - con->content_x + view->geometry.x;
-        double sy = cursor->cursor->y - con->content_y + view->geometry.y;
+        double sx = cursor->cursor->x - win->content_x + view->geometry.x;
+        double sy = cursor->cursor->y - win->content_y + view->geometry.y;
 
         if (!pixman_region32_contains_point(region,
                 floor(sx), floor(sy), NULL)) {
@@ -789,8 +789,8 @@ static void check_constraint_region(struct sway_cursor *cursor) {
                 double sy = (boxes[0].y1 + boxes[0].y2) / 2.;
 
                 wlr_cursor_warp_closest(cursor->cursor, NULL,
-                    sx + con->content_x - view->geometry.x,
-                    sy + con->content_y - view->geometry.y);
+                    sx + win->content_x - view->geometry.x,
+                    sy + win->content_y - view->geometry.y);
 
                 cursor_rebase(cursor);
             }
@@ -1093,25 +1093,25 @@ struct sway_cursor *sway_cursor_create(struct sway_seat *seat) {
 }
 
 /**
- * Warps the cursor to the middle of the container argument.
- * Does nothing if the cursor is already inside the container and `force` is
- * false. If container is NULL, returns without doing anything.
+ * Warps the cursor to the middle of the window argument.
+ * Does nothing if the cursor is already inside the window and `force` is
+ * false. If window is NULL, returns without doing anything.
  */
-void cursor_warp_to_container(struct sway_cursor *cursor,
-        struct sway_container *container, bool force) {
-    if (!container) {
+void cursor_warp_to_window(struct sway_cursor *cursor,
+        struct wls_window *window, bool force) {
+    if (!window) {
         return;
     }
 
     struct wlr_box box;
-    container_get_box(container, &box);
+    window_get_box(window, &box);
     if (!force && wlr_box_contains_point(&box, cursor->cursor->x,
             cursor->cursor->y)) {
         return;
     }
 
-    double x = container->x + container->width / 2.0;
-    double y = container->y + container->height / 2.0;
+    double x = window->x + window->width / 2.0;
+    double y = window->y + window->height / 2.0;
 
     wlr_cursor_warp(cursor->cursor, NULL, x, y);
     cursor_unhide(cursor);
@@ -1143,10 +1143,10 @@ static void warp_to_constraint_cursor_hint(struct sway_cursor *cursor) {
         double sy = constraint->current.cursor_hint.y;
 
         struct sway_view *view = view_from_wlr_surface(constraint->surface);
-        struct sway_container *con = view->container;
+        struct wls_window *win = view->window;
 
-        double lx = sx + con->content_x - view->geometry.x;
-        double ly = sy + con->content_y - view->geometry.y;
+        double lx = sx + win->content_x - view->geometry.x;
+        double ly = sy + win->content_y - view->geometry.y;
 
         wlr_cursor_warp(cursor->cursor, NULL, lx, ly);
 
@@ -1194,8 +1194,8 @@ void handle_pointer_constraint(struct wl_listener *listener, void *data) {
     wl_signal_add(&constraint->events.destroy, &sway_constraint->destroy);
 
     struct wls_transaction_node *focus = seat_get_focus(seat);
-    if (focus && focus->type == N_CONTAINER && focus->sway_container->view) {
-        struct wlr_surface *surface = focus->sway_container->view->surface;
+    if (focus && focus->type == N_WINDOW && focus->wls_window->view) {
+        struct wlr_surface *surface = focus->wls_window->view->surface;
         if (surface == constraint->surface) {
             sway_cursor_constrain(seat->cursor, constraint);
         }

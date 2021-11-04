@@ -88,15 +88,15 @@ static bool get_surface_box(struct surface_iterator_data *data,
 
 // =============== OUTPUT_LAYOUT ===============
 
-void wls_output_layout_for_each_container(void (*f)(struct sway_container *con, void *data),
+void wls_output_layout_for_each_window(void (*f)(struct wls_window *win, void *data),
         void *data) {
     for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
         struct sway_output *output = wls->output_manager->outputs->items[i];
-        output_for_each_container(output, f, data);
+        output_for_each_window(output, f, data);
     }
 
     if (wls->output_manager->noop_output->active) {
-        output_for_each_container(wls->output_manager->noop_output, f, data);
+        output_for_each_window(wls->output_manager->noop_output, f, data);
     }
 }
 
@@ -110,14 +110,14 @@ void wls_output_layout_for_each_output(void (*f)(struct sway_output *output, voi
 
 // =============== OUTPUTS ===============
 
-static void for_each_surface_container_iterator(struct sway_container *con,
+static void for_each_surface_window_iterator(struct wls_window *win,
         void *_data) {
-    if (!con->view || !view_is_visible(con->view)) {
+    if (!win->view || !view_is_visible(win->view)) {
         return;
     }
 
     struct surface_iterator_data *data = _data;
-    output_view_for_each_surface(data->output, con->view,
+    output_view_for_each_surface(data->output, win->view,
         data->user_iterator, data->user_data);
 }
 
@@ -145,8 +145,8 @@ void output_for_each_surface(struct sway_output *output,
         &output->layers[ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM],
         iterator, user_data);
 
-    output_for_each_container(output,
-        for_each_surface_container_iterator, &data);
+    output_for_each_window(output,
+        for_each_surface_window_iterator, &data);
 
 #if HAVE_XWAYLAND
     output_unmanaged_for_each_surface(output, &wls->output_manager->xwayland_unmanaged,
@@ -205,12 +205,12 @@ void output_view_for_each_surface(struct sway_output *output,
         .user_data = user_data,
         .output = output,
         .view = view,
-        .ox = view->container->surface_x - output->lx
+        .ox = view->window->surface_x - output->lx
             - view->geometry.x,
-        .oy = view->container->surface_y - output->ly
+        .oy = view->window->surface_y - output->ly
             - view->geometry.y,
-        .width = view->container->current.content_width,
-        .height = view->container->current.content_height,
+        .width = view->window->current.content_width,
+        .height = view->window->current.content_height,
         .rotation = 0, // TODO
     };
 
@@ -225,12 +225,12 @@ void output_view_for_each_popup_surface(struct sway_output *output,
         .user_data = user_data,
         .output = output,
         .view = view,
-        .ox = view->container->surface_x - output->lx
+        .ox = view->window->surface_x - output->lx
             - view->geometry.x,
-        .oy = view->container->surface_y - output->ly
+        .oy = view->window->surface_y - output->ly
             - view->geometry.y,
-        .width = view->container->current.content_width,
-        .height = view->container->current.content_height,
+        .width = view->window->current.content_width,
+        .height = view->window->current.content_height,
         .rotation = 0, // TODO
     };
 
@@ -369,12 +369,12 @@ void output_drag_icons_for_each_surface(struct sway_output *output,
     }
 }
 
-void output_for_each_container(struct sway_output *output,
-        void (*f)(struct sway_container *con, void *data), void *data) {
+void output_for_each_window(struct sway_output *output,
+        void (*f)(struct wls_window *win, void *data), void *data) {
     if (output->active) {
         for (int i = 0; i < output->windows->length; ++i) {
-            struct sway_container *container = output->windows->items[i];
-            f(container, data);
+            struct wls_window *window = output->windows->items[i];
+            f(window, data);
         }
     }
 }

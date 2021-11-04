@@ -100,20 +100,20 @@ void seat_idle_notify_activity(struct sway_seat *seat,
 }
 
 /**
- * Activate all views within this container recursively.
+ * Activate all views within this window recursively.
  */
 static void seat_send_activate(struct wls_transaction_node *node, struct sway_seat *seat) {
     if (node_is_view(node)) {
-        if (!seat_is_input_allowed(seat, node->sway_container->view->surface)) {
+        if (!seat_is_input_allowed(seat, node->wls_window->view->surface)) {
             sway_log(SWAY_DEBUG, "Refusing to set focus, input is inhibited");
             return;
         }
-        view_set_activated(node->sway_container->view, true);
+        view_set_activated(node->wls_window->view, true);
     } else {
         list_t *children = node_get_children(node);
         if (children) {
             for (int i = 0; i < children->length; ++i) {
-                struct sway_container *child = children->items[i];
+                struct wls_window *child = children->items[i];
                 seat_send_activate(&child->node, seat);
             }
         }
@@ -169,15 +169,15 @@ static void seat_tablet_pads_notify_enter(struct sway_seat *seat,
 }
 
 /**
- * If con is a view, set it as active and enable keyboard input.
- * If con is a container, set all child views as active and don't enable
+ * If win is a view, set it as active and enable keyboard input.
+ * If win is a window, set all child views as active and don't enable
  * keyboard input on any.
  */
 static void seat_send_focus(struct wls_transaction_node *node, struct sway_seat *seat) {
     seat_send_activate(node, seat);
 
-    struct sway_view *view = node->type == N_CONTAINER ?
-        node->sway_container->view : NULL;
+    struct sway_view *view = node->type == N_WINDOW ?
+        node->wls_window->view : NULL;
 
     if (view && seat_is_input_allowed(seat, view->surface)) {
 #if HAVE_XWAYLAND
@@ -206,17 +206,17 @@ void seat_for_each_node(struct sway_seat *seat,
     }
 }
 
-struct sway_container *seat_get_focus_inactive_view(struct sway_seat *seat,
+struct wls_window *seat_get_focus_inactive_view(struct sway_seat *seat,
         struct wls_transaction_node *ancestor) {
-    if (ancestor->type == N_CONTAINER && ancestor->sway_container->view) {
-        return ancestor->sway_container;
+    if (ancestor->type == N_WINDOW && ancestor->wls_window->view) {
+        return ancestor->wls_window;
     }
     struct sway_seat_node *current;
     wl_list_for_each(current, &seat->focus_stack, link) {
         struct wls_transaction_node *node = current->node;
-        if (node->type == N_CONTAINER && node->sway_container->view &&
+        if (node->type == N_WINDOW && node->wls_window->view &&
                 node_has_ancestor(node, ancestor)) {
-            return node->sway_container;
+            return node->wls_window;
         }
     }
     return NULL;
@@ -241,16 +241,16 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
     seat_node_destroy(seat_node);
 
     if (!parent && !needs_new_focus) {
-        // Destroying a container that is no longer in the tree
+        // Destroying a window that is no longer in the tree
         return;
     }
 
     // Find new focus_inactive (ie. sibling, or workspace if no siblings left)
     struct wls_transaction_node *next_focus = NULL;
     while (next_focus == NULL && parent != NULL) {
-        struct sway_container *con =
+        struct wls_window *win =
             seat_get_focus_inactive_view(seat, parent);
-        next_focus = con ? &con->node : NULL;
+        next_focus = win ? &win->node : NULL;
 
         if (next_focus == NULL && parent->type == N_OUTPUT) {
             next_focus = parent;
@@ -265,9 +265,9 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
         struct sway_seat_node *current;
         wl_list_for_each(current, &seat->focus_stack, link) {
             struct wls_transaction_node *node = current->node;
-            if (node->type == N_CONTAINER &&
-                    node->sway_container->output->active) {
-                output = node->sway_container->output;
+            if (node->type == N_WINDOW &&
+                    node->wls_window->output->active) {
+                output = node->wls_window->output;
                 break;
             } else if (node->type == N_OUTPUT) {
                 output = node->sway_output;
@@ -277,14 +277,14 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
         if (!output) {
             return;
         }
-        struct sway_container *con =
+        struct wls_window *win =
             seat_get_focus_inactive_view(seat, &output->node);
-        next_focus = con ? &(con->node) : &(output->node);
+        next_focus = win ? &(win->node) : &(output->node);
     }
 
     if (needs_new_focus) {
         // Make sure the workspace IPC event gets sent
-        if (node->type == N_CONTAINER) {
+        if (node->type == N_WINDOW) {
             seat_set_focus(seat, NULL);
         }
         // The structure change might have caused it to move up to the top of
@@ -297,8 +297,8 @@ static void handle_seat_node_destroy(struct wl_listener *listener, void *data) {
     } else {
         focus = seat_get_next_in_focus_stack(seat);
         seat_set_raw_focus(seat, next_focus);
-        if (focus->type == N_CONTAINER && focus->sway_container->output->active) {
-            seat_set_raw_focus(seat, &focus->sway_container->output->node);
+        if (focus->type == N_WINDOW && focus->wls_window->output->active) {
+            seat_set_raw_focus(seat, &focus->wls_window->output->node);
         }
         seat_set_raw_focus(seat, focus);
     }
@@ -417,9 +417,9 @@ static void collect_focus_output_iter(struct sway_output *output,
     collect_focus_iter(&output->node, data);
 }
 
-static void collect_focus_container_iter(struct sway_container *container,
+static void collect_focus_window_iter(struct wls_window *window,
         void *data) {
-    collect_focus_iter(&container->node, data);
+    collect_focus_iter(&window->node, data);
 }
 
 struct sway_seat *seat_create(const char *seat_name) {
@@ -456,7 +456,7 @@ struct sway_seat *seat_create(const char *seat_name) {
     wl_list_init(&seat->devices);
 
     wls_output_layout_for_each_output(collect_focus_output_iter, seat);
-    wls_output_layout_for_each_container(collect_focus_container_iter, seat);
+    wls_output_layout_for_each_window(collect_focus_window_iter, seat);
 
     wl_signal_add(&wls->node_manager->events.new_node, &seat->new_node);
     seat->new_node.notify = handle_new_node;
@@ -625,7 +625,7 @@ static void seat_configure_keyboard(struct sway_seat *seat,
     if (focus && node_is_view(focus)) {
         // force notify reenter to pick up the new configuration
         wlr_seat_keyboard_notify_clear_focus(seat->wlr_seat);
-        seat_keyboard_notify_enter(seat, focus->sway_container->view->surface);
+        seat_keyboard_notify_enter(seat, focus->wls_window->view->surface);
     }
 }
 
@@ -880,20 +880,20 @@ bool seat_is_input_allowed(struct sway_seat *seat,
     return !seat->exclusive_client || seat->exclusive_client == client;
 }
 
-static void send_unfocus(struct sway_container *con, void *data) {
-    if (con->view) {
-        view_set_activated(con->view, false);
+static void send_unfocus(struct wls_window *win, void *data) {
+    if (win->view) {
+        view_set_activated(win->view, false);
     }
 }
 
-// Unfocus the container and any children (eg. when leaving `focus parent`)
+// Unfocus the window and any children (eg. when leaving `focus parent`)
 static void seat_send_unfocus(struct wls_transaction_node *node, struct sway_seat *seat) {
     sway_cursor_constrain(seat->cursor, NULL);
     wlr_seat_keyboard_notify_clear_focus(seat->wlr_seat);
     if (node->type == N_OUTPUT) {
-        output_for_each_container(node->sway_output, send_unfocus, seat);
-    } else if (node->type == N_CONTAINER) {
-        send_unfocus(node->sway_container, seat);
+        output_for_each_window(node->sway_output, send_unfocus, seat);
+    } else if (node->type == N_WINDOW) {
+        send_unfocus(node->wls_window, seat);
     }
 }
 
@@ -919,8 +919,8 @@ static void dump_focus_stack(struct sway_seat *seat) {
             continue;
         }
         sway_log(SWAY_DEBUG, "   node ID %lu", node->id);
-        if (node->type == N_CONTAINER) {
-            sway_log(SWAY_DEBUG, "   type: container (%p)", node->sway_container);
+        if (node->type == N_WINDOW) {
+            sway_log(SWAY_DEBUG, "   type: window (%p)", node->wls_window);
         } else if (node->type == N_OUTPUT) {
             sway_log(SWAY_DEBUG, "   type: output (%p)", node->sway_output);
         } else {
@@ -969,7 +969,7 @@ void seat_set_focus(struct sway_seat *seat, struct wls_transaction_node *node) {
        if (last_focus) {
            // Close any popups on the old focus
            if (node_is_view(last_focus)) {
-               view_close_popups(last_focus->sway_container->view);
+               view_close_popups(last_focus->wls_window->view);
            }
            seat_send_unfocus(last_focus, seat);
        }
@@ -979,10 +979,10 @@ void seat_set_focus(struct sway_seat *seat, struct wls_transaction_node *node) {
     }
 
     struct sway_output *new_output = node->type == N_OUTPUT ?
-        node->sway_output : node->sway_container->output;
+        node->sway_output : node->wls_window->output;
 
-    struct sway_container *container = node->type == N_CONTAINER ?
-        node->sway_container : NULL;
+    struct wls_window *window = node->type == N_WINDOW ?
+        node->wls_window : NULL;
 
 
     if (new_output && last_output != new_output) {
@@ -1002,20 +1002,20 @@ void seat_set_focus(struct sway_seat *seat, struct wls_transaction_node *node) {
     if (new_output) {
         seat_set_raw_focus(seat, &new_output->node);
     }
-    if (container) {
-        seat_set_raw_focus(seat, &container->node);
-        seat_send_focus(&container->node, seat);
+    if (window) {
+        seat_set_raw_focus(seat, &window->node);
+        seat_send_focus(&window->node, seat);
     }
 
     // Close any popups on the old focus
     if (last_focus && node_is_view(last_focus)) {
-        view_close_popups(last_focus->sway_container->view);
+        view_close_popups(last_focus->wls_window->view);
     }
 
     // If urgent, either unset the urgency or start a timer to unset it
-    if (container && container->view && view_is_urgent(container->view) &&
-            !container->view->urgent_timer) {
-        struct sway_view *view = container->view;
+    if (window && window->view && view_is_urgent(window->view) &&
+            !window->view->urgent_timer) {
+        struct sway_view *view = window->view;
         if (last_output && last_output != new_output &&
                 config->urgent_timeout > 0) {
             view->urgent_timer = wl_event_loop_add_timer(wls->server->wl_event_loop,
@@ -1035,9 +1035,9 @@ void seat_set_focus(struct sway_seat *seat, struct wls_transaction_node *node) {
     seat->has_focus = true;
 }
 
-void seat_set_focus_container(struct sway_seat *seat,
-        struct sway_container *con) {
-    seat_set_focus(seat, con ? &con->node : NULL);
+void seat_set_focus_window(struct sway_seat *seat,
+        struct wls_window *win) {
+    seat_set_focus(seat, win ? &win->node : NULL);
 }
 
 void seat_set_focus_output(struct sway_seat *seat,
@@ -1103,7 +1103,7 @@ void seat_set_exclusive_client(struct sway_seat *seat,
     if (seat->has_focus) {
         struct wls_transaction_node *focus = seat_get_focus(seat);
         if (node_is_view(focus) && wl_resource_get_client(
-                    focus->sway_container->view->surface->resource) != client) {
+                    focus->wls_window->view->surface->resource) != client) {
             seat_set_focus(seat, NULL);
         }
     }
@@ -1175,7 +1175,7 @@ struct wls_transaction_node *seat_get_active_tiling_child(struct sway_seat *seat
                 sway_log(SWAY_DEBUG, "workspace has no output!");
                 continue;
             }
-            if (list_find(output->windows, node->sway_container) == -1) {
+            if (list_find(output->windows, node->wls_window) == -1) {
                 continue;
             }
         }
@@ -1189,8 +1189,8 @@ struct sway_output *seat_get_focused_output(struct sway_seat *seat) {
     if (!focus) {
         return NULL;
     }
-    if (focus->type == N_CONTAINER) {
-        return focus->sway_container->output;
+    if (focus->type == N_WINDOW) {
+        return focus->wls_window->output;
     } else if (focus->type == N_OUTPUT) {
         return focus->sway_output;
     }
@@ -1262,18 +1262,18 @@ void seat_consider_warp_to_focus(struct sway_seat *seat) {
         }
     }
 
-    if (focus->type == N_CONTAINER) {
-        cursor_warp_to_container(seat->cursor, focus->sway_container, false);
+    if (focus->type == N_WINDOW) {
+        cursor_warp_to_window(seat->cursor, focus->wls_window, false);
     } else {
         cursor_warp_to_output(seat->cursor, focus->sway_output);
     }
 }
 
-void down_handle_unref(struct sway_seat *seat, struct sway_container *con);
+void down_handle_unref(struct sway_seat *seat, struct wls_window *win);
 
-void seatop_unref(struct sway_seat *seat, struct sway_container *con) {
+void seatop_unref(struct sway_seat *seat, struct wls_window *win) {
     if (seat->cursor_pressed) {
-        down_handle_unref(seat, con);
+        down_handle_unref(seat, win);
     }
 }
 

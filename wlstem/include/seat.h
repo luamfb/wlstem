@@ -11,7 +11,7 @@
 #include "text_input.h"
 
 struct seat_config;
-struct sway_container;
+struct wls_window;
 struct sway_output;
 struct sway_seat;
 
@@ -62,7 +62,7 @@ struct sway_seat {
     struct sway_cursor *cursor;
 
     bool has_focus;
-    struct wl_list focus_stack; // list of containers in focus order
+    struct wl_list focus_stack; // list of windows in focus order
 
     // If the focused layer is set, views cannot receive keyboard focus
     struct wlr_layer_surface_v1 *focused_layer;
@@ -138,8 +138,8 @@ void seat_configure_xcursor(struct sway_seat *seat);
 
 void seat_set_focus(struct sway_seat *seat, struct wls_transaction_node *node);
 
-void seat_set_focus_container(struct sway_seat *seat,
-        struct sway_container *con);
+void seat_set_focus_window(struct sway_seat *seat,
+        struct wls_window *win);
 
 void seat_set_focus_output(struct sway_seat *seat,
         struct sway_output *output);
@@ -168,16 +168,16 @@ struct wls_transaction_node *seat_get_focus(struct sway_seat *seat);
 
 struct sway_output *seat_get_focused_output(struct sway_seat *seat);
 
-struct sway_container *seat_get_focused_container(struct sway_seat *seat);
+struct wls_window *seat_get_focused_window(struct sway_seat *seat);
 
 struct wls_transaction_node *seat_get_next_in_focus_stack(struct sway_seat *seat);
 /**
- * Return the last container to be focused for the seat (or the most recently
- * opened if no container has received focused) that is a child of the given
- * container. The focus-inactive container of the root window is the focused
- * container for the seat (if the seat does have focus). This function can be
- * used to determine what container gets focused next if the focused container
- * is destroyed, or focus moves to a container with children and we need to
+ * Return the last window to be focused for the seat (or the most recently
+ * opened if no window has received focused) that is a child of the given
+ * window. The focus-inactive window of the root window is the focused
+ * window for the seat (if the seat does have focus). This function can be
+ * used to determine what window gets focused next if the focused window
+ * is destroyed, or focus moves to a window with children and we need to
  * descend into the next leaf in focus order.
  */
 struct wls_transaction_node *seat_get_focus_inactive(struct sway_seat *seat,
@@ -185,19 +185,19 @@ struct wls_transaction_node *seat_get_focus_inactive(struct sway_seat *seat,
 
 /**
  * Descend into the focus stack to find the focus-inactive view. Useful for
- * container placement when they change position in the tree.
+ * window placement when they change position in the tree.
  */
-struct sway_container *seat_get_focus_inactive_view(struct sway_seat *seat,
+struct wls_window *seat_get_focus_inactive_view(struct sway_seat *seat,
         struct wls_transaction_node *ancestor);
 
 /**
- * Return the immediate child of container which was most recently focused.
+ * Return the immediate child of window which was most recently focused.
  */
 struct wls_transaction_node *seat_get_active_tiling_child(struct sway_seat *seat,
         struct wls_transaction_node *parent);
 
 /**
- * Iterate over the focus-inactive children of the container calling the
+ * Iterate over the focus-inactive children of the window calling the
  * function on each.
  */
 void seat_for_each_node(struct sway_seat *seat,
@@ -218,7 +218,7 @@ void drag_icon_update_position(struct sway_drag_icon *icon);
 
 void seatop_begin_default(struct sway_seat *seat);
 
-void seatop_begin_down(struct sway_seat *seat, struct sway_container *con,
+void seatop_begin_down(struct sway_seat *seat, struct wls_window *win,
         uint32_t time_msec, int sx, int sy);
 
 void seat_pointer_notify_button(struct sway_seat *seat, uint32_t time_msec,
@@ -251,10 +251,10 @@ void seatop_end(struct sway_seat *seat);
 
 /**
  * Instructs the seatop implementation to drop any references to the given
- * container (eg. because the container is destroying).
+ * window (eg. because the window is destroying).
  * The seatop may choose to abort itself in response to this.
  */
-void seatop_unref(struct sway_seat *seat, struct sway_container *con);
+void seatop_unref(struct sway_seat *seat, struct wls_window *win);
 
 bool seatop_allows_set_cursor(struct sway_seat *seat);
 

@@ -49,7 +49,7 @@ void view_begin_destroy(struct sway_view *view) {
     }
     view->destroying = true;
 
-    if (!view->container) {
+    if (!view->window) {
         view_destroy(view);
     }
 }
@@ -163,20 +163,20 @@ bool view_ancestor_is_only_visible(struct sway_view *view) {
 }
 
 void view_autoconfigure(struct sway_view *view) {
-    struct sway_container *con = view->container;
+    struct wls_window *win = view->window;
 
     double x, y, width, height;
     // Height is: 1px border + 3px pad + title height + 3px pad + 1px border
-    x = con->x + config->border_thickness;
-    width = con->width - config->border_thickness - config->border_thickness;
-    y = con->y + container_titlebar_height();
-    height = con->height - container_titlebar_height()
+    x = win->x + config->border_thickness;
+    width = win->width - config->border_thickness - config->border_thickness;
+    y = win->y + window_titlebar_height();
+    height = win->height - window_titlebar_height()
         - config->border_thickness;
 
-    con->content_x = x;
-    con->content_y = y;
-    con->content_width = width;
-    con->content_height = height;
+    win->content_x = x;
+    win->content_y = y;
+    win->content_width = width;
+    win->content_height = height;
 }
 
 void view_set_activated(struct sway_view *view, bool activated) {
@@ -190,7 +190,7 @@ void view_set_activated(struct sway_view *view, bool activated) {
 }
 
 void view_request_activate(struct sway_view *view) {
-    struct sway_output *output = view->container->output;
+    struct sway_output *output = view->window->output;
     if (!output) {
         return;
     }
@@ -278,13 +278,13 @@ static struct sway_output *select_output(struct sway_view *view) {
         if (output->active) {
             return output;
         }
-    } else if (node && node->type == N_CONTAINER) {
-        struct sway_output *output = node->sway_container->output;
-        if (!sway_assert(output, "container has no output")) {
+    } else if (node && node->type == N_WINDOW) {
+        struct sway_output *output = node->wls_window->output;
+        if (!sway_assert(output, "window has no output")) {
             abort();
         }
         if (output->active) {
-            return node->sway_container->output;
+            return node->wls_window->output;
         }
     } else if (node) {
         sway_log(SWAY_ERROR,
@@ -301,9 +301,9 @@ static struct sway_output *select_output(struct sway_view *view) {
 
 static bool should_focus(struct sway_view *view) {
     struct sway_seat *seat = input_manager_current_seat();
-    struct sway_container *prev_con = seat_get_focused_container(seat);
+    struct wls_window *prev_con = seat_get_focused_window(seat);
     struct sway_output *prev_output = seat_get_focused_output(seat);
-    struct sway_output *map_output = view->container->output;
+    struct sway_output *map_output = view->window->output;
 
     // Views can only take focus if they are mapped into the active output
     if (map_output && prev_output != map_output) {
@@ -312,7 +312,7 @@ static bool should_focus(struct sway_view *view) {
 
     // If the view is the only one in the focused workspace, it'll get focus
     if (!prev_con) {
-        struct sway_output *output = view->container->output;
+        struct sway_output *output = view->window->output;
         if (!output) {
             sway_log(SWAY_DEBUG, "workspace has no output!");
             return false;
@@ -334,7 +334,7 @@ static void handle_foreign_activate_request(
     struct sway_seat *seat;
     wl_list_for_each(seat, &wls->seats, link) {
         if (seat->wlr_seat == event->seat) {
-            seat_set_focus_container(seat, view->container);
+            seat_set_focus_window(seat, view->window);
             seat_consider_warp_to_focus(seat);
             break;
         }
@@ -370,15 +370,15 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     }
     view->surface = wlr_surface;
     view_populate_pid(view);
-    view->container = container_create(view);
+    view->window = window_create(view);
 
     struct sway_output *output = select_output(view);
 
     struct sway_seat *seat = input_manager_current_seat();
     struct wls_transaction_node *node = output ? seat_get_focus_inactive(seat, &output->node)
         : seat_get_next_in_focus_stack(seat);
-    struct sway_container *target_sibling = node->type == N_CONTAINER ?
-        node->sway_container : NULL;
+    struct wls_window *target_sibling = node->type == N_WINDOW ?
+        node->wls_window : NULL;
 
     view->foreign_toplevel =
         wlr_foreign_toplevel_handle_v1_create(server.foreign_toplevel_manager);
@@ -395,15 +395,15 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
     wl_signal_add(&view->foreign_toplevel->events.destroy,
             &view->foreign_destroy);
 
-    struct sway_container *container = view->container;
+    struct wls_window *window = view->window;
     if (target_sibling) {
-        container_add_sibling(target_sibling, container, 1);
+        window_add_sibling(target_sibling, window, 1);
     } else if (output) {
         if (!output->active) {
             sway_log(SWAY_DEBUG, "output is not active...");
             return;
         }
-        container = output_add_container(output, container);
+        window = output_add_window(output, window);
     }
 
     view_init_subsurfaces(view, wlr_surface);
@@ -419,12 +419,12 @@ void view_map(struct sway_view *view, struct wlr_surface *wlr_surface,
 
     view_update_title(view, false);
 
-    if (container->output) {
-        arrange_output(container->output);
+    if (window->output) {
+        arrange_output(window->output);
     }
 
     if (should_focus(view)) {
-        input_manager_set_focus(&view->container->node);
+        input_manager_set_focus(&view->window->node);
     }
 
     const char *app_id;
@@ -453,8 +453,8 @@ void view_unmap(struct sway_view *view) {
         view->foreign_toplevel = NULL;
     }
 
-    struct sway_output *output = view->container->output;
-    container_begin_destroy(view->container);
+    struct sway_output *output = view->window->output;
+    window_begin_destroy(view->window);
 
     if (output && output->active && !output->node.destroying) {
         arrange_output(output);
@@ -478,12 +478,12 @@ void view_unmap(struct sway_view *view) {
 }
 
 void view_update_size(struct sway_view *view, int width, int height) {
-    struct sway_container *con = view->container;
+    struct wls_window *win = view->window;
 
-    con->surface_x = con->content_x + (con->content_width - width) / 2;
-    con->surface_y = con->content_y + (con->content_height - height) / 2;
-    con->surface_x = fmax(con->surface_x, con->content_x);
-    con->surface_y = fmax(con->surface_y, con->content_y);
+    win->surface_x = win->content_x + (win->content_width - width) / 2;
+    win->surface_y = win->content_y + (win->content_height - height) / 2;
+    win->surface_x = fmax(win->surface_x, win->content_x);
+    win->surface_y = fmax(win->surface_y, win->content_y);
 }
 
 static const struct sway_view_child_impl subsurface_impl;
@@ -580,14 +580,14 @@ static void view_child_subsurface_create(struct sway_view_child *child,
 }
 
 static void view_child_damage(struct sway_view_child *child, bool whole) {
-    if (!child || !child->mapped || !child->view || !child->view->container) {
+    if (!child || !child->mapped || !child->view || !child->view->window) {
         return;
     }
     int sx, sy;
     child->impl->get_root_coords(child, &sx, &sy);
     desktop_damage_surface(child->surface,
-            child->view->container->content_x + sx,
-            child->view->container->content_y + sy, whole);
+            child->view->window->content_x + sx,
+            child->view->window->content_y + sy, whole);
 }
 
 static void view_child_handle_surface_commit(struct wl_listener *listener,
@@ -670,7 +670,7 @@ void view_child_init(struct sway_view_child *child,
     wl_signal_add(&view->events.unmap, &child->view_unmap);
     child->view_unmap.notify = view_child_handle_view_unmap;
 
-    struct sway_output *output = child->view->container->output;
+    struct sway_output *output = child->view->window->output;
     if (output) {
         wlr_surface_send_enter(child->surface, output->wlr_output);
     }
@@ -679,7 +679,7 @@ void view_child_init(struct sway_view_child *child,
 }
 
 void view_child_destroy(struct sway_view_child *child) {
-    if (child->mapped && child->view->container != NULL) {
+    if (child->mapped && child->view->window != NULL) {
         view_child_damage(child, true);
     }
 
@@ -783,17 +783,17 @@ void view_update_title(struct sway_view *view, bool force) {
     const char *title = view_get_title(view);
 
     if (!force) {
-        if (title && view->container->title &&
-                strcmp(title, view->container->title) == 0) {
+        if (title && view->window->title &&
+                strcmp(title, view->window->title) == 0) {
             return;
         }
-        if (!title && !view->container->title) {
+        if (!title && !view->window->title) {
             return;
         }
     }
 
-    struct window_title *title_data = view->container->data;
-    free(view->container->title);
+    struct window_title *title_data = view->window->data;
+    free(view->window->title);
     free(title_data->formatted_title);
     if (title) {
         size_t len = parse_title_format(view, NULL);
@@ -803,17 +803,17 @@ void view_update_title(struct sway_view *view, bool force) {
         }
         parse_title_format(view, buffer);
 
-        view->container->title = strdup(title);
+        view->window->title = strdup(title);
         title_data->formatted_title = buffer;
     } else {
-        view->container->title = NULL;
+        view->window->title = NULL;
         title_data->formatted_title = NULL;
     }
-    container_calculate_title_height(view->container);
+    window_calculate_title_height(view->window);
     config_update_font_height(false);
 
     // Update title after the global font height is updated
-    container_update_title_textures(view->container);
+    window_update_title_textures(view->window);
 
     if (view->foreign_toplevel && title) {
         wlr_foreign_toplevel_handle_v1_set_title(view->foreign_toplevel, title);
@@ -826,7 +826,7 @@ void view_set_urgent(struct sway_view *view, bool enable) {
     }
     if (enable) {
         struct sway_seat *seat = input_manager_current_seat();
-        if (seat_get_focused_container(seat) == view->container) {
+        if (seat_get_focused_window(seat) == view->window) {
             return;
         }
         clock_gettime(CLOCK_MONOTONIC, &view->urgent);
@@ -837,7 +837,7 @@ void view_set_urgent(struct sway_view *view, bool enable) {
             view->urgent_timer = NULL;
         }
     }
-    container_damage_whole(view->container);
+    window_damage_whole(view->window);
 }
 
 bool view_is_urgent(struct sway_view *view) {

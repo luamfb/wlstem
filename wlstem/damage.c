@@ -50,14 +50,14 @@ static void damage_surface_iterator(struct sway_output *output, struct sway_view
     }
 }
 
-static void damage_child_views_iterator(struct sway_container *con,
+static void damage_child_views_iterator(struct wls_window *win,
         void *data) {
-    if (!con->view || !view_is_visible(con->view)) {
+    if (!win->view || !view_is_visible(win->view)) {
         return;
     }
     struct sway_output *output = data;
     bool whole = true;
-    output_view_for_each_surface(output, con->view, damage_surface_iterator,
+    output_view_for_each_surface(output, win->view, damage_surface_iterator,
             &whole);
 }
 
@@ -68,10 +68,10 @@ void view_damage_from(struct sway_view *view) {
     }
 }
 
-void container_damage_whole(struct sway_container *container) {
+void window_damage_whole(struct wls_window *window) {
     for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
         struct sway_output *output = wls->output_manager->outputs->items[i];
-        output_damage_whole_container(output, container);
+        output_damage_whole_window(output, window);
     }
 }
 
@@ -84,20 +84,20 @@ void output_damage_box(struct sway_output *output, struct wlr_box *_box) {
     wlr_output_damage_add_box(output->damage, &box);
 }
 
-void output_damage_whole_container(struct sway_output *output,
-        struct sway_container *con) {
+void output_damage_whole_window(struct sway_output *output,
+        struct wls_window *win) {
     // Pad the box by 1px, because the width is a double and might be a fraction
     struct wlr_box box = {
-        .x = con->current.x - output->lx - 1,
-        .y = con->current.y - output->ly - 1,
-        .width = con->current.width + 2,
-        .height = con->current.height + 2,
+        .x = win->current.x - output->lx - 1,
+        .y = win->current.y - output->ly - 1,
+        .width = win->current.width + 2,
+        .height = win->current.height + 2,
     };
     scale_box(&box, output->wlr_output->scale);
     wlr_output_damage_add_box(output->damage, &box);
     // Damage subsurfaces as well, which may extend outside the box
-    if (con->view) {
-        damage_child_views_iterator(con, output);
+    if (win->view) {
+        damage_child_views_iterator(win, output);
     }
 }
 
@@ -127,10 +127,10 @@ void desktop_damage_surface(struct wlr_surface *surface, double lx, double ly,
     }
 }
 
-void desktop_damage_whole_container(struct sway_container *con) {
+void desktop_damage_whole_window(struct wls_window *win) {
     for (int i = 0; i < wls->output_manager->outputs->length; ++i) {
         struct sway_output *output = wls->output_manager->outputs->items[i];
-        output_damage_whole_container(output, con);
+        output_damage_whole_window(output, win);
     }
 }
 
@@ -142,10 +142,10 @@ void desktop_damage_box(struct wlr_box *box) {
 }
 
 void desktop_damage_view(struct sway_view *view) {
-    desktop_damage_whole_container(view->container);
+    desktop_damage_whole_window(view->window);
     struct wlr_box box = {
-        .x = view->container->current.content_x - view->geometry.x,
-        .y = view->container->current.content_y - view->geometry.y,
+        .x = view->window->current.content_x - view->geometry.x,
+        .y = view->window->current.content_y - view->geometry.y,
         .width = view->surface->current.width,
         .height = view->surface->current.height,
     };

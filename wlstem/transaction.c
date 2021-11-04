@@ -34,7 +34,7 @@ struct sway_transaction_instruction {
     struct wls_transaction_node *node;
     union {
         struct sway_output_state output_state;
-        struct sway_container_state container_state;
+        struct wls_window_state window_state;
     };
     uint32_t serial;
 };
@@ -64,8 +64,8 @@ static void transaction_destroy(struct sway_transaction *transaction) {
             case N_OUTPUT:
                 output_destroy(node->sway_output);
                 break;
-            case N_CONTAINER:
-                container_destroy(node->sway_container);
+            case N_WINDOW:
+                window_destroy(node->wls_window);
                 break;
             }
         }
@@ -88,25 +88,25 @@ static void copy_output_state(struct sway_output *output,
     state->active = output->active;
 }
 
-static void copy_container_state(struct sway_container *container,
+static void copy_window_state(struct wls_window *window,
         struct sway_transaction_instruction *instruction) {
-    struct sway_container_state *state = &instruction->container_state;
+    struct wls_window_state *state = &instruction->window_state;
 
-    state->x = container->x;
-    state->y = container->y;
-    state->width = container->width;
-    state->height = container->height;
-    state->output = container->output;
-    state->content_x = container->content_x;
-    state->content_y = container->content_y;
-    state->content_width = container->content_width;
-    state->content_height = container->content_height;
+    state->x = window->x;
+    state->y = window->y;
+    state->width = window->width;
+    state->height = window->height;
+    state->output = window->output;
+    state->content_x = window->content_x;
+    state->content_y = window->content_y;
+    state->content_width = window->content_width;
+    state->content_height = window->content_height;
 
     /* XXX commented out so we can migrate this to wlstem without
      * having migrated input_manager_current_seat() yet.
      *
     struct sway_seat *seat = input_manager_current_seat();
-    state->focused = seat_get_focus(seat) == &container->node;
+    state->focused = seat_get_focus(seat) == &window->node;
     */
     state->focused = false; //XXX
 }
@@ -125,8 +125,8 @@ static void transaction_add_node(struct sway_transaction *transaction,
     case N_OUTPUT:
         copy_output_state(node->sway_output, instruction);
         break;
-    case N_CONTAINER:
-        copy_container_state(node->sway_container, instruction);
+    case N_WINDOW:
+        copy_window_state(node->wls_window, instruction);
         break;
     }
 
@@ -142,17 +142,17 @@ static void apply_output_state(struct sway_output *output,
     output_damage_whole(output);
 }
 
-static void apply_container_state(struct sway_container *container,
-        struct sway_container_state *state) {
-    struct sway_view *view = container->view;
+static void apply_window_state(struct wls_window *window,
+        struct wls_window_state *state) {
+    struct sway_view *view = window->view;
     // Damage the old location
-    desktop_damage_whole_container(container);
+    desktop_damage_whole_window(window);
     if (view && !wl_list_empty(&view->saved_buffers)) {
         struct sway_saved_buffer *saved_buf;
         wl_list_for_each(saved_buf, &view->saved_buffers, link) {
             struct wlr_box box = {
-                .x = container->current.content_x - view->saved_geometry.x + saved_buf->x,
-                .y = container->current.content_y - view->saved_geometry.y + saved_buf->y,
+                .x = window->current.content_x - view->saved_geometry.x + saved_buf->x,
+                .y = window->current.content_y - view->saved_geometry.y + saved_buf->y,
                 .width = saved_buf->width,
                 .height = saved_buf->height,
             };
@@ -160,21 +160,21 @@ static void apply_container_state(struct sway_container *container,
         }
     }
 
-    memcpy(&container->current, state, sizeof(struct sway_container_state));
+    memcpy(&window->current, state, sizeof(struct wls_window_state));
 
     if (view && !wl_list_empty(&view->saved_buffers)) {
-        if (!container->node.destroying || container->node.ntxnrefs == 1) {
+        if (!window->node.destroying || window->node.ntxnrefs == 1) {
             view_remove_saved_buffer(view);
         }
     }
 
     // Damage the new location
-    desktop_damage_whole_container(container);
+    desktop_damage_whole_window(window);
     if (view && view->surface) {
         struct wlr_surface *surface = view->surface;
         struct wlr_box box = {
-            .x = container->current.content_x - view->geometry.x,
-            .y = container->current.content_y - view->geometry.y,
+            .x = window->current.content_x - view->geometry.x,
+            .y = window->current.content_y - view->geometry.y,
             .width = surface->current.width,
             .height = surface->current.height,
         };
@@ -182,25 +182,25 @@ static void apply_container_state(struct sway_container *container,
     }
 
     // If the view hasn't responded to the configure, center it within
-    // the container. This is important for fullscreen views which
+    // the window. This is important for fullscreen views which
     // refuse to resize to the size of the output.
     if (view && view->surface) {
-        if (view->geometry.width < container->current.content_width) {
-            container->surface_x = container->current.content_x +
-                (container->current.content_width - view->geometry.width) / 2;
+        if (view->geometry.width < window->current.content_width) {
+            window->surface_x = window->current.content_x +
+                (window->current.content_width - view->geometry.width) / 2;
         } else {
-            container->surface_x = container->current.content_x;
+            window->surface_x = window->current.content_x;
         }
-        if (view->geometry.height < container->current.content_height) {
-            container->surface_y = container->current.content_y +
-                (container->current.content_height - view->geometry.height) / 2;
+        if (view->geometry.height < window->current.content_height) {
+            window->surface_y = window->current.content_y +
+                (window->current.content_height - view->geometry.height) / 2;
         } else {
-            container->surface_y = container->current.content_y;
+            window->surface_y = window->current.content_y;
         }
     }
 
-    if (!container->node.destroying) {
-        container_discover_outputs(container);
+    if (!window->node.destroying) {
+        window_discover_outputs(window);
     }
 }
 
@@ -229,9 +229,9 @@ static void transaction_apply(struct sway_transaction *transaction) {
         case N_OUTPUT:
             apply_output_state(node->sway_output, &instruction->output_state);
             break;
-        case N_CONTAINER:
-            apply_container_state(node->sway_container,
-                    &instruction->container_state);
+        case N_WINDOW:
+            apply_window_state(node->wls_window,
+                    &instruction->window_state);
             break;
         }
 
@@ -324,12 +324,12 @@ static bool should_configure(struct wls_transaction_node *node,
     if (node->destroying) {
         return false;
     }
-    struct sway_container_state *cstate = &node->sway_container->current;
-    struct sway_container_state *istate = &instruction->container_state;
+    struct wls_window_state *cstate = &node->wls_window->current;
+    struct wls_window_state *istate = &instruction->window_state;
 #if HAVE_XWAYLAND
     // Xwayland views are position-aware and need to be reconfigured
     // when their position changes.
-    if (node->sway_container->view->type == SWAY_VIEW_XWAYLAND) {
+    if (node->wls_window->view->type == SWAY_VIEW_XWAYLAND) {
         // Sway logical coordinates are doubles, but they get truncated to
         // integers when sent to Xwayland through `xcb_configure_window`.
         // X11 apps will not respond to duplicate configure requests (from their
@@ -356,11 +356,11 @@ static void transaction_commit(struct sway_transaction *transaction) {
             transaction->instructions->items[i];
         struct wls_transaction_node *node = instruction->node;
         if (should_configure(node, instruction)) {
-            instruction->serial = view_configure(node->sway_container->view,
-                    instruction->container_state.content_x,
-                    instruction->container_state.content_y,
-                    instruction->container_state.content_width,
-                    instruction->container_state.content_height);
+            instruction->serial = view_configure(node->wls_window->view,
+                    instruction->window_state.content_x,
+                    instruction->window_state.content_y,
+                    instruction->window_state.content_width,
+                    instruction->window_state.content_height);
             ++transaction->num_waiting;
 
             // From here on we are rendering a saved buffer of the view, which
@@ -370,12 +370,12 @@ static void transaction_commit(struct sway_transaction *transaction) {
             struct timespec now;
             clock_gettime(CLOCK_MONOTONIC, &now);
             wlr_surface_send_frame_done(
-                    node->sway_container->view->surface, &now);
+                    node->wls_window->view->surface, &now);
         }
-        if (node_is_view(node) && wl_list_empty(&node->sway_container->view->saved_buffers)) {
-            view_save_buffer(node->sway_container->view);
-            memcpy(&node->sway_container->view->saved_geometry,
-                    &node->sway_container->view->geometry,
+        if (node_is_view(node) && wl_list_empty(&node->wls_window->view->saved_buffers)) {
+            view_save_buffer(node->wls_window->view);
+            memcpy(&node->wls_window->view->saved_geometry,
+                    &node->wls_window->view->geometry,
                     sizeof(struct wlr_box));
         }
         node->instruction = instruction;
@@ -425,7 +425,7 @@ static void set_instruction_ready(
                 transaction,
                 transaction->num_configures - transaction->num_waiting + 1,
                 transaction->num_configures, ms,
-                instruction->node->sway_container->title);
+                instruction->node->wls_window->title);
     }
 
     // If the transaction has timed out then its num_waiting will be 0 already.
@@ -441,7 +441,7 @@ static void set_instruction_ready(
 void transaction_notify_view_ready_by_serial(struct sway_view *view,
         uint32_t serial) {
     struct sway_transaction_instruction *instruction =
-        view->container->node.instruction;
+        view->window->node.instruction;
     if (instruction != NULL && instruction->serial == serial) {
         set_instruction_ready(instruction);
     }
@@ -450,19 +450,19 @@ void transaction_notify_view_ready_by_serial(struct sway_view *view,
 void transaction_notify_view_ready_by_geometry(struct sway_view *view,
         double x, double y, int width, int height) {
     struct sway_transaction_instruction *instruction =
-        view->container->node.instruction;
+        view->window->node.instruction;
     if (instruction != NULL &&
-            (int)instruction->container_state.content_x == (int)x &&
-            (int)instruction->container_state.content_y == (int)y &&
-            instruction->container_state.content_width == width &&
-            instruction->container_state.content_height == height) {
+            (int)instruction->window_state.content_x == (int)x &&
+            (int)instruction->window_state.content_y == (int)y &&
+            instruction->window_state.content_width == width &&
+            instruction->window_state.content_height == height) {
         set_instruction_ready(instruction);
     }
 }
 
 void transaction_notify_view_ready_immediately(struct sway_view *view) {
     struct sway_transaction_instruction *instruction =
-            view->container->node.instruction;
+            view->window->node.instruction;
     if (instruction != NULL) {
         set_instruction_ready(instruction);
     }

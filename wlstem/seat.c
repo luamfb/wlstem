@@ -36,10 +36,10 @@ void remove_node_from_focus_stack(struct sway_seat *seat,
     }
 }
 
-struct sway_container *seat_get_focused_container(struct sway_seat *seat) {
+struct wls_window *seat_get_focused_window(struct sway_seat *seat) {
     struct wls_transaction_node *focus = seat_get_focus(seat);
-    if (focus && focus->type == N_CONTAINER) {
-        return focus->sway_container;
+    if (focus && focus->type == N_WINDOW) {
+        return focus->wls_window;
     }
     return NULL;
 }

@@ -368,7 +368,7 @@ static void handle_commit(struct wl_listener *listener, void *data) {
     struct wlr_xwayland_surface *xsurface = view->wlr_xwayland_surface;
     struct wlr_surface_state *state = &xsurface->surface->current;
 
-    if (view->container->node.instruction) {
+    if (view->window->node.instruction) {
         get_geometry(view, &view->geometry);
         transaction_notify_view_ready_by_geometry(view,
                 xsurface->x, xsurface->y, state->width, state->height);
@@ -487,10 +487,10 @@ static void handle_request_configure(struct wl_listener *listener, void *data) {
             ev->width, ev->height);
         return;
     }
-    configure(view, view->container->current.content_x,
-            view->container->current.content_y,
-            view->container->current.content_width,
-            view->container->current.content_height);
+    configure(view, view->window->current.content_x,
+            view->window->current.content_y,
+            view->window->current.content_width,
+            view->window->current.content_height);
 }
 
 static void handle_request_fullscreen(struct wl_listener *listener, void *data) {
@@ -507,7 +507,7 @@ static void handle_request_minimize(struct wl_listener *listener, void *data) {
 
     struct wlr_xwayland_minimize_event *e = data;
     struct sway_seat *seat = input_manager_current_seat();
-    bool focused = seat_get_focus(seat) == &view->container->node;
+    bool focused = seat_get_focus(seat) == &view->window->node;
     wlr_xwayland_surface_set_minimized(xsurface, !focused && e->minimize);
 }
 

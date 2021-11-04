@@ -5,7 +5,7 @@
 /**
  * Transactions enable us to perform atomic layout updates.
  *
- * A transaction contains a list of containers and their new state.
+ * A transaction contains a list of windows and their new state.
  * A state might contain a new size, or new border settings, or new parent/child
  * relationships.
  *
@@ -15,15 +15,15 @@
  * updates all at the same time.
  *
  * When we want to make adjustments to the layout, we change the pending state
- * in containers, mark them as dirty and call transaction_commit_dirty(). This
- * create and commits a transaction from the dirty containers.
+ * in windows, mark them as dirty and call transaction_commit_dirty(). This
+ * create and commits a transaction from the dirty windows.
  */
 
 struct sway_transaction_instruction;
 struct sway_view;
 
 /**
- * Find all dirty containers, create and commit a transaction containing them,
+ * Find all dirty windows, create and commit a transaction containing them,
  * and unmark them as dirty.
  */
 void transaction_commit_dirty(void);

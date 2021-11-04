@@ -7,14 +7,14 @@
 #include "view.h"
 #include "window.h"
 
-struct sway_container *surface_at_view(struct sway_container *con, double lx, double ly,
+struct wls_window *surface_at_view(struct wls_window *win, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
-    if (!sway_assert(con->view, "Expected a view")) {
+    if (!sway_assert(win->view, "Expected a view")) {
         return NULL;
     }
-    struct sway_view *view = con->view;
-    double view_sx = lx - con->surface_x + view->geometry.x;
-    double view_sy = ly - con->surface_y + view->geometry.y;
+    struct sway_view *view = win->view;
+    double view_sx = lx - win->surface_x + view->geometry.x;
+    double view_sy = ly - win->surface_y + view->geometry.y;
 
     double _sx, _sy;
     struct wlr_surface *_surface = NULL;
@@ -35,61 +35,61 @@ struct sway_container *surface_at_view(struct sway_container *con, double lx, do
         *sx = _sx;
         *sy = _sy;
         *surface = _surface;
-        return con;
+        return win;
     }
     return NULL;
 }
 
-struct sway_container *view_container_at(struct wls_transaction_node *parent,
+struct wls_window *view_window_at(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     if (!sway_assert(node_is_view(parent), "Expected a view")) {
         return NULL;
     }
 
-    struct sway_container *container = parent->sway_container;
+    struct wls_window *window = parent->wls_window;
     struct wlr_box box = {
-            .x = container->x,
-            .y = container->y,
-            .width = container->width,
-            .height = container->height,
+            .x = window->x,
+            .y = window->y,
+            .width = window->width,
+            .height = window->height,
     };
 
     if (wlr_box_contains_point(&box, lx, ly)) {
-        surface_at_view(parent->sway_container, lx, ly, surface, sx, sy);
-        return container;
+        surface_at_view(parent->wls_window, lx, ly, surface, sx, sy);
+        return window;
     }
 
     return NULL;
 }
 
-static struct sway_container *toplevel_window_at_recurse(struct wls_transaction_node *parent,
+static struct wls_window *toplevel_window_at_recurse(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     list_t *children = node_get_children(parent);
     if (children) {
         for (int i = 0; i < children->length; ++i) {
-            struct sway_container *child = children->items[i];
-            struct sway_container *container =
+            struct wls_window *child = children->items[i];
+            struct wls_window *window =
                 toplevel_window_at(&child->node, lx, ly, surface, sx, sy);
-            if (container) {
-                return container;
+            if (window) {
+                return window;
             }
         }
     }
     return NULL;
 }
 
-struct sway_container *toplevel_window_at(struct wls_transaction_node *parent,
+struct wls_window *toplevel_window_at(struct wls_transaction_node *parent,
         double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {
     if (node_is_view(parent)) {
-        return view_container_at(parent, lx, ly, surface, sx, sy);
+        return view_window_at(parent, lx, ly, surface, sx, sy);
     }
     if (!node_get_children(parent)) {
         return NULL;
     }
-    if (node_may_have_container_children(parent)) {
+    if (node_may_have_window_children(parent)) {
         return toplevel_window_at_recurse(parent, lx, ly, surface, sx, sy);
     }
     return NULL;

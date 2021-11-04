@@ -20,9 +20,9 @@
 #include "view.h"
 #include "wlstem.h"
 
-static void update_title_texture(struct sway_container *con,
+static void update_title_texture(struct wls_window *win,
         struct wlr_texture **texture, struct border_colors *class) {
-    struct sway_output *output = container_get_effective_output(con);
+    struct sway_output *output = window_get_effective_output(win);
     if (!output) {
         return;
     }
@@ -30,14 +30,14 @@ static void update_title_texture(struct sway_container *con,
         wlr_texture_destroy(*texture);
         *texture = NULL;
     }
-    struct window_title *title_data = con->data;
+    struct window_title *title_data = win->data;
     if (!title_data->formatted_title) {
         return;
     }
 
     double scale = output->wlr_output->scale;
     int width = 0;
-    int height = con->title_height * scale;
+    int height = win->title_height * scale;
 
     // We must use a non-nil cairo_t for cairo_set_font_options to work.
     // Therefore, we cannot use cairo_create(NULL).
@@ -89,21 +89,21 @@ static void update_title_texture(struct sway_container *con,
     cairo_destroy(cairo);
 }
 
-void container_update_title_textures(struct sway_container *container) {
-    struct window_title *title_data = container->data;
-    update_title_texture(container, &title_data->title_focused,
+void window_update_title_textures(struct wls_window *window) {
+    struct window_title *title_data = window->data;
+    update_title_texture(window, &title_data->title_focused,
             &config->border_colors.focused);
-    update_title_texture(container, &title_data->title_unfocused,
+    update_title_texture(window, &title_data->title_unfocused,
             &config->border_colors.unfocused);
-    update_title_texture(container, &title_data->title_urgent,
+    update_title_texture(window, &title_data->title_urgent,
             &config->border_colors.urgent);
-    container_damage_whole(container);
+    window_damage_whole(window);
 }
 
-void container_calculate_title_height(struct sway_container *container) {
-    struct window_title *title_data = container->data;
+void window_calculate_title_height(struct wls_window *window) {
+    struct window_title *title_data = window->data;
     if (!title_data->formatted_title) {
-        container->title_height = 0;
+        window->title_height = 0;
         return;
     }
     cairo_t *cairo = cairo_create(NULL);
@@ -112,10 +112,10 @@ void container_calculate_title_height(struct sway_container *container) {
     get_text_size(cairo, config->font, NULL, &height, &baseline, 1,
             config->pango_markup, "%s", title_data->formatted_title);
     cairo_destroy(cairo);
-    container->title_height = height;
-    container->title_baseline = baseline;
+    window->title_height = height;
+    window->title_baseline = baseline;
 }
 
-size_t container_titlebar_height(void) {
+size_t window_titlebar_height(void) {
     return config->font_height + config->titlebar_v_padding * 2;
 }

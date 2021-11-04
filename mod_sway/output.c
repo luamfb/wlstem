@@ -7,8 +7,8 @@
 #include "window_title.h"
 #include "wlstem.h"
 
-static void update_textures(struct sway_container *con, void *data) {
-    container_update_title_textures(con);
+static void update_textures(struct wls_window *win, void *data) {
+    window_update_title_textures(win);
 }
 
 void handle_output_commit(struct sway_output *output,
@@ -19,7 +19,7 @@ void handle_output_commit(struct sway_output *output,
     }
 
     if (event->committed & WLR_OUTPUT_STATE_SCALE) {
-        output_for_each_container(output, update_textures, NULL);
+        output_for_each_window(output, update_textures, NULL);
     }
 
     if (event->committed & (WLR_OUTPUT_STATE_TRANSFORM | WLR_OUTPUT_STATE_SCALE)) {

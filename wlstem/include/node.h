@@ -7,19 +7,19 @@
 #define MIN_SANE_H 60
 
 struct sway_output;
-struct sway_container;
+struct wls_window;
 struct sway_transaction_instruction;
 struct wlr_box;
 
 enum wls_transaction_node_type {
     N_OUTPUT,
-    N_CONTAINER,
+    N_WINDOW,
 };
 struct wls_transaction_node {
     enum wls_transaction_node_type type;
     union {
         struct sway_output *sway_output;
-        struct sway_container *sway_container;
+        struct wls_window *wls_window;
     };
 
     /**
@@ -32,7 +32,7 @@ struct wls_transaction_node {
     size_t ntxnrefs;
     bool destroying;
 
-    // If true, indicates that the container has pending state that differs from
+    // If true, indicates that the window has pending state that differs from
     // the current.
     bool dirty;
 
@@ -61,7 +61,7 @@ bool node_is_view(struct wls_transaction_node *node);
 
 struct sway_output *node_get_output(struct wls_transaction_node *node);
 
-bool node_may_have_container_children(struct wls_transaction_node *node);
+bool node_may_have_window_children(struct wls_transaction_node *node);
 
 struct wls_transaction_node *node_get_parent(struct wls_transaction_node *node);
 

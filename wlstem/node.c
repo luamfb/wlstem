@@ -33,7 +33,7 @@ void node_manager_destroy(struct wls_node_manager *node_manager) {
 
 void node_init(struct wls_transaction_node *node, enum wls_transaction_node_type type, void *thing) {
     static size_t next_id = 1;
-    if (type != N_OUTPUT && type != N_CONTAINER) {
+    if (type != N_OUTPUT && type != N_WINDOW) {
         sway_log(SWAY_ERROR, "node_init: invalid node type %d (%x)", type, type);
     }
     node->id = next_id++;
@@ -51,22 +51,22 @@ void node_set_dirty(struct wls_transaction_node *node) {
 }
 
 bool node_is_view(struct wls_transaction_node *node) {
-    return node->type == N_CONTAINER && node->sway_container->view;
+    return node->type == N_WINDOW && node->wls_window->view;
 }
 
 struct sway_output *node_get_output(struct wls_transaction_node *node) {
     switch (node->type) {
-    case N_CONTAINER:
-        return node->sway_container->output;
+    case N_WINDOW:
+        return node->wls_window->output;
     case N_OUTPUT:
         return node->sway_output;
     }
     return NULL;
 }
 
-bool node_may_have_container_children(struct wls_transaction_node *node) {
+bool node_may_have_window_children(struct wls_transaction_node *node) {
     switch (node->type) {
-    case N_CONTAINER:
+    case N_WINDOW:
     case N_OUTPUT:
         return true;
     }
@@ -75,9 +75,9 @@ bool node_may_have_container_children(struct wls_transaction_node *node) {
 
 struct wls_transaction_node *node_get_parent(struct wls_transaction_node *node) {
     switch (node->type) {
-    case N_CONTAINER:
-        if (node->sway_container->output) {
-            return &node->sway_container->output->node;
+    case N_WINDOW:
+        if (node->wls_window->output) {
+            return &node->wls_window->output->node;
         }
         return NULL;
     case N_OUTPUT:
@@ -92,7 +92,7 @@ list_t *node_get_children(struct wls_transaction_node *node) {
     switch (node->type) {
     case N_OUTPUT:
         return node->sway_output->windows;
-    case N_CONTAINER:
+    case N_WINDOW:
         return NULL;
     }
     return NULL;

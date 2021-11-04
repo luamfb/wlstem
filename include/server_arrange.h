@@ -2,9 +2,9 @@
 #define SERVER_ARRANGE_H_
 
 struct sway_output;
-struct sway_container;
+struct wls_window;
 
-void arrange_container(struct sway_container *container);
+void arrange_window(struct wls_window *window);
 
 void arrange_output(struct sway_output *output);
 
