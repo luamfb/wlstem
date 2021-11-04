@@ -11,11 +11,11 @@
 #include "input_manager.h"
 #include "cursor.h"
 #include "output.h"
-#include "container.h"
 #include "node.h"
 #include "view.h"
 #include "list.h"
 #include "log.h"
+#include "window.h"
 #include "wlstem.h"
 #include "server.h"
 

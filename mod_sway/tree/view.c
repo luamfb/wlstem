@@ -25,7 +25,7 @@
 #include "sway_server.h"
 #include "server_arrange.h"
 #include "server_wm.h"
-#include "container.h"
+#include "window.h"
 #include "view.h"
 #include "sway_config.h"
 #include "sway_xdg_decoration.h"

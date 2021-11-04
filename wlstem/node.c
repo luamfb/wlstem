@@ -1,11 +1,11 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 #include "output.h"
-#include "container.h"
 #include "node.h"
 #include "output_manager.h"
 #include "list.h"
 #include "log.h"
+#include "window.h"
 #include "wlstem.h"
 
 struct wls_node_manager * node_manager_create(void) {

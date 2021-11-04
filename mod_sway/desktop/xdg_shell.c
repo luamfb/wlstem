@@ -14,9 +14,9 @@
 #include "seat.h"
 #include "output.h"
 #include "server_wm.h"
-#include "container.h"
 #include "view.h"
 #include "sway_xdg_decoration.h"
+#include "window.h"
 
 static const struct sway_view_child_impl popup_impl;
 

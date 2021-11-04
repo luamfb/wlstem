@@ -3,9 +3,9 @@
 #include <wlr/types/wlr_surface.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include "config.h"
-#include "container.h"
 #include "log.h"
 #include "view.h"
+#include "window.h"
 
 struct sway_container *surface_at_view(struct sway_container *con, double lx, double ly,
         struct wlr_surface **surface, double *sx, double *sy) {

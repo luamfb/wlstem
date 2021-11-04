@@ -27,7 +27,7 @@
 #include "sway_server.h"
 #include "server_wm.h"
 #include "window_title.h"
-#include "container.h"
+#include "window.h"
 #include "output_manager.h"
 #include "view.h"
 #include "wlstem.h"

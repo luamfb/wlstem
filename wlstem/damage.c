@@ -3,11 +3,11 @@
 #include <wlr/types/wlr_box.h>
 #include <wlr/types/wlr_output_damage.h>
 #include <wlr/util/region.h>
-#include "container.h"
 #include "damage.h"
 #include "foreach.h"
 #include "output.h"
 #include "view.h"
+#include "window.h"
 #include "wlstem.h"
 
 static void damage_surface_iterator(struct sway_output *output, struct sway_view *view,

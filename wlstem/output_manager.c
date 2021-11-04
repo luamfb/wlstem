@@ -7,11 +7,11 @@
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_output_management_v1.h>
 #include "output.h"
-#include "container.h"
 #include "output_manager.h"
 #include "list.h"
 #include "log.h"
 #include "util.h"
+#include "window.h"
 #include "wlstem.h"
 #include "server.h"
 

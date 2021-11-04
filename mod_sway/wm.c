@@ -11,7 +11,7 @@
 #include "server_wm.h"
 #include "sway_server.h"
 #include "window_title.h"
-#include "container.h"
+#include "window.h"
 #include "output.h"
 #include "view.h"
 #include "layers.h"

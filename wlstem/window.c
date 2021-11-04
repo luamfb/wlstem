@@ -4,13 +4,13 @@
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_foreign_toplevel_management_v1.h>
 #include <wlr/types/wlr_xdg_shell.h>
-#include "container.h"
 #include "foreach.h"
 #include "node.h"
 #include "log.h"
 #include "list.h"
 #include "output.h"
 #include "view.h"
+#include "window.h"
 #include "wlstem.h"
 
 struct sway_container *container_create(struct sway_view *view) {

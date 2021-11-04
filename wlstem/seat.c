@@ -1,8 +1,8 @@
 #define _POSIX_C_SOURCE 200809L
 #include <wayland-server-core.h>
-#include "container.h"
 #include "log.h"
 #include "seat.h"
+#include "window.h"
 
 struct wls_transaction_node *seat_get_focus(struct sway_seat *seat) {
     if (!seat->has_focus) {

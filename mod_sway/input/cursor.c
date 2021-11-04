@@ -29,7 +29,7 @@
 #include "layers.h"
 #include "sway_server.h"
 #include "output.h"
-#include "container.h"
+#include "window.h"
 #include "output_manager.h"
 #include "view.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"

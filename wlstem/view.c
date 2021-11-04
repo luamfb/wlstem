@@ -5,10 +5,10 @@
 #if HAVE_XWAYLAND
 #include <wlr/xwayland.h>
 #endif
-#include "container.h"
 #include "foreach.h"
 #include "log.h"
 #include "view.h"
+#include "window.h"
 
 void view_destroy(struct sway_view *view) {
     if (!sway_assert(view->surface == NULL, "Tried to free mapped view")) {

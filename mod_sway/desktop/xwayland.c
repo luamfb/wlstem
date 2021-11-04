@@ -15,7 +15,7 @@
 #include "cursor.h"
 #include "output.h"
 #include "server_wm.h"
-#include "container.h"
+#include "window.h"
 #include "view.h"
 #include "sway_xwayland.h"
 #include "wlstem.h"

@@ -10,12 +10,12 @@
 #include <xkbcommon/xkbcommon.h>
 #include "../include/config.h"
 #include "list.h"
-#include "container.h"
 #include "input_config.h"
 #include "output_config.h"
 #include "tablet.h"
 #include "output_manager.h"
 #include "util.h"
+#include "window.h"
 #include "wlr-layer-shell-unstable-v1-protocol.h"
 
 enum binding_input_type {

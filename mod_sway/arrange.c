@@ -1,12 +1,12 @@
 #define _POSIX_C_SOURCE 200809L
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
-#include "container.h"
 #include "log.h"
 #include "output.h"
 #include "server_arrange.h"
 #include "transaction.h"
 #include "view.h"
+#include "window.h"
 #include "wlstem.h"
 
 static void apply_horiz_layout(list_t *children, struct wlr_box *parent) {

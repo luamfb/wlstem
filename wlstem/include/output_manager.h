@@ -4,9 +4,9 @@
 #include <wayland-util.h>
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/render/wlr_texture.h>
-#include "container.h"
 #include "config.h"
 #include "list.h"
+#include "window.h"
 
 struct wls_server;
 
