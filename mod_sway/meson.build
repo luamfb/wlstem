@@ -25,12 +25,11 @@ sway_sources = files(
     'bindkey.c',
     'container.c',
     'output.c',
+    'view.c',
 
     'arrange.c',
     'wm.c',
     'window_title.c',
-
-    'tree/view.c',
 )
 
 sway_deps = [
