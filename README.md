@@ -1,3 +1,10 @@
+# TL;DR
+
+Any serious (non-toy) Wayland compositor using wlroots would have to
+reimplement half of sway's code.
+This library hopes to provide that half, while keeping its nose out of
+WM decisions.
+
 # wlstem
 
 **wlstem** is a WIP high-level library that aids in creating Wayland
