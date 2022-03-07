@@ -1,7 +1,7 @@
 project(
-    'sway',
+    'wlstem',
     'c',
-    version: '1.5', #release_version
+    version: '0.1', #release_version
     license: 'MIT',
     meson_version: '>=0.53.0',
     default_options: [
