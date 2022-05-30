@@ -22,7 +22,6 @@ struct sway_cursor {
     struct wlr_cursor *cursor;
     struct {
         double x, y;
-        struct wls_transaction_node *node;
     } previous;
     struct wlr_xcursor_manager *xcursor_manager;
     struct wl_list tablets;
