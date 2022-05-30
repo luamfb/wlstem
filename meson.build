@@ -53,34 +53,18 @@ xcb            = dependency('xcb', required: get_option('xwayland'))
 math           = cc.find_library('m')
 rt             = cc.find_library('rt')
 
-# Try first to find wlroots as a subproject, then as a system dependency
 wlroots_version = ['>=0.12.0', '<0.13.0']
-wlroots_proj = subproject(
-    'wlroots',
-    default_options: ['examples=false'],
-    required: false,
-    version: wlroots_version,
-)
 wlroots_features = {
     'xwayland': false,
     'systemd': false,
     'elogind': false,
     'libseat': false,
 }
-if wlroots_proj.found()
-    wlroots = wlroots_proj.get_variable('wlroots')
-    wlroots_conf = wlroots_proj.get_variable('conf_data')
-    foreach name, _ : wlroots_features
-        has = wlroots_conf.get('WLR_HAS_' + name.to_upper()) == 1
-        wlroots_features += { name: has }
-    endforeach
-else
-    wlroots = dependency('wlroots', version: wlroots_version)
-    foreach name, _ : wlroots_features
-        has = cc.get_define('WLR_HAS_' + name.to_upper(), prefix: '#include <wlr/config.h>', dependencies: wlroots) == '1'
-        wlroots_features += { name: has }
-    endforeach
-endif
+wlroots = dependency('wlroots', version: wlroots_version)
+foreach name, _ : wlroots_features
+    has = cc.get_define('WLR_HAS_' + name.to_upper(), prefix: '#include <wlr/config.h>', dependencies: wlroots) == '1'
+    wlroots_features += { name: has }
+endforeach
 
 if get_option('xwayland').enabled() and not wlroots_features['xwayland']
     error('Cannot enable Xwayland in sway: wlroots has been built without Xwayland support')
