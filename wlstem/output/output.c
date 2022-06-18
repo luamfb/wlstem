@@ -90,7 +90,7 @@ static void output_evacuate(struct sway_output *output) {
         return;
     }
     struct sway_output *fallback_output =
-        wls->choose_absorber_output(output);
+        wls->user_callbacks.choose_absorber_output(output);
 
     if (output->active) {
         struct sway_output *new_output = fallback_output;

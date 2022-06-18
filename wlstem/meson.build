@@ -21,6 +21,7 @@ endif
 lib_wlstem = shared_library(
     'wlstem',
     files(
+        'user_callbacks.c',
         'misc_protocols.c',
         'server.c',
         'window.c',

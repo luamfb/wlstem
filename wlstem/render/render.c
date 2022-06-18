@@ -171,9 +171,9 @@ void output_render(struct sway_output *output, struct timespec *when,
     }
 
     if (!output_has_opaque_overlay_layer_surface(output)) {
-        wls->output_render_non_overlay(output, renderer, damage);
+        wls->user_callbacks.output_render_non_overlay(output, renderer, damage);
     }
-    wls->output_render_overlay(output, renderer, damage);
+    wls->user_callbacks.output_render_overlay(output, renderer, damage);
 
 renderer_end:
     wlr_renderer_scissor(renderer, NULL);

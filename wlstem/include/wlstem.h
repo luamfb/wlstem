@@ -3,24 +3,14 @@
 
 #include <stdbool.h>
 #include <wayland-server-core.h>
-#include <wlr/render/wlr_renderer.h>
-#include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_tablet_v2.h>
 #include "list.h"
 #include "node.h"
 #include "misc_protocols.h"
+#include "user_callbacks.h"
 #include "output_manager.h"
 
 struct sway_output;
-
-typedef void (*handle_output_commit_fn)(struct sway_output *output,
-        struct wlr_output_event_commit *event);
-
-typedef void (*output_render_fn)(struct sway_output *output,
-        struct wlr_renderer *renderer,
-        pixman_region32_t *damage);
-typedef struct sway_output *
-    (*choose_absorber_output_fn)(struct sway_output *giver);
 
 struct wls_debug {
     bool noatomic;         // Ignore atomic layout updates
@@ -47,19 +37,7 @@ struct wls_context {
     struct sway_seat *current_seat;
     struct wls_misc_protocols *misc_protocols;
 
-    // user-provided callbacks
-    handle_output_commit_fn handle_output_commit;
-
-    // for the overlay in layer shell protocol
-    output_render_fn output_render_overlay;
-    // for all remaining layers in layer shell protocol
-    output_render_fn output_render_non_overlay;
-
-    // this function must return which output will receive the windows from
-    // another output (`giver`), that has been disconnected.
-    // If NULL is returned, the `noop_output` is used, and the window will
-    // disappear (until it is moved to a "real" output).
-    choose_absorber_output_fn choose_absorber_output;
+    struct wls_user_callbacks user_callbacks;
 
     struct wls_debug debug;
     struct {
@@ -75,8 +53,7 @@ extern struct wls_context *wls;
 // Initializes the `wls` variable containing wlstem's context.
 // Returns whether or not the initialization succeeded.
 //
-bool wls_init(handle_output_commit_fn, output_render_fn, output_render_fn,
-    choose_absorber_output_fn);
+bool wls_init(const struct wls_user_callbacks *callbacks);
 
 // Finalizes the wlstem context, freeing up any resources it used so far.
 void wls_fini(void);

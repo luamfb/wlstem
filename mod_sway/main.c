@@ -21,6 +21,7 @@
 #include "log.h"
 #include "stringop.h"
 #include "util.h"
+#include "user_callbacks.h"
 #include "wlstem.h"
 #include "server.h"
 
@@ -325,9 +326,14 @@ int main(int argc, char **argv) {
 
     sway_log(SWAY_INFO, "Starting sway version " SWAY_VERSION);
 
-    if (!wls_init(handle_output_commit,
-            output_render_overlay, output_render_non_overlay,
-            choose_absorber_output)) {
+    struct wls_user_callbacks callbacks = {
+        handle_output_commit,
+        output_render_overlay,
+        output_render_non_overlay,
+        choose_absorber_output
+    };
+
+    if (!wls_init(&callbacks)) {
         return 1;
     }
     wls->debug = wls_debug;

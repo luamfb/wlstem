@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
+#include <string.h>
 #include <wayland-server-core.h>
 #include "input_method.h"
 #include "list.h"
@@ -13,19 +14,14 @@
 
 struct wls_context *wls = NULL;
 
-bool wls_init(handle_output_commit_fn handle_output_commit,
-        output_render_fn output_render_overlay,
-        output_render_fn output_render_non_overlay,
-        choose_absorber_output_fn choose_absorber_output) {
+bool wls_init(const struct wls_user_callbacks *callbacks) {
     if (wls) {
         sway_log(SWAY_ERROR, "the wlstem context was already initialized!");
         return false;
     }
 
-    if (!handle_output_commit || !output_render_overlay
-            || !output_render_non_overlay
-            || !choose_absorber_output) {
-        sway_log(SWAY_ERROR, "refusing NULL callback");
+    if (!validate_callbacks(callbacks)) {
+        sway_log(SWAY_ERROR, "callback validation failed!");
         return false;
     }
 
@@ -61,12 +57,8 @@ bool wls_init(handle_output_commit_fn handle_output_commit,
         return false;
     }
 
+    memcpy(&_wls->user_callbacks, callbacks, sizeof(struct wls_user_callbacks));
     wls = _wls;
-    wls->handle_output_commit = handle_output_commit;
-    wls->output_render_overlay = output_render_overlay;
-    wls->output_render_non_overlay = output_render_non_overlay;
-    wls->choose_absorber_output = choose_absorber_output;
-
     wls->server = _server;
     wls->node_manager = _node_manager;
     wls->output_manager = _output_manager;

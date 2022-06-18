@@ -209,7 +209,7 @@ static void handle_commit(struct wl_listener *listener, void *data) {
     struct sway_output *output = wl_container_of(listener, output, commit);
     struct wlr_output_event_commit *event = data;
 
-    wls->handle_output_commit(output, event);
+    wls->user_callbacks.handle_output_commit(output, event);
 }
 
 static void handle_present(struct wl_listener *listener, void *data) {
