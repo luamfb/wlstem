@@ -1,3 +1,6 @@
+# DEPRECATION NOTE
+This software is now deprecated. Use something else.
+
 # TL;DR
 
 Any serious (non-toy) Wayland compositor using wlroots would have to
